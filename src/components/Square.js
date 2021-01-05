@@ -2,13 +2,16 @@ import '../style/Square.css';
 import Counter from './Counter'
 
 export default function Square(props) {
-    const isBlack = props.isBlack;
-    const style = isBlack ? "square black" : "square";
-    const showCounter = props.showCounter;
+    const state = props.state;
+    const style = state !== 0 ? "square black" : "square";
+
+    function click() {
+        console.log("Free")
+    }
 
     return (
-        <div class={style}>
-            
+        <div className={style} onClick={click}>
+            <Counter state={state}></Counter>
         </div>
     )
 
