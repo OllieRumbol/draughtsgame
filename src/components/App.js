@@ -9,7 +9,7 @@ function App() {
     <div className="container fluid">
       <Jumbotron fluid>
         <Container>
-          <h1>Draughts Game</h1>
+          <h1 className="display-1">Draughts Game</h1>
           <p>
             A draughts game built in react
           </p>

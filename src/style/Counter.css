@@ -1,13 +1,13 @@
 .circle {
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  padding: 5px;
+  width:  100px;
+  height: 100px;
+  padding: 10px;
   background: #fff;
   border: 3px solid #000;
   color: #ffbf00;
   text-align: center;
-  font: 32px Arial, sans-serif;
+  font: 65px Arial, sans-serif;
 }
 
 .red {

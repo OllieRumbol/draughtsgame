@@ -1,8 +1,13 @@
 import '../style/Counter.css';
 
 export default function Counter(props) {
+    const height = props.y;
+    const width = props.x
+
     function click() {
-        console.log(props.state)
+        console.log(props.state);
+        console.log("Height: " + height);
+        console.log("Width: " + width);
     }
 
     if (props.state === 1) {
