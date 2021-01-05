@@ -11,7 +11,7 @@ function App() {
         <Container>
           <h1>Draughts Game</h1>
           <p>
-            A draughts game built in react 
+            A draughts game built in react
           </p>
         </Container>
       </Jumbotron>
