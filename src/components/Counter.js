@@ -1,13 +1,16 @@
 import '../style/Counter.css';
 
 export default function Counter(props) {
+    const state = props.state;
     const height = props.y;
     const width = props.x
+    const setCounterToMove = props.setCounterToMove;
 
     function click() {
         console.log(props.state);
         console.log("Height: " + height);
         console.log("Width: " + width);
+        setCounterToMove({state: state, height: height, width: width});
     }
 
     if (props.state === 1) {

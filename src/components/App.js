@@ -6,17 +6,17 @@ import Board from './Board';
 
 function App() {
   return (
-    <div className="container fluid">
+    <Container fluid>
       <Jumbotron fluid>
         <Container>
-          <h1 className="display-1">Draughts Game</h1>
-          <p>
+          <h1 className="display-1 font-weight-bold">Draughts Game</h1>
+          <h4>
             A draughts game built in react
-          </p>
+          </h4>
         </Container>
       </Jumbotron>
       <Board></Board>
-    </div>
+    </Container>
   );
 }
 
