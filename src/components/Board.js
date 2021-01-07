@@ -23,16 +23,20 @@ export default function Board() {
     const [counterToMove, setCounterToMove] = useState(null);
     const [squareToMoveTo, setSquareToMoveTo] = useState(null);
 
-    const [squares, setSquares] = useState(counters.map((row, index) => {
-        let y = index;
-        return (
-            <tr>
-                {
-                    row.map((piece, index) => <td><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
-                }
-            </tr>
-        )
-    }));
+    const [squares, setSquares] = useState(renderSquares());
+
+    function renderSquares() {
+        return counters.map((row, index) => {
+            let y = index;
+            return (
+                <tr>
+                    {
+                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
+                    }
+                </tr>
+            )
+        })
+    }
 
     useEffect(() => {
         if (counterToMove != null && squareToMoveTo != null) {
@@ -44,16 +48,7 @@ export default function Board() {
                         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
                         setCounters(counters);
-                        setSquares(counters.map((row, index) => {
-                            let y = index;
-                            return (
-                                <tr>
-                                    {
-                                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
-                                    }
-                                </tr>
-                            )
-                        }))
+                        setSquares(renderSquares());
                     }
                 }
             }
@@ -65,61 +60,24 @@ export default function Board() {
                         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
                         setCounters(counters);
-                        setSquares(counters.map((row, index) => {
-                            let y = index;
-                            return (
-                                <tr>
-                                    {
-                                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
-                                    }
-                                </tr>
-                            )
-                        }))
+                        setSquares(renderSquares());
                     }
                 }
             }
-            //Player 1 king
-            else if (counterToMove.state === 3) {
+            //Player 1 or 2 king
+            else if (counterToMove.state === 3 || counterToMove.state === 4) {
                 if (counterToMove.height - 1 === squareToMoveTo.height || counterToMove.height + 1 === squareToMoveTo.height) {
                     if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
                         counters[counterToMove.height][counterToMove.width] = 5;
                         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
                         setCounters(counters);
-                        setSquares(counters.map((row, index) => {
-                            let y = index;
-                            return (
-                                <tr>
-                                    {
-                                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
-                                    }
-                                </tr>
-                            )
-                        }))
+                        setSquares(renderSquares());
                     }
                 }
             }
-            //Player 2 king
-            else if (counterToMove.state === 4) {
-                if (counterToMove.height - 1 === squareToMoveTo.height || counterToMove.height + 1 === squareToMoveTo.height) {
-                    if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
-                        counters[counterToMove.height][counterToMove.width] = 5;
-                        counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
-
-                        setCounters(counters);
-                        setSquares(counters.map((row, index) => {
-                            let y = index;
-                            return (
-                                <tr>
-                                    {
-                                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
-                                    }
-                                </tr>
-                            )
-                        }))
-                    }
-                }
-            }
+            //Player 1 taking player 2
+            
             setCounterToMove(null);
             setSquareToMoveTo(null);
         }
