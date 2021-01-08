@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/draughtsgame/static/css/main.6196ddfe.chunk.css",
-    "main.js": "/draughtsgame/static/js/main.19e4d20d.chunk.js",
-    "main.js.map": "/draughtsgame/static/js/main.19e4d20d.chunk.js.map",
+    "main.js": "/draughtsgame/static/js/main.8f7758ce.chunk.js",
+    "main.js.map": "/draughtsgame/static/js/main.8f7758ce.chunk.js.map",
     "runtime-main.js": "/draughtsgame/static/js/runtime-main.618992b1.js",
     "runtime-main.js.map": "/draughtsgame/static/js/runtime-main.618992b1.js.map",
     "static/css/2.ae9f1eb3.chunk.css": "/draughtsgame/static/css/2.ae9f1eb3.chunk.css",
@@ -18,6 +18,6 @@
     "static/css/2.ae9f1eb3.chunk.css",
     "static/js/2.66be4eee.chunk.js",
     "static/css/main.6196ddfe.chunk.css",
-    "static/js/main.19e4d20d.chunk.js"
+    "static/js/main.8f7758ce.chunk.js"
   ]
 }
