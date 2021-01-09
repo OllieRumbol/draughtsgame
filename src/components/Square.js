@@ -1,5 +1,5 @@
+import Counter from './Counter';
 import '../style/Square.css';
-import Counter from './Counter'
 
 export default function Square(props) {
     const state = props.state;
@@ -9,11 +9,11 @@ export default function Square(props) {
     const setSquareToMoveTo = props.setSquareToMoveTo;
 
     function click() {
-        console.log("Free");
-        console.log("Height: " + height);
-        console.log("Width: " + width);
-        if(state === 5){
-            setSquareToMoveTo({height: height, width: width});
+        // console.log("Free");
+        // console.log("Height: " + height);
+        // console.log("Width: " + width);
+        if (state === 5) {
+            setSquareToMoveTo({ height: height, width: width });
         }
     }
 
