@@ -1,7 +1,7 @@
 import React from "react";
+import Row from 'react-bootstrap/Row';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../style/Counter.css';
-import Row from 'react-bootstrap/Row';
 
 export default function Pieces(props) {
 
@@ -13,7 +13,7 @@ export default function Pieces(props) {
             </Row>
             <br></br>
             <Row className="p-3">
-            <div className="circle red center">K</div>
+                <div className="circle red center">K</div>
                 <h5 className="p-4">King</h5>
             </Row>
         </div>
