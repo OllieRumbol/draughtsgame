@@ -7,7 +7,7 @@ export default function DisplayCard(props) {
     return (
         <div>
             <Card>
-                <Card.Header><h4>{props.title}</h4></Card.Header>
+                <Card.Header><h2>{props.title}</h2></Card.Header>
                 <Card.Body>
                     {props.innerComponent}
                 </Card.Body>

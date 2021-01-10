@@ -8,13 +8,13 @@ export default function Players(props) {
     return (
         <div>
             <Row className="p-3">
-                <div className="circle red center"></div>
-                <h5 className="p-4">Player 1</h5>
+                <div className="circle red center yellowBorder"></div>
+                <h3 className="p-4">Player 1</h3>
             </Row>
             <br></br>
             <Row className="p-3">
                 <div className="circle blue center"></div>
-                <h5 className="p-4">Player 2</h5>
+                <h3 className="p-4">Player 2</h3>
             </Row>
         </div>
     )

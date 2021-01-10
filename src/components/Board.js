@@ -12,10 +12,10 @@ export default function Board(props) {
     const start = [
         [2, 0, 2, 0, 2, 0, 2, 0],
         [0, 2, 0, 2, 0, 2, 0, 2],
-        [4, 0, 2, 0, 2, 0, 2, 0],
+        [2, 0, 2, 0, 2, 0, 2, 0],
         [0, 5, 0, 5, 0, 5, 0, 5],
         [5, 0, 5, 0, 5, 0, 5, 0],
-        [0, 3, 0, 1, 0, 1, 0, 1],
+        [0, 1, 0, 1, 0, 1, 0, 1],
         [1, 0, 1, 0, 1, 0, 1, 0],
         [0, 1, 0, 1, 0, 1, 0, 1],
     ]
@@ -32,7 +32,7 @@ export default function Board(props) {
             return (
                 <tr>
                     {
-                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
+                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} key={y+index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
                     }
                 </tr>
             )
@@ -43,6 +43,7 @@ export default function Board(props) {
         counters[counterToMove.height][counterToMove.width] = 5;
         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
+        kingMeCheck();
         setCounters(counters);
         setSquares(renderSquares());
     }
@@ -60,8 +61,24 @@ export default function Board(props) {
 
         counters[res][res2] = 5;
 
+        kingMeCheck();
         setCounters(counters);
         setSquares(renderSquares());
+    }
+
+    function kingMeCheck() {
+        //Player 1 check
+        if (counterToMove.state === 1) {
+            if (squareToMoveTo.height === 0) {
+                counters[squareToMoveTo.height][squareToMoveTo.width] = 3;
+            }
+        }
+        //Player 2 check
+        else if (counterToMove.state === 2) {
+            if (squareToMoveTo.height === 7) {
+                counters[squareToMoveTo.height][squareToMoveTo.width] = 4;
+            }
+        }
     }
 
     useEffect(() => {

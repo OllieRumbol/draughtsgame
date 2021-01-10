@@ -45,19 +45,19 @@ function App() {
       </Jumbotron>
       <Row>
         <ResultModal show={showResultModal} update={setShowResultModal} title={resultsModalTitle}></ResultModal>
-        <Col lg="1"></Col>
-        <Col lg="7">
+        <Col xl="1"></Col>
+        <Col xl="7">
           <Board player1Counter={player1Counter} setPlayer1Counter={setPlayer1Counter} player2Counter={player2Counter} setPlayer2Counter={setPlayer2Counter}></Board>
           <br></br>
         </Col>
-        <Col lg="3">
+        <Col xl="3">
           <DisplayCard title="Players" innerComponent={<Players></Players>}></DisplayCard>
           <br></br>
           <DisplayCard title="Pieces" innerComponent={<Pieces></Pieces>}></DisplayCard>
           <br></br>
           <DisplayCard title="Pieces Taken" innerComponent={<PiecesTaken player1Counter={player1Counter} player2Counter={player2Counter}></PiecesTaken>}></DisplayCard>
         </Col>
-        <Col lg="1"></Col>
+        <Col xl="1"></Col>
       </Row>
     </Container>
   );
