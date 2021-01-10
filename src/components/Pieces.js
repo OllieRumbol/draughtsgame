@@ -9,13 +9,25 @@ export default function Pieces(props) {
         <div>
             <Row className="p-3">
                 <div className="circle red center"></div>
-                <h5 className="p-4">Single</h5>
+                <h3 className="p-4">Single</h3>
             </Row>
             <br></br>
             <Row className="p-3">
                 <div className="circle red center">K</div>
-                <h5 className="p-4">King</h5>
+                <h3 className="p-4">King</h3>
             </Row>
+            {/* <br></br>
+            <Row className="pl-5">
+            <div className="circle red center ml-5"></div>
+            </Row>
+            <Row className="pl-3">
+            <div className="circle red center mr-5"></div>
+            <br></br>
+            <div className="circle red center ml-3"></div>
+            </Row>
+            <Row className="pl-5">
+            <div className="circle red center ml-5"></div>
+            </Row> */}
         </div>
     )
 }
