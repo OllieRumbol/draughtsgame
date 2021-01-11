@@ -32,7 +32,7 @@ export default function Board(props) {
             return (
                 <tr>
                     {
-                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} key={y+index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
+                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} key={y + index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
                     }
                 </tr>
             )
@@ -84,46 +84,57 @@ export default function Board(props) {
     useEffect(() => {
         if (counterToMove != null && squareToMoveTo != null) {
             //Player1 
-            if (counterToMove.state === 1) {
-                if (counterToMove.height - 1 === squareToMoveTo.height) {
-                    if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
-                        moveCounter();
+            if(props.turn === true){
+                if (counterToMove.state === 1) {
+                    if (counterToMove.height - 1 === squareToMoveTo.height) {
+                        if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
+                            moveCounter();
+                            props.setTurn(!props.turn);
+                        }
                     }
-                }
-                //Player 1 taking player 2
-                else if (counterToMove.height - 2 === squareToMoveTo.height) {
-                    if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
-                        let res = (squareToMoveTo.height + counterToMove.height) / 2;
-                        let res2 = (squareToMoveTo.width + counterToMove.width) / 2
-                        if (counters[res][res2] === 2) {
-                            takeCounter(res, res2);
+                    //Player 1 taking player 2
+                    else if (counterToMove.height - 2 === squareToMoveTo.height) {
+                        if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
+                            let res = (squareToMoveTo.height + counterToMove.height) / 2;
+                            let res2 = (squareToMoveTo.width + counterToMove.width) / 2
+                            if (counters[res][res2] === 2) {
+                                takeCounter(res, res2);
+                                props.setTurn(!props.turn);
+                            }
                         }
                     }
                 }
             }
             //Player 2
-            else if (counterToMove.state === 2) {
-                if (counterToMove.height + 1 === squareToMoveTo.height) {
-                    if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
-                        moveCounter();
+            if(props.turn === false){
+                if (counterToMove.state === 2) {
+                    if (counterToMove.height + 1 === squareToMoveTo.height) {
+                        if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
+                            moveCounter();
+                            props.setTurn(!props.turn);
+                        }
                     }
-                }
-                //Player 2 taking player 1
-                else if (counterToMove.height + 2 === squareToMoveTo.height) {
-                    if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
-                        let res = (squareToMoveTo.height + counterToMove.height) / 2;
-                        let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
-                        if (counters[res][res2] === 1) {
-                            takeCounter(res, res2);
+                    //Player 2 taking player 1
+                    else if (counterToMove.height + 2 === squareToMoveTo.height) {
+                        if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
+                            let res = (squareToMoveTo.height + counterToMove.height) / 2;
+                            let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
+                            if (counters[res][res2] === 1) {
+                                takeCounter(res, res2);
+                                props.setTurn(!props.turn);
+                            }
                         }
                     }
                 }
             }
             //Player 1 or 2 king
-            else if (counterToMove.state === 3 || counterToMove.state === 4) {
+            if (counterToMove.state === 3 || counterToMove.state === 4) {
                 if (counterToMove.height - 1 === squareToMoveTo.height || counterToMove.height + 1 === squareToMoveTo.height) {
                     if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
-                        moveCounter();
+                        if((counterToMove.state === 3 && props.turn === true) || (counterToMove.state === 4 && props.turn === false)){
+                            moveCounter();
+                            props.setTurn(!props.turn);
+                        }
                     }
                 }
                 else if (counterToMove.height - 2 === squareToMoveTo.height || counterToMove.height + 2 === squareToMoveTo.height) {
@@ -131,12 +142,19 @@ export default function Board(props) {
                         let res = (squareToMoveTo.height + counterToMove.height) / 2;
                         let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
                         //Player 1 king takes player 2
-                        if (counterToMove.state === 3 && (counters[res][res2] === 2 || counters[res][res2] === 4)) {
-                            takeCounter(res, res2);
+                        if(props.turn === true){
+                            if (counterToMove.state === 3 && (counters[res][res2] === 2 || counters[res][res2] === 4)) {
+                                takeCounter(res, res2);
+                                props.setTurn(!props.turn);
+                            }
                         }
                         //Player 2 king takes player 1
-                        else if (counterToMove.state === 4 && (counters[res][res2] === 1 || counters[res][res2] === 3)) {
-                            takeCounter(res, res2);
+                        else if(props.turn === false){
+                            console.log("hello world");
+                            if (counterToMove.state === 4 && (counters[res][res2] === 1 || counters[res][res2] === 3)) {
+                                takeCounter(res, res2);
+                                props.setTurn(!props.turn);
+                            }
                         }
                     }
                 }

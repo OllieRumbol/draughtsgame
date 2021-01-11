@@ -4,16 +4,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../style/Counter.css';
 
 export default function Players(props) {
-
     return (
         <div>
             <Row className="p-3">
-                <div className="circle red center yellowBorder"></div>
+                <div className={"circle red center" + (props.turn === true ? " yellow" : "")}></div>
                 <h3 className="p-4">Player 1</h3>
             </Row>
             <br></br>
             <Row className="p-3">
-                <div className="circle blue center"></div>
+                <div className={"circle blue center" + (props.turn === false ? " yellow" : "")}></div>
                 <h3 className="p-4">Player 2</h3>
             </Row>
         </div>
