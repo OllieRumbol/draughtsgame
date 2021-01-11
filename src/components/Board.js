@@ -30,9 +30,9 @@ export default function Board(props) {
         return counters.map((row, index) => {
             let y = index;
             return (
-                <tr>
+                <tr key={y}>
                     {
-                        row.map((piece, index) => <td><Square state={piece} y={y} x={index} key={y + index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
+                        row.map((piece, index) => <td key={y + index}><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
                     }
                 </tr>
             )
@@ -84,7 +84,7 @@ export default function Board(props) {
     useEffect(() => {
         if (counterToMove != null && squareToMoveTo != null) {
             //Player1 
-            if(props.turn === true){
+            if (props.turn === true) {
                 if (counterToMove.state === 1) {
                     if (counterToMove.height - 1 === squareToMoveTo.height) {
                         if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
@@ -106,7 +106,7 @@ export default function Board(props) {
                 }
             }
             //Player 2
-            if(props.turn === false){
+            if (props.turn === false) {
                 if (counterToMove.state === 2) {
                     if (counterToMove.height + 1 === squareToMoveTo.height) {
                         if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
@@ -131,7 +131,7 @@ export default function Board(props) {
             if (counterToMove.state === 3 || counterToMove.state === 4) {
                 if (counterToMove.height - 1 === squareToMoveTo.height || counterToMove.height + 1 === squareToMoveTo.height) {
                     if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
-                        if((counterToMove.state === 3 && props.turn === true) || (counterToMove.state === 4 && props.turn === false)){
+                        if ((counterToMove.state === 3 && props.turn === true) || (counterToMove.state === 4 && props.turn === false)) {
                             moveCounter();
                             props.setTurn(!props.turn);
                         }
@@ -142,14 +142,14 @@ export default function Board(props) {
                         let res = (squareToMoveTo.height + counterToMove.height) / 2;
                         let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
                         //Player 1 king takes player 2
-                        if(props.turn === true){
+                        if (props.turn === true) {
                             if (counterToMove.state === 3 && (counters[res][res2] === 2 || counters[res][res2] === 4)) {
                                 takeCounter(res, res2);
                                 props.setTurn(!props.turn);
                             }
                         }
                         //Player 2 king takes player 1
-                        else if(props.turn === false){
+                        else if (props.turn === false) {
                             console.log("hello world");
                             if (counterToMove.state === 4 && (counters[res][res2] === 1 || counters[res][res2] === 3)) {
                                 takeCounter(res, res2);

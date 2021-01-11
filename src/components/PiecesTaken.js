@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../style/Counter.css';
 
 export default function PiecesTaken(props) {
-
     return (
         <div>
             <Row className="p-3">
