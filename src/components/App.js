@@ -12,12 +12,16 @@ import ResultModal from './ResultModal';
 import '../style/App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
+export default function App() {
   const [player1Counter, setPlayer1Counter] = useState(0);
   const [player2Counter, setPlayer2Counter] = useState(0);
 
   const [showResultModal, setShowResultModal] = useState(false);
   const [resultsModalTitle, setResultsModalTitle] = useState("");
+
+  //Player 1 - true
+  //Player 2 - false
+  const [turn, setTurn] = useState(true)
 
   useEffect(() => {
     // console.log(player1Counter);
@@ -39,7 +43,7 @@ function App() {
         <Container>
           <h1 className="display-1 font-weight-bold">Draughts Game</h1>
           <h4>
-            A draughts game built in react
+            A draughts game built in react js
           </h4>
         </Container>
       </Jumbotron>
@@ -47,20 +51,19 @@ function App() {
         <ResultModal show={showResultModal} update={setShowResultModal} title={resultsModalTitle}></ResultModal>
         <Col xl="1"></Col>
         <Col xl="7">
-          <Board player1Counter={player1Counter} setPlayer1Counter={setPlayer1Counter} player2Counter={player2Counter} setPlayer2Counter={setPlayer2Counter}></Board>
+          <Board player1Counter={player1Counter} setPlayer1Counter={setPlayer1Counter} player2Counter={player2Counter} setPlayer2Counter={setPlayer2Counter} turn={turn} setTurn={setTurn}></Board>
           <br></br>
         </Col>
         <Col xl="3">
-          <DisplayCard title="Players" innerComponent={<Players></Players>}></DisplayCard>
+          <DisplayCard title="Players" innerComponent={<Players turn={turn}></Players>}></DisplayCard>
           <br></br>
           <DisplayCard title="Pieces" innerComponent={<Pieces></Pieces>}></DisplayCard>
           <br></br>
           <DisplayCard title="Pieces Taken" innerComponent={<PiecesTaken player1Counter={player1Counter} player2Counter={player2Counter}></PiecesTaken>}></DisplayCard>
+          <br></br>
         </Col>
         <Col xl="1"></Col>
       </Row>
     </Container>
   );
 }
-
-export default App;

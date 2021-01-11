@@ -1,6 +1,6 @@
 .circle {
   border-radius: 50%;
-  width:  100px;
+  width: 100px;
   height: 100px;
   padding: 10px;
   background: #fff;
@@ -16,4 +16,10 @@
 
 .blue {
   background-color: #6495ed;
+}
+
+.yellow {
+  border-color: #ffbf00;
+  border-width: thick;
+  border-style: solid;
 }
