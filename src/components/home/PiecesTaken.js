@@ -1,7 +1,7 @@
 import React from "react";
 import Row from 'react-bootstrap/Row';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../style/Counter.css';
+import '../../style/Counter.css';
 
 export default function PiecesTaken(props) {
     return (

@@ -1,4 +1,4 @@
-import '../style/Counter.css';
+import '../../style/Counter.css';
 
 export default function Counter(props) {
     const state = props.state;

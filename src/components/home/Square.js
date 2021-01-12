@@ -1,5 +1,5 @@
 import Counter from './Counter';
-import '../style/Square.css';
+import '../../style/Square.css';
 
 export default function Square(props) {
     const state = props.state;
