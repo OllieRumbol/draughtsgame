@@ -1,23 +1,23 @@
 {
   "files": {
     "main.css": "/draughtsgame/static/css/main.97110aaa.chunk.css",
-    "main.js": "/draughtsgame/static/js/main.115413cf.chunk.js",
-    "main.js.map": "/draughtsgame/static/js/main.115413cf.chunk.js.map",
+    "main.js": "/draughtsgame/static/js/main.7a1eaed6.chunk.js",
+    "main.js.map": "/draughtsgame/static/js/main.7a1eaed6.chunk.js.map",
     "runtime-main.js": "/draughtsgame/static/js/runtime-main.618992b1.js",
     "runtime-main.js.map": "/draughtsgame/static/js/runtime-main.618992b1.js.map",
     "static/css/2.ae9f1eb3.chunk.css": "/draughtsgame/static/css/2.ae9f1eb3.chunk.css",
-    "static/js/2.ccfdd55e.chunk.js": "/draughtsgame/static/js/2.ccfdd55e.chunk.js",
-    "static/js/2.ccfdd55e.chunk.js.map": "/draughtsgame/static/js/2.ccfdd55e.chunk.js.map",
+    "static/js/2.405c794e.chunk.js": "/draughtsgame/static/js/2.405c794e.chunk.js",
+    "static/js/2.405c794e.chunk.js.map": "/draughtsgame/static/js/2.405c794e.chunk.js.map",
     "index.html": "/draughtsgame/index.html",
     "static/css/2.ae9f1eb3.chunk.css.map": "/draughtsgame/static/css/2.ae9f1eb3.chunk.css.map",
     "static/css/main.97110aaa.chunk.css.map": "/draughtsgame/static/css/main.97110aaa.chunk.css.map",
-    "static/js/2.ccfdd55e.chunk.js.LICENSE.txt": "/draughtsgame/static/js/2.ccfdd55e.chunk.js.LICENSE.txt"
+    "static/js/2.405c794e.chunk.js.LICENSE.txt": "/draughtsgame/static/js/2.405c794e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.618992b1.js",
     "static/css/2.ae9f1eb3.chunk.css",
-    "static/js/2.ccfdd55e.chunk.js",
+    "static/js/2.405c794e.chunk.js",
     "static/css/main.97110aaa.chunk.css",
-    "static/js/main.115413cf.chunk.js"
+    "static/js/main.7a1eaed6.chunk.js"
   ]
 }
