@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Square from './Square';
-import '../style/Board.css';
+import '../../style/Board.css';
 
 export default function Board(props) {
     //0 - Counter is never there
