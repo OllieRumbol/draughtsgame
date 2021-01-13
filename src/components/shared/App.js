@@ -1,5 +1,6 @@
 import React from 'react';
 import Home from '../home/Home'
+import HowToPlay from '../howToPlay/HowToPlay'
 import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import Jumbotron from 'react-bootstrap/Jumbotron';
 import Container from 'react-bootstrap/Container';
@@ -37,7 +38,7 @@ export default function App() {
         <main>
           <Switch>
             <Route path="/" exact component={() => <Home />} />
-            <Route path="/howtoplay" exact component={() => <div>HELLO WORLD</div>} />
+            <Route path="/howtoplay" exact component={() => <HowToPlay />} />
           </Switch>
         </main>
       </Container>
