@@ -1,6 +1,7 @@
 import React from 'react';
-import Home from '../home/Home'
-import HowToPlay from '../howToPlay/HowToPlay'
+import Home from '../home/Home';
+import HowToPlay from '../howToPlay/HowToPlay';
+import About from '../about/About';
 import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import Jumbotron from 'react-bootstrap/Jumbotron';
 import Container from 'react-bootstrap/Container';
@@ -23,13 +24,18 @@ export default function App() {
             <hr class="my-4"></hr>
             <ButtonToolbar>
               <Link to="/">
-                <ButtonGroup className="mr-2" aria-label="First group">
+                <ButtonGroup className="mr-2">
                   <Button className="" variant="primary">Home</Button>
                 </ButtonGroup>
               </Link>
               <Link to="/howtoplay">
-                <ButtonGroup className="mr-2" aria-label="First group">
+                <ButtonGroup className="mr-2">
                   <Button className="" variant="primary">How to play</Button>
+                </ButtonGroup>
+              </Link>
+              <Link to="/about">
+                <ButtonGroup className="mr-2">
+                  <Button className="" variant="primary">About</Button>
                 </ButtonGroup>
               </Link>
             </ButtonToolbar>
@@ -39,6 +45,7 @@ export default function App() {
           <Switch>
             <Route path="/" exact component={() => <Home />} />
             <Route path="/howtoplay" exact component={() => <HowToPlay />} />
+            <Route path="/about" exact component={() => <About />} />
           </Switch>
         </main>
       </Container>
