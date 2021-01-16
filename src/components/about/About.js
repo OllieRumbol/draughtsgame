@@ -12,7 +12,7 @@ export default function About() {
                 <Col xl="1"></Col>
                 <Col xl="10">
                     <div>
-                        <h1>About 1</h1>
+                        <h1>About</h1>
                         <p>This game was made in loving memory of my grandad, Ernest Rumbol. My grandad taught me this game many years ago. Over the years we have played thousands of games together. As I got older and understood the game more, the more games I won. However, grandad still loved playing even when he wiped the board clean because he lost the game after the first move. We played with many different rule sets, his favourite was forcing users to take a piece if available, I thought the game was more tactical if you didn't. I hope that people play this game with as much fun as we did.</p>
                     </div>
                     <div>
@@ -31,8 +31,8 @@ export default function About() {
                         <div class="card-columns">
                             <ProjectCard title="Draughts Game Phase 1 Epic" colour="success" features={["React Project Setup", "Board setup", "Counter setup", "UI design", "Move counter", "Take counter", "Game end", "King me", "Turns"]} status="Complete"></ProjectCard>
                             <ProjectCard title="React Router Epic" colour="success" features={["Setup", "Refactor", "Production changes"]} status="Complete"></ProjectCard>
-                            <ProjectCard title="Pages Epic" colour="warning" features={["How to play", "About"]} status="In development"></ProjectCard>
-                            <ProjectCard title="CI/CD and Unit Tests" colour="danger" features={["Setup unit tests"]} status="Not started"></ProjectCard>
+                            <ProjectCard title="Pages Epic" colour="success" features={["How to play", "About"]} status="Complete"></ProjectCard>
+                            <ProjectCard title="CI/CD and Unit Tests" colour="warning" features={["Create basic pipeline in yaml", "Setup unit tests"]} status="Not started"></ProjectCard>
                             <ProjectCard title="Player tips" colour="danger" features={["Add tips section to the UI"]} status="Not started"></ProjectCard>
                             <ProjectCard title="Automated 2nd Player" colour="danger" features={[]} status="Not started"></ProjectCard>
                             <ProjectCard title="Draughts Game Phase 2" colour="danger" features={["Game setup page", "Double jumps", "Game over - no one can move", "Restart", "Undo", "Better CSS"]} status="Not started"></ProjectCard>
