@@ -32,7 +32,7 @@ export default function About() {
                             <ProjectCard title="Draughts Game Phase 1 Epic" colour="success" features={["React Project Setup", "Board setup", "Counter setup", "UI design", "Move counter", "Take counter", "Game end", "King me", "Turns"]} status="Complete"></ProjectCard>
                             <ProjectCard title="React Router Epic" colour="success" features={["Setup", "Refactor", "Production changes"]} status="Complete"></ProjectCard>
                             <ProjectCard title="Pages Epic" colour="success" features={["How to play", "About"]} status="Complete"></ProjectCard>
-                            <ProjectCard title="CI/CD and Unit Tests" colour="warning" features={["Create basic pipeline in yaml", "Setup unit tests"]} status="Not started"></ProjectCard>
+                            <ProjectCard title="CI/CD and Unit Tests" colour="warning" features={["Create basic pipeline in yaml", "Setup testing environment"]} status="Not started"></ProjectCard>
                             <ProjectCard title="Player tips" colour="danger" features={["Add tips section to the UI"]} status="Not started"></ProjectCard>
                             <ProjectCard title="Automated 2nd Player" colour="danger" features={[]} status="Not started"></ProjectCard>
                             <ProjectCard title="Draughts Game Phase 2" colour="danger" features={["Game setup page", "Double jumps", "Game over - no one can move", "Restart", "Undo", "Better CSS"]} status="Not started"></ProjectCard>
