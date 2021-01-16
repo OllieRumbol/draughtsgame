@@ -17,25 +17,23 @@ export default function App() {
       <Container fluid>
         <Jumbotron fluid>
           <Container>
-            <h1 className="display-1 font-weight-bold">Draughts Game</h1>
-            <h4>
-              A draughts game built in react js
-          </h4>
-            <hr class="my-4"></hr>
+            <h1 data-testid="title" className="display-1 font-weight-bold">Draughts Game</h1>
+            <h4>A draughts game built in react js</h4>
+            <hr className="my-4"></hr>
             <ButtonToolbar>
               <Link to="/">
                 <ButtonGroup className="mr-2">
-                  <Button className="" variant="primary">Home</Button>
+                  <Button data-testid="link" variant="primary">Home</Button>
                 </ButtonGroup>
               </Link>
               <Link to="/howtoplay">
                 <ButtonGroup className="mr-2">
-                  <Button className="" variant="primary">How to play</Button>
+                  <Button data-testid="link" variant="primary">How to play</Button>
                 </ButtonGroup>
               </Link>
               <Link to="/about">
                 <ButtonGroup className="mr-2">
-                  <Button className="" variant="primary">About</Button>
+                  <Button data-testid="link" variant="primary">About</Button>
                 </ButtonGroup>
               </Link>
             </ButtonToolbar>
