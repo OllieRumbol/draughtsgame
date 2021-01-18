@@ -15,27 +15,27 @@ export default function Counter(props) {
 
     if (props.state === 1) {
         return (
-            <div className="circle red center" onClick={click}></div>
+            <div data-testid="player1" className="circle red center" onClick={click}></div>
         )
     }
     else if (props.state === 2) {
         return (
-            <div className="circle blue center" onClick={click}></div>
+            <div data-testid="player2" className="circle blue center" onClick={click}></div>
         )
     }
     else if (props.state === 3) {
         return (
-            <div className="circle red center" onClick={click}>K</div>
+            <div data-testid="player1king" className="circle red center" onClick={click}>K</div>
         )
     }
     else if (props.state === 4) {
         return (
-            <div className="circle blue center" onClick={click}>K</div>
+            <div data-testid="player2king" className="circle blue center" onClick={click}>K</div>
         )
     }
     else {
         return (
-            <div></div>
+            <div data-testid="empty"></div>
         )
     }
 }
