@@ -1,9 +1,13 @@
 .square {
-    height: 100px;
-    width: 100px;
-    margin: 0 !important;
+  height: 100px;
+  width: 100px;
+  margin: 0 !important;
 }
 
 .black {
-    background-color: #555;
+  background-color: #555;
+}
+
+.tip {
+  background-color: #ffdc00;
 }

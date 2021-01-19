@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Square from './Square';
+import Button from 'react-bootstrap/Button';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import '../../style/Board.css';
+import { findPlayer1Moves } from '../../logic/playerTips';
 
 export default function Board(props) {
     //0 - Counter is never there
@@ -9,6 +13,7 @@ export default function Board(props) {
     //3 - Player 1 King Counter
     //4 - Player 2 King Counter
     //5 - Playable space
+    //6 - Show player tip
     const start = [
         [2, 0, 2, 0, 2, 0, 2, 0],
         [0, 2, 0, 2, 0, 2, 0, 2],
@@ -79,6 +84,29 @@ export default function Board(props) {
                 counters[squareToMoveTo.height][squareToMoveTo.width] = 4;
             }
         }
+    }
+
+    function clearTips() {
+        for (let i = 0; i < counters.length; i++) {
+            for (let j = 0; j < counters[i].length; j++) {
+                if (counters[i][j] === 6) {
+                    counters[i][j] = 5;
+                }
+            }
+        }
+
+        setCounters(counters);
+        setSquares(renderSquares());
+    }
+
+    function showPlayer1Tips() {
+        let res = findPlayer1Moves(counters, 1, 2);
+        res.forEach(element => {
+            counters[element.height][element.width] = 6;
+        });
+
+        setCounters(counters);
+        setSquares(renderSquares());
     }
 
     useEffect(() => {
@@ -166,12 +194,23 @@ export default function Board(props) {
     }, [squareToMoveTo, counterToMove, counters])
 
     return (
-        <div className="container fluid d-flex justify-content-center">
-            <table>
-                <tbody className="border border-dark">
-                    {squares}
-                </tbody>
-            </table>
+        <div className="container fluid">
+            <ButtonToolbar className="d-flex justify-content-center">
+                <ButtonGroup className="ml-2 mr-2 mb-4">
+                    <Button onClick={showPlayer1Tips}>Show player 1 moves</Button>
+                </ButtonGroup>
+                <ButtonGroup className="ml-2 mr-2 mb-4">
+                    <Button onClick={clearTips}>Clear tips</Button>
+                </ButtonGroup>
+            </ButtonToolbar>
+
+            <div className="d-flex justify-content-center">
+                <table>
+                    <tbody className="border border-dark">
+                        {squares}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }
