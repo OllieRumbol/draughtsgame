@@ -76,8 +76,10 @@ function checkTakeDown(board, i, j, playerToTake) {
     catch { }
 }
 
-function removeDuplicates() {
-
+function removeDuplicates(list) {
+    return list.filter(function(item, index){
+        return list.indexOf(item) >= index;
+    });
 }
 
 function findPlayerMoves(board, tipFor) {
@@ -110,5 +112,5 @@ function findPlayerMoves(board, tipFor) {
         }
     }
 
-    return result;
+    return removeDuplicates(result);
 }

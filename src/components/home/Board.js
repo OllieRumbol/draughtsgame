@@ -25,13 +25,14 @@ export default function Board(props) {
         [0, 1, 0, 1, 0, 1, 0, 1],
     ]
     const [counters, setCounters] = useState(start);
-    const [squares, setSquares] = useState(renderSquares());
 
     const [counterToMove, setCounterToMove] = useState(null);
     const [squareToMoveTo, setSquareToMoveTo] = useState(null);
 
     const [showTips, setShowTips] = useState(true);
     let tipButtonText = showTips ? "Show player tips" : "Hide player tips";
+
+    const [squares, setSquares] = useState(renderSquares());
 
     function renderSquares() {
         return counters.map((row, index) => {
@@ -104,6 +105,7 @@ export default function Board(props) {
     function displayTips() {
         if (props.turn === true) {
             let res = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
+            console.log(res);
             res.forEach(element => {
                 counters[element.height][element.width] = 6;
             });
