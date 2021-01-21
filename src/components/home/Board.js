@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import '../../style/Board.css';
-import { findPlayer1Moves } from '../../logic/playerTips';
+import { findPlayerMoves } from '../../logic/playerTips';
 
 export default function Board(props) {
     //0 - Counter is never there
@@ -25,11 +25,13 @@ export default function Board(props) {
         [0, 1, 0, 1, 0, 1, 0, 1],
     ]
     const [counters, setCounters] = useState(start);
+    const [squares, setSquares] = useState(renderSquares());
 
     const [counterToMove, setCounterToMove] = useState(null);
     const [squareToMoveTo, setSquareToMoveTo] = useState(null);
 
-    const [squares, setSquares] = useState(renderSquares());
+    const [showTips, setShowTips] = useState(true);
+    let tipButtonText = showTips ? "Show player tips" : "Hide player tips";
 
     function renderSquares() {
         return counters.map((row, index) => {
@@ -99,11 +101,30 @@ export default function Board(props) {
         setSquares(renderSquares());
     }
 
-    function showPlayer1Tips() {
-        let res = findPlayer1Moves(counters, 1, 2);
-        res.forEach(element => {
-            counters[element.height][element.width] = 6;
-        });
+    function displayTips() {
+        if (props.turn === true) {
+            let res = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
+            res.forEach(element => {
+                counters[element.height][element.width] = 6;
+            });
+        }
+        else if (props.turn === false) {
+            let res = findPlayerMoves(counters, 2).concat(findPlayerMoves(counters, 4));
+            res.forEach(element => {
+                counters[element.height][element.width] = 6;
+            });
+        }
+    }
+
+    function showPlayerTips() {
+        if (showTips) {
+            displayTips();
+            setShowTips(false);
+        }
+        else {
+            clearTips();
+            setShowTips(true);
+        }
 
         setCounters(counters);
         setSquares(renderSquares());
@@ -197,10 +218,7 @@ export default function Board(props) {
         <div className="container fluid">
             <ButtonToolbar className="d-flex justify-content-center">
                 <ButtonGroup className="ml-2 mr-2 mb-4">
-                    <Button onClick={showPlayer1Tips}>Show player 1 moves</Button>
-                </ButtonGroup>
-                <ButtonGroup className="ml-2 mr-2 mb-4">
-                    <Button onClick={clearTips}>Clear tips</Button>
+                    <Button onClick={showPlayerTips}>{tipButtonText}</Button>
                 </ButtonGroup>
             </ButtonToolbar>
 
