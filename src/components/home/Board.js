@@ -105,7 +105,6 @@ export default function Board(props) {
     function displayTips() {
         if (props.turn === true) {
             let res = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
-            console.log(res);
             res.forEach(element => {
                 counters[element.height][element.width] = 6;
             });

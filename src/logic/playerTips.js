@@ -77,9 +77,27 @@ function checkTakeDown(board, i, j, playerToTake) {
 }
 
 function removeDuplicates(list) {
-    return list.filter(function(item, index){
-        return list.indexOf(item) >= index;
+    let newList = [];
+
+    list.forEach(element => {
+        if(newList.length === 0){
+            newList.push(element);
+        }
+        else{
+            let counter = 0;
+            newList.forEach(element2 => {
+                if(element.height === element2.height && element.width ===element2.width){
+                    counter++;
+                }
+            });
+
+            if(counter === 0){
+                newList.push(element);
+            }
+        }
     });
+
+    return newList;
 }
 
 function findPlayerMoves(board, tipFor) {
