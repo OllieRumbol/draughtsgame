@@ -32,11 +32,11 @@ export default function About() {
                             <ProjectCard title="Draughts Game Phase 1 Epic" colour="success" features={["React Project Setup", "Board setup", "Counter setup", "UI design", "Move counter", "Take counter", "Game end", "King me", "Turns"]} status="Complete"></ProjectCard>
                             <ProjectCard title="React Router Epic" colour="success" features={["Setup", "Refactor", "Production changes"]} status="Complete"></ProjectCard>
                             <ProjectCard title="Pages Epic" colour="success" features={["How to play", "About"]} status="Complete"></ProjectCard>
-                            <ProjectCard title="CI/CD and Unit Tests" colour="warning" features={["Create basic pipeline in yaml", "Setup testing environment"]} status="Not started"></ProjectCard>
-                            <ProjectCard title="Player tips" colour="danger" features={["Add tips section to the UI"]} status="Not started"></ProjectCard>
-                            <ProjectCard title="Automated 2nd Player" colour="danger" features={[]} status="Not started"></ProjectCard>
-                            <ProjectCard title="Draughts Game Phase 2" colour="danger" features={["Game setup page", "Double jumps", "Game over - no one can move", "Restart", "Undo", "Better CSS"]} status="Not started"></ProjectCard>
-                            <ProjectCard title="Support" colour="danger" features={[]} status="Not started"></ProjectCard>
+                            <ProjectCard title="CI/CD and Unit Tests Epic" colour="warning" features={["Create basic pipeline in yaml", "Setup testing environment and add to pipeline", "Unit test components", "Unit test web app logic"]} status="In progress"></ProjectCard>
+                            <ProjectCard title="Player tips Epic" colour="warning" features={["UI changes to display user tips", "Logic to work out where a player can move", "Logic to work out where a player can take another counter"]} status="In progress"></ProjectCard>
+                            <ProjectCard title="Automated 2nd Player Epic" colour="danger" features={["Game setup page, 2 player or VS PC. Along with other settings", "Web app logic for PC to decide next move", "Render PC move on page"]} status="Not started"></ProjectCard>
+                            <ProjectCard title="Draughts Game Phase 2 Epic" colour="danger" features={["Double jumps", "Game over - no one can move", "Restart", "Undo", "Mobile friendly CSS"]} status="Not started"></ProjectCard>
+                            <ProjectCard title="Support Epic" colour="danger" features={[]} status="Not started"></ProjectCard>
                         </div>
                     </div>
                     <br></br>
