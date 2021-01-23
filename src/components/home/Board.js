@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Square from './Square';
+import Button from 'react-bootstrap/Button';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import '../../style/Board.css';
+import { findPlayerMoves } from '../../logic/playerTips';
 
 export default function Board(props) {
     //0 - Counter is never there
@@ -9,6 +13,7 @@ export default function Board(props) {
     //3 - Player 1 King Counter
     //4 - Player 2 King Counter
     //5 - Playable space
+    //6 - Show player tip
     const start = [
         [2, 0, 2, 0, 2, 0, 2, 0],
         [0, 2, 0, 2, 0, 2, 0, 2],
@@ -23,6 +28,9 @@ export default function Board(props) {
 
     const [counterToMove, setCounterToMove] = useState(null);
     const [squareToMoveTo, setSquareToMoveTo] = useState(null);
+
+    const [showTips, setShowTips] = useState(true);
+    let tipButtonText = showTips ? "Show player tips" : "Hide player tips";
 
     const [squares, setSquares] = useState(renderSquares());
 
@@ -79,6 +87,48 @@ export default function Board(props) {
                 counters[squareToMoveTo.height][squareToMoveTo.width] = 4;
             }
         }
+    }
+
+    function clearTips() {
+        for (let i = 0; i < counters.length; i++) {
+            for (let j = 0; j < counters[i].length; j++) {
+                if (counters[i][j] === 6) {
+                    counters[i][j] = 5;
+                }
+            }
+        }
+
+        setCounters(counters);
+        setSquares(renderSquares());
+    }
+
+    function displayTips() {
+        if (props.turn === true) {
+            let res = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
+            res.forEach(element => {
+                counters[element.height][element.width] = 6;
+            });
+        }
+        else if (props.turn === false) {
+            let res = findPlayerMoves(counters, 2).concat(findPlayerMoves(counters, 4));
+            res.forEach(element => {
+                counters[element.height][element.width] = 6;
+            });
+        }
+    }
+
+    function showPlayerTips() {
+        if (showTips) {
+            displayTips();
+            setShowTips(false);
+        }
+        else {
+            clearTips();
+            setShowTips(true);
+        }
+
+        setCounters(counters);
+        setSquares(renderSquares());
     }
 
     useEffect(() => {
@@ -159,6 +209,8 @@ export default function Board(props) {
                     }
                 }
             }
+            clearTips();
+            setShowTips(true);
             setCounterToMove(null);
             setSquareToMoveTo(null);
         }
@@ -166,12 +218,20 @@ export default function Board(props) {
     }, [squareToMoveTo, counterToMove, counters])
 
     return (
-        <div className="container fluid d-flex justify-content-center">
-            <table>
-                <tbody className="border border-dark">
-                    {squares}
-                </tbody>
-            </table>
+        <div className="container fluid">
+            <ButtonToolbar className="d-flex justify-content-center">
+                <ButtonGroup className="ml-2 mr-2 mb-4">
+                    <Button onClick={showPlayerTips}>{tipButtonText}</Button>
+                </ButtonGroup>
+            </ButtonToolbar>
+
+            <div className="d-flex justify-content-center">
+                <table>
+                    <tbody className="border border-dark">
+                        {squares}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }

@@ -3,7 +3,7 @@ import '../../style/Square.css';
 
 export default function Square(props) {
     const state = props.state;
-    const style = state !== 0 ? "square black" : "square";
+    const style = state === 6 ? "square tip" : state !== 0 ? "square black" : "square";
     const height = props.y;
     const width = props.x;
     const setSquareToMoveTo = props.setSquareToMoveTo;
@@ -12,7 +12,7 @@ export default function Square(props) {
         // console.log("Free");
         // console.log("Height: " + height);
         // console.log("Width: " + width);
-        if (state === 5) {
+        if (state === 5 || state === 6) {
             setSquareToMoveTo({ height: height, width: width });
         }
     }
