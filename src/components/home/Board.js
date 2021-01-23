@@ -209,6 +209,8 @@ export default function Board(props) {
                     }
                 }
             }
+            clearTips();
+            setShowTips(true);
             setCounterToMove(null);
             setSquareToMoveTo(null);
         }
