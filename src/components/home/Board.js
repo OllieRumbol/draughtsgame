@@ -200,7 +200,6 @@ export default function Board(props) {
                         }
                         //Player 2 king takes player 1
                         else if (props.turn === false) {
-                            console.log("hello world");
                             if (counterToMove.state === 4 && (counters[res][res2] === 1 || counters[res][res2] === 3)) {
                                 takeCounter(res, res2);
                                 props.setTurn(!props.turn);
@@ -209,6 +208,7 @@ export default function Board(props) {
                     }
                 }
             }
+
             clearTips();
             setShowTips(true);
             setCounterToMove(null);

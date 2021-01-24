@@ -7,9 +7,6 @@ export default function Counter(props) {
     const setCounterToMove = props.setCounterToMove;
 
     function click() {
-        // console.log(props.state);
-        // console.log("Height: " + height);
-        // console.log("Width: " + width);
         setCounterToMove({ state: state, height: height, width: width });
     }
 
