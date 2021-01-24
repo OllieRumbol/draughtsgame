@@ -80,18 +80,18 @@ function removeDuplicates(list) {
     let newList = [];
 
     list.forEach(element => {
-        if(newList.length === 0){
+        if (newList.length === 0) {
             newList.push(element);
         }
-        else{
+        else {
             let counter = 0;
             newList.forEach(element2 => {
-                if(element.height === element2.height && element.width ===element2.width){
+                if (element.height === element2.height && element.width === element2.width) {
                     counter++;
                 }
             });
 
-            if(counter === 0){
+            if (counter === 0) {
                 newList.push(element);
             }
         }
