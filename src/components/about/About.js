@@ -35,7 +35,7 @@ export default function About() {
                             <ProjectCard title="CI/CD and Unit Tests Epic" colour="warning" features={["Create basic pipeline in yaml", "Setup testing environment and add to pipeline", "Unit test components", "Unit test web app logic"]} status="In progress"></ProjectCard>
                             <ProjectCard title="Player tips Epic" colour="success" features={["UI changes to display user tips", "Logic to work out where a player can move", "Logic to work out where a player can take another counter"]} status="Complete"></ProjectCard>
                             <ProjectCard title="Automated 2nd Player Epic" colour="danger" features={["Game setup page, 2 player or VS PC. Along with other settings", "Web app logic for PC to decide next move", "Render PC move on page"]} status="Not started"></ProjectCard>
-                            <ProjectCard title="Draughts Game Phase 2 Epic" colour="warning" features={["Double jumps", "Game over - no one can move", "Restart", "Undo", "Mobile friendly CSS"]} status="In progress"></ProjectCard>
+                            <ProjectCard title="Draughts Game Phase 2 Epic" colour="warning" features={["Double jumps", "Game over - no one can move", "Restart", "Undo", "CSS for selecting a counter"]} status="In progress"></ProjectCard>
                             <ProjectCard title="Support Epic" colour="danger" features={[]} status="Not started"></ProjectCard>
                         </div>
                     </div>

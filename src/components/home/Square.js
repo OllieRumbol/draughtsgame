@@ -9,9 +9,6 @@ export default function Square(props) {
     const setSquareToMoveTo = props.setSquareToMoveTo;
 
     function click() {
-        // console.log("Free");
-        // console.log("Height: " + height);
-        // console.log("Width: " + width);
         if (state === 5 || state === 6) {
             setSquareToMoveTo({ height: height, width: width });
         }
