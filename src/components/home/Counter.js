@@ -1,6 +1,12 @@
 import '../../style/Counter.css';
+import { useOutsideAlerter } from '../../hooks/useOutsideAlerter';
 
 export default function Counter(props) {
+    const { visible, ref } = useOutsideAlerter();
+
+    let player1Css = visible ? "circle red center yellow" : "circle red center";
+    let player2Css = visible ? "circle blue center yellow" : "circle blue center";
+
     const state = props.state;
     const height = props.y;
     const width = props.x
@@ -12,22 +18,22 @@ export default function Counter(props) {
 
     if (props.state === 1) {
         return (
-            <div className="circle red center" onClick={click}></div>
+            <div ref={ref} className={player1Css} onClick={click}></div>
         )
     }
     else if (props.state === 2) {
         return (
-            <div className="circle blue center" onClick={click}></div>
+            <div ref={ref} className={player2Css}onClick={click}></div>
         )
     }
     else if (props.state === 3) {
         return (
-            <div className="circle red center" onClick={click}>K</div>
+            <div ref={ref} className={player1Css} onClick={click}>K</div>
         )
     }
     else if (props.state === 4) {
         return (
-            <div className="circle blue center" onClick={click}>K</div>
+            <div ref={ref} className={player2Css} onClick={click}>K</div>
         )
     }
     else {
