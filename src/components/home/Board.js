@@ -40,7 +40,7 @@ export default function Board(props) {
             return (
                 <tr key={y}>
                     {
-                        row.map((piece, index) => <td key={y + index}><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
+                        row.map((piece, index) => <td key={y + index} className="p-0"><Square state={piece} y={y} x={index} setSquareToMoveTo={setSquareToMoveTo} setCounterToMove={setCounterToMove}></Square></td>)
                     }
                 </tr>
             )
@@ -226,7 +226,7 @@ export default function Board(props) {
             </ButtonToolbar>
 
             <div className="d-flex justify-content-center">
-                <table>
+                <table className="gameBorder">
                     <tbody className="border border-dark">
                         {squares}
                     </tbody>
