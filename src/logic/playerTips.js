@@ -5,12 +5,12 @@ let result = [];
 function checkMoveUp(board, i, j) {
     try {
         //Check left side
-        if (board[i - 1][j - 1] === 5) {
+        if (board[i - 1][j - 1] === 5 || board[i - 1][j - 1] === 6) {
             result.push({ height: i - 1, width: j - 1 });
         }
 
         //Check right side
-        if (board[i - 1][j + 1] === 5) {
+        if (board[i - 1][j + 1] === 5 || board[i - 1][j + 1] === 6) {
             result.push({ height: i - 1, width: j + 1 });
         }
     }
@@ -20,12 +20,12 @@ function checkMoveUp(board, i, j) {
 function checkMoveDown(board, i, j) {
     try {
         //Check left side
-        if (board[i + 1][j - 1] === 5) {
+        if (board[i + 1][j - 1] === 5 || board[i + 1][j - 1] === 6) {
             result.push({ height: i + 1, width: j - 1 });
         }
 
         //Check right side
-        if (board[i + 1][j + 1] === 5) {
+        if (board[i + 1][j + 1] === 5 || board[i + 1][j + 1] === 6) {
             result.push({ height: i + 1, width: j + 1 });
         }
     }
@@ -36,7 +36,7 @@ function checkTakeUp(board, i, j, playerToTake) {
     try {
         //left
         if (playerToTake.includes(board[i - 1][j - 1])) {
-            if (board[i - 2][j - 2] === 5) {
+            if (board[i - 2][j - 2] === 5 || board[i - 2][j - 2] === 6) {
                 result.push({ height: i - 2, width: j - 2 });
                 checkTakeUp(board, i - 2, j - 2, playerToTake)
             }
@@ -44,7 +44,7 @@ function checkTakeUp(board, i, j, playerToTake) {
 
         //Right
         if (playerToTake.includes(board[i - 1][j + 1])) {
-            if (board[i - 2][j + 2] === 5) {
+            if (board[i - 2][j + 2] === 5 || board[i - 2][j + 2] === 6) {
                 result.push({ height: i - 2, width: j + 2 });
                 checkTakeUp(board, i - 2, j + 2, playerToTake)
             }
@@ -57,7 +57,7 @@ function checkTakeDown(board, i, j, playerToTake) {
     try {
         //left
         if (playerToTake.includes(board[i + 1][j - 1])) {
-            if (board[i + 2][j - 2] === 5) {
+            if (board[i + 2][j - 2] === 5 || board[i + 2][j - 2] === 6) {
                 result.push({ height: i + 2, width: j - 2 });
                 checkTakeDown(board, i + 2, j - 2, playerToTake)
             }
@@ -65,7 +65,7 @@ function checkTakeDown(board, i, j, playerToTake) {
 
         //Right
         if (playerToTake.includes(board[i + 1][j + 1])) {
-            if (board[i + 2][j + 2] === 5) {
+            if (board[i + 2][j + 2] === 5 || board[i + 2][j + 2] === 6) {
                 result.push({ height: i + 2, width: j + 2 });
                 checkTakeDown(board, i + 2, j + 2, playerToTake)
             }
