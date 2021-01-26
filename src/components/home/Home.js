@@ -20,8 +20,6 @@ export default function Home(props) {
     const [turn, setTurn] = useState(true)
 
     useEffect(() => {
-        // console.log(player1Counter);
-        // console.log(player2Counter);
         if (player1Counter === 12) {
             setResultsModalTitle("Player 2 wins");
             setShowResultModal(true);
