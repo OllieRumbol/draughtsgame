@@ -131,7 +131,27 @@ export default function Board(props) {
         setSquares(renderSquares());
     }
 
+    function noOneCanMoveCheck() {
+        let player1Moves = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
+        let player2Moves = findPlayerMoves(counters, 2).concat(findPlayerMoves(counters, 4));
+
+        if (player1Moves.length === 0 && player2Moves.length === 0) {
+            props.setResultsModalTitle("Tied game");
+            props.setResultsModalMessage("No player can move. Therefore the game ends in a tie. I hope you had fun playing.");
+            props.setShowResultModal(true);
+        } else if (player1Moves.length === 0) {
+            props.setResultsModalTitle("Player 2 wins");
+            props.setResultsModalMessage("Player 1 can no longer move. Player 2 wins. I hope you had fun playing.");
+            props.setShowResultModal(true);
+        } else if (player2Moves.length === 0) {
+            props.setResultsModalTitle("Player 1 wins");
+            props.setResultsModalMessage("Player 2 can no longer move. Player 1 wins. I hope you had fun playing.");
+            props.setShowResultModal(true);
+        }
+    }
+
     useEffect(() => {
+        noOneCanMoveCheck();
         if (counterToMove != null && squareToMoveTo != null) {
             //Player1 
             if (props.turn === true) {

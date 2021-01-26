@@ -37,7 +37,6 @@ function checkTakeUp(board, i, j, playerToTake) {
         //left
         if (playerToTake.includes(board[i - 1][j - 1])) {
             if (board[i - 2][j - 2] === 5) {
-                console.log("Found take left");
                 result.push({ height: i - 2, width: j - 2 });
                 checkTakeUp(board, i - 2, j - 2, playerToTake)
             }
@@ -46,7 +45,6 @@ function checkTakeUp(board, i, j, playerToTake) {
         //Right
         if (playerToTake.includes(board[i - 1][j + 1])) {
             if (board[i - 2][j + 2] === 5) {
-                console.log("Found take right");
                 result.push({ height: i - 2, width: j + 2 });
                 checkTakeUp(board, i - 2, j + 2, playerToTake)
             }

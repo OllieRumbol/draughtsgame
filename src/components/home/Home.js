@@ -14,20 +14,21 @@ export default function Home(props) {
 
     const [showResultModal, setShowResultModal] = useState(false);
     const [resultsModalTitle, setResultsModalTitle] = useState("");
+    const [resultsModalMessage, setResultsModalMessage] = useState("");
 
     //Player 1 - true
     //Player 2 - false
     const [turn, setTurn] = useState(true)
 
     useEffect(() => {
-        // console.log(player1Counter);
-        // console.log(player2Counter);
         if (player1Counter === 12) {
             setResultsModalTitle("Player 2 wins");
+            setResultsModalMessage("Well done on finishing the game of draughts. I hope you had fun playing.");
             setShowResultModal(true);
         }
         else if (player2Counter === 12) {
             setResultsModalTitle("Player 1 wins");
+            setResultsModalMessage("Well done on finishing the game of draughts. I hope you had fun playing.");
             setShowResultModal(true);
         }
 
@@ -35,10 +36,10 @@ export default function Home(props) {
 
     return (
         <Row>
-            <ResultModal show={showResultModal} update={setShowResultModal} title={resultsModalTitle}></ResultModal>
+            <ResultModal show={showResultModal} update={setShowResultModal} title={resultsModalTitle} message={resultsModalMessage}></ResultModal>
             <Col xl="1"></Col>
             <Col xl="7">
-                <Board player1Counter={player1Counter} setPlayer1Counter={setPlayer1Counter} player2Counter={player2Counter} setPlayer2Counter={setPlayer2Counter} turn={turn} setTurn={setTurn}></Board>
+                <Board player1Counter={player1Counter} setPlayer1Counter={setPlayer1Counter} player2Counter={player2Counter} setPlayer2Counter={setPlayer2Counter} turn={turn} setTurn={setTurn} setResultsModalTitle={setResultsModalTitle} setShowResultModal={setShowResultModal} setResultsModalMessage={setResultsModalMessage}></Board>
                 <br></br>
             </Col>
             <Col xl="3">

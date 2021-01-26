@@ -14,7 +14,7 @@ export default function ResultModal(props) {
                 <Modal.Header closeButton>
                     <Modal.Title>{props.title}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Well done on finishing the game of draughts. I hope you had fun playing</Modal.Body>
+                <Modal.Body>{props.message}</Modal.Body>
                 <Modal.Footer>
                     <Button variant="danger" onClick={handleClose}>
                         Close
