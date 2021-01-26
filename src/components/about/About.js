@@ -28,7 +28,7 @@ export default function About() {
                     </div>
                     <div>
                         <h2>Project Plan</h2>
-                        <div class="card-columns">
+                        <div className="card-columns">
                             <ProjectCard title="Draughts Game Phase 1 Epic" colour="success" features={["React Project Setup", "Board setup", "Counter setup", "UI design", "Move counter", "Take counter", "Game end", "King me", "Turns"]} status="Complete"></ProjectCard>
                             <ProjectCard title="React Router Epic" colour="success" features={["Setup", "Refactor", "Production changes"]} status="Complete"></ProjectCard>
                             <ProjectCard title="Pages Epic" colour="success" features={["How to play", "About"]} status="Complete"></ProjectCard>
@@ -36,6 +36,7 @@ export default function About() {
                             <ProjectCard title="Player tips Epic" colour="success" features={["UI changes to display user tips", "Logic to work out where a player can move", "Logic to work out where a player can take another counter"]} status="Complete"></ProjectCard>
                             <ProjectCard title="Automated 2nd Player Epic" colour="danger" features={["Game setup page, 2 player or VS PC. Along with other settings", "Web app logic for PC to decide next move", "Render PC move on page"]} status="Not started"></ProjectCard>
                             <ProjectCard title="Draughts Game Phase 2 Epic" colour="warning" features={["Double jumps", "Game over - no one can move", "Restart", "Undo", "CSS for selecting a counter"]} status="In progress"></ProjectCard>
+                            <ProjectCard title="Mobile responsive UI Epic" colour="danger" features={["Game setup page is mobile responsive", "Game board page is mobile responsive", "How to play page is mobile responsive", "About page is mobile responsive"]} status="Not started"></ProjectCard>
                             <ProjectCard title="Support Epic" colour="danger" features={[]} status="Not started"></ProjectCard>
                         </div>
                     </div>
