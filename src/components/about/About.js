@@ -38,7 +38,8 @@ export default function About() {
                             <ProjectCard title="Automated 2nd Player Phase 2 Epic" colour="danger" features={["Use some kind of genetic search algorithm to find best move"]} status="Not started"></ProjectCard>
                             <ProjectCard title="Draughts Game Phase 2 Epic" colour="warning" features={["Double jumps", "Game over - no one can move", "Restart", "Undo", "CSS for selecting a counter"]} status="In progress"></ProjectCard>
                             <ProjectCard title="Mobile responsive UI Epic" colour="danger" features={["Game setup page is mobile responsive", "Game board page is mobile responsive", "How to play page is mobile responsive", "About page is mobile responsive"]} status="Not started"></ProjectCard>
-                            <ProjectCard title="Support Epic" colour="danger" features={["Game tips results in no possible moves (26/01/21)"]} status="Not started"></ProjectCard>
+                            <ProjectCard title="Support Epic" colour="danger" features={["Game tips results in no possible moves (26/01/21)"]} status="Paused due to no further work"></ProjectCard>
+                            <ProjectCard title="Technical Debt Epic Epic" colour="danger" features={["Refactor main use effect logic (28/01/21)"]} status="Not started"></ProjectCard>
                         </div>
                     </div>
                     <br></br>
