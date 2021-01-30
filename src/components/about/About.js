@@ -34,12 +34,12 @@ export default function About() {
                             <ProjectCard title="Pages Epic" colour="success" features={["How to play", "About"]} status="Complete"></ProjectCard>
                             <ProjectCard title="CI/CD and Unit Tests Epic" colour="warning" features={["Create basic pipeline in yaml", "Setup testing environment and add to pipeline", "Unit test components", "Unit test web app logic"]} status="In progress"></ProjectCard>
                             <ProjectCard title="Player tips Epic" colour="success" features={["UI changes to display user tips", "Logic to work out where a player can move", "Logic to work out where a player can take another counter"]} status="Complete"></ProjectCard>
-                            <ProjectCard title="Automated 2nd Player Phase 1 Epic" colour="danger" features={["Game setup page, 2 player or VS PC. Along with other settings", "Web app logic for PC to decide next move (random logic)", "Render PC move on page"]} status="Not started"></ProjectCard>
+                            <ProjectCard title="Draughts Game Phase 2 Epic" colour="success" features={["Double jumps", "Game over - no one can move", "Restart", "Undo", "CSS for selecting a counter"]} status="Complete"></ProjectCard>
+                            <ProjectCard title="Automated 2nd Player Phase 1 Epic" colour="warning" features={["Game setup page, 2 player or VS PC. Along with other settings", "Web app logic for PC to decide next move (random logic)", "Render PC move on page"]} status="In progress"></ProjectCard>
                             <ProjectCard title="Automated 2nd Player Phase 2 Epic" colour="danger" features={["Use some kind of genetic search algorithm to find best move"]} status="Not started"></ProjectCard>
-                            <ProjectCard title="Draughts Game Phase 2 Epic" colour="warning" features={["Double jumps", "Game over - no one can move", "Restart", "Undo", "CSS for selecting a counter"]} status="In progress"></ProjectCard>
                             <ProjectCard title="Mobile responsive UI Epic" colour="danger" features={["Game setup page is mobile responsive", "Game board page is mobile responsive", "How to play page is mobile responsive", "About page is mobile responsive"]} status="Not started"></ProjectCard>
                             <ProjectCard title="Support Epic" colour="danger" features={["Game tips results in no possible moves (26/01/21)"]} status="Paused due to no further work"></ProjectCard>
-                            <ProjectCard title="Technical Debt Epic Epic" colour="danger" features={["Refactor main use effect logic (28/01/21)"]} status="Not started"></ProjectCard>
+                            <ProjectCard title="Technical Debt Epic Epic" colour="danger" features={["Refactor main use effect logic (28/01/21)"]} status="Paused due to no further work"></ProjectCard>
                         </div>
                     </div>
                     <br></br>
