@@ -86,13 +86,15 @@ function checkTakeDown(board, i, j, playerToTake) {
     catch { }
 }
 
-function checkKingTake(board, i, j, playerToTake) {
+function checkKingTake(board, i, j, i2, j2, playerToTake) {
     try {
         //Down left
-        if (playerToTake.includes(board[i + 1][j - 1])) {
-            if (board[i + 2][j - 2] === 5 || board[i + 2][j - 2] === 6) {
-                result.push({ height: i + 2, width: j - 2 });
-                checkKingTake(board, i + 2, j - 2, playerToTake)
+        if (playerToTake.includes(board[i2 + 1][j2 - 1])) {
+            if (board[i2 + 2][j2 - 2] === 5 || board[i2 + 2][j2 - 2] === 6) {
+                if (i !== i2 + 2 || j !== j2 - 2) {
+                    result.push({ height: i2 + 2, width: j2 - 2 });
+                    checkKingTake(board, i2, j2, i2 + 2, j2 - 2, playerToTake);
+                }
             }
         }
     }
@@ -100,10 +102,12 @@ function checkKingTake(board, i, j, playerToTake) {
 
     try {
         //Down Right
-        if (playerToTake.includes(board[i + 1][j + 1])) {
-            if (board[i + 2][j + 2] === 5 || board[i + 2][j + 2] === 6) {
-                result.push({ height: i + 2, width: j + 2 });
-                checkKingTake(board, i + 2, j + 2, playerToTake)
+        if (playerToTake.includes(board[i2 + 1][j2 + 1])) {
+            if (board[i2 + 2][j2 + 2] === 5 || board[i2 + 2][j2 + 2] === 6) {
+                if (i !== i2 + 2 || j !== j2 + 2) {
+                    result.push({ height: i2 + 2, width: j2 + 2 });
+                    checkKingTake(board, i2, j2, i2 + 2, j2 + 2, playerToTake)
+                }
             }
         }
     }
@@ -111,10 +115,13 @@ function checkKingTake(board, i, j, playerToTake) {
 
     try {
         //Up left
-        if (playerToTake.includes(board[i - 1][j - 1])) {
-            if (board[i - 2][j - 2] === 5 || board[i - 2][j - 2] === 6) {
-                result.push({ height: i - 2, width: j - 2 });
-                checkKingTake(board, i - 2, j - 2, playerToTake)
+        if (playerToTake.includes(board[i2 - 1][j2 - 1])) {
+            if (board[i2 - 2][j2 - 2] === 5 || board[i2 - 2][j2 - 2] === 6) {
+                if (i !== i2 - 2 || j !== j2 - 2) {
+                    result.push({ height: i2 - 2, width: j2 - 2 });
+                    checkKingTake(board, i2, j2, i2 - 2, j2 - 2, playerToTake)
+                }
+
             }
         }
     }
@@ -122,10 +129,13 @@ function checkKingTake(board, i, j, playerToTake) {
 
     try {
         //Up Right
-        if (playerToTake.includes(board[i - 1][j + 1])) {
-            if (board[i - 2][j + 2] === 5 || board[i - 2][j + 2] === 6) {
-                result.push({ height: i - 2, width: j + 2 });
-                checkKingTake(board, i - 2, j + 2, playerToTake)
+        if (playerToTake.includes(board[i2 - 1][j2 + 1])) {
+            if (board[i2 - 2][j2 + 2] === 5 || board[i2 - 2][j2 + 2] === 6) {
+                if (i !== i2 - 2 || j !== j2 + 2) {
+                    result.push({ height: i2 - 2, width: j2 + 2 });
+                    checkKingTake(board, i2, j2, i2 - 2, j2 + 2, playerToTake)
+                }
+
             }
         }
     }
@@ -173,12 +183,12 @@ function findPlayerMoves(board, tipFor) {
                 else if (piece === 3) {
                     checkMoveUp(board, i, j);
                     checkMoveDown(board, i, j);
-                    checkKingTake(board, i, j, [2, 4]);
+                    checkKingTake(board, i, j, i, j, [2, 4]);
                 }
                 else if (piece === 4) {
                     checkMoveUp(board, i, j);
                     checkMoveDown(board, i, j);
-                    checkKingTake(board, i, j, [1, 3]);
+                    checkKingTake(board, i, j, i, j, [1, 3]);
                 }
             }
         }
