@@ -240,17 +240,20 @@ export default function Board(props) {
         }
 
         if (listOfMoves.length !== 0) {
-            var temp = listOfMoves[listOfMoves.length - 1];
+            let temp = listOfMoves[listOfMoves.length - 1];
             for (let i = 0; i < counters.length; i++) {
                 for (let j = 0; j < counters[i].length; j++) {
-                    if (temp[i][j] === 6) {
+                    if (temp.board[i][j] === 6) {
                         counters[i][j] = 5;
                     }
-                    else if (counters[i][j] !== temp[i][j]) {
-                        counters[i][j] = temp[i][j];
+                    else if (counters[i][j] !== temp.board[i][j]) {
+                        counters[i][j] = temp.board[i][j];
                     }
                 }
             }
+
+            props.setTurn(temp.turn);
+
             listOfMoves.pop();
 
             let piecesTakenPlayer1 = 12 - calculatePiecesTaken(1);
@@ -258,17 +261,19 @@ export default function Board(props) {
             let piecesTakenPlayer2 = 12 - calculatePiecesTaken(2);
             props.setPlayer2Counter(piecesTakenPlayer2);
 
-            props.setTurn(!props.turn);
             setSquares(renderSquares());
         }
     }
 
     function saveBoard() {
         let copyBoard = [];
-        for (var i = 0; i < counters.length; i++) {
+        for (let i = 0; i < counters.length; i++) {
             copyBoard[i] = counters[i].slice();
         }
-        setListOfMoves(moves => [...moves, copyBoard]);
+        setListOfMoves(moves => [...moves, {
+            turn: props.turn,
+            board: copyBoard
+        }]);
     }
 
     function calculatePiecesTaken(player) {
