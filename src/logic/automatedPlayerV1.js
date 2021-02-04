@@ -1,3 +1,11 @@
+class Tree {
+    constructor(value) {
+        this.Value = value;
+        this.Left = null;
+        this.Right = null
+    }
+
+}
 
 function checkMoveUpLeft(board, i, j) {
     try {
@@ -112,12 +120,92 @@ function FindAvailableMoves(board) {
     return results;
 }
 
+function checkTakeDown(board, i, j, playerToTake, tree) {
+    try {
+        //left
+        if (playerToTake.includes(board[i + 1][j - 1])) {
+            if (board[i + 2][j - 2] === 5 || board[i + 2][j - 2] === 6) {
+                tree.Left = new Tree({
+                    takeHeight: i + 1,
+                    takeWidth: j - 1,
+                    nextHeight: i + 2,
+                    nextWidth: j - 2
+                })
+                checkTakeDown(board, i + 2, j - 2, playerToTake, tree.Left);
+            }
+        }
+    }
+    catch { }
+
+    try {
+        //Right
+        if (playerToTake.includes(board[i + 1][j + 1])) {
+            if (board[i + 2][j + 2] === 5 || board[i + 2][j + 2] === 6) {
+                tree.Right = new Tree({
+                    takeHeight: i + 1,
+                    takeWidth: j + 1,
+                    nextHeight: i + 2,
+                    nextWidth: j + 2
+                })
+                checkTakeDown(board, i + 2, j + 2, playerToTake, tree.Right);
+            }
+        }
+    }
+    catch { }
+
+    return tree;
+}
+
+function FindAvailableTakeMoves(board) {
+    let res = [];
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            let piece = board[i][j]
+            if (piece === 2) {
+                let resultTree = checkTakeDown(board, i, j, [1], new Tree({ currentHeight: i, currentWidth: j }));
+                if (resultTree.Left != null || resultTree.Right != null) {
+                    var treeArray = treeToArray(resultTree);
+                    treeArray.forEach(element => {
+                        res.push(element);
+                    });
+                }
+            }
+            else if (piece === 4) {
+
+            }
+        }
+    }
+
+    return res;
+}
+
+function treeToArray(mainTree) {
+    function iter(tree, tempArray) {
+        if (tree.Left != null && tree.Right != null) {
+            return iter(tree.Left, tempArray.concat(tree.Value)) + iter(tree.Right, tempArray.concat(tree.Value));
+        }
+        else if (tree.Left != null) {
+            return iter(tree.Left, tempArray.concat(tree.Value))
+        }
+        else if (tree.Right != null) {
+            iter(tree.Right, tempArray.concat(tree.Value))
+        }
+        else {
+            result.push(tempArray.concat(tree.Value));
+        }
+    }
+
+    var result = [];
+    iter(mainTree, []);
+    return result;
+}
+
 function pickMoveForPlayer2() {
     let board = [
         [2, 0, 2, 0, 2, 0, 2, 0],
         [0, 2, 0, 2, 0, 2, 0, 2],
-        [2, 0, 4, 0, 4, 0, 4, 0],
-        [0, 1, 0, 5, 0, 5, 0, 5],
+        [4, 0, 4, 0, 2, 0, 2, 0],
+        [0, 1, 0, 1, 0, 1, 0, 5],
         [5, 0, 5, 0, 5, 0, 5, 0],
         [0, 1, 0, 1, 0, 1, 0, 1],
         [1, 0, 1, 0, 5, 0, 1, 0],
@@ -126,7 +214,23 @@ function pickMoveForPlayer2() {
     let takeMoves = FindAvailableTakeMoves(board);
     if (takeMoves.length !== 0) {
         let randomNumber = Math.floor((Math.random() * takeMoves.length));
-        return (takeMoves[randomNumber]);
+        var takeMove = takeMoves[randomNumber];
+        let takes = [];
+        for (let index = 1; index < takeMove.length; index++){
+            const element = takeMove[index];
+            takes.push({
+                height: element.takeHeight,
+                width: element.takeWidth
+            })
+        }
+        return {
+            currentHeight: takeMove[0].currentHeight,
+            currentWidth: takeMove[0].currentWidth,
+            nextHeight: takeMove[takeMove.length-1].nextHeight,
+            nextWidth: takeMove[takeMove.length-1].nextWidth,
+            take: true,
+            takes: takes
+        };
     }
 
     // let moves = FindAvailableMoves(board)
@@ -136,6 +240,7 @@ function pickMoveForPlayer2() {
     // }
 }
 
-console.log(pickMoveForPlayer2());
+let move = pickMoveForPlayer2();
+console.log(move);
 
 
