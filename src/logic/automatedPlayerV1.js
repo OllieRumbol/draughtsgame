@@ -2,9 +2,18 @@ class Tree {
     constructor(value) {
         this.Value = value;
         this.Left = null;
-        this.Right = null
+        this.Right = null;
     }
+}
 
+class KingTree {
+    constructor(value) {
+        this.Value = value;
+        this.DownLeft = null;
+        this.DownRight = null;
+        this.UpLeft = null;
+        this.UpRight = null;
+    }
 }
 
 function checkMoveUpLeft(board, i, j) {
@@ -156,6 +165,82 @@ function checkTakeDown(board, i, j, playerToTake, tree) {
     return tree;
 }
 
+function checkKingTake(board, i, j, i2, j2, playerToTake, tree) {
+    try {
+        //Down left
+        if (playerToTake.includes(board[i2 + 1][j2 - 1])) {
+            if (board[i2 + 2][j2 - 2] === 5 || board[i2 + 2][j2 - 2] === 6) {
+                if (i !== i2 + 2 || j !== j2 - 2) {
+                    tree.DownLeft = new Tree({
+                        takeHeight: i2 + 1,
+                        takeWidth: j2 - 1,
+                        nextHeight: i2 + 2,
+                        nextWidth: j2 - 2
+                    })
+                    checkKingTake(board, i2, j2, i2 + 2, j2 - 2, playerToTake, tree.DownLeft);
+                }
+            }
+        }
+    }
+    catch { }
+
+    try {
+        //Down Right
+        if (playerToTake.includes(board[i2 + 1][j2 + 1])) {
+            if (board[i2 + 2][j2 + 2] === 5 || board[i2 + 2][j2 + 2] === 6) {
+                if (i !== i2 + 2 || j !== j2 + 2) {
+                    tree.DownRight = new Tree({
+                        takeHeight: i2 + 1,
+                        takeWidth: j2 + 1,
+                        nextHeight: i2 + 2,
+                        nextWidth: j2 + 2
+                    })
+                    checkKingTake(board, i2, j2, i2 + 2, j2 + 2, playerToTake, tree.DownRight);
+                }
+            }
+        }
+    }
+    catch { }
+
+    try {
+        //Up left
+        if (playerToTake.includes(board[i2 - 1][j2 - 1])) {
+            if (board[i2 - 2][j2 - 2] === 5 || board[i2 - 2][j2 - 2] === 6) {
+                if (i !== i2 - 2 || j !== j2 - 2) {
+                    tree.UpLeft = new Tree({
+                        takeHeight: i2 - 1,
+                        takeWidth: j2 - 1,
+                        nextHeight: i2 - 2,
+                        nextWidth: j2 - 2
+                    })
+                    checkKingTake(board, i2, j2, i2 - 2, j2 - 2, playerToTake, tree.UpLeft);
+                }
+            }
+        }
+    }
+    catch { }
+
+    try {
+        //Up Right
+        if (playerToTake.includes(board[i2 - 1][j2 + 1])) {
+            if (board[i2 - 2][j2 + 2] === 5 || board[i2 - 2][j2 + 2] === 6) {
+                if (i !== i2 - 2 || j !== j2 + 2) {
+                    tree.UpRight = new Tree({
+                        takeHeight: i2 - 1,
+                        takeWidth: j2 + 1,
+                        nextHeight: i2 - 2,
+                        nextWidth: j2 + 2
+                    })
+                    checkKingTake(board, i2, j2, i2 - 2, j2 + 2, playerToTake, tree.UpRight);
+                }
+            }
+        }
+    }
+    catch { }
+
+    return tree;
+}
+
 function FindAvailableTakeMoves(board) {
     let res = [];
     for (let i = 0; i < board.length; i++) {
@@ -171,7 +256,13 @@ function FindAvailableTakeMoves(board) {
                 }
             }
             else if (piece === 4) {
-
+                let resultTree = checkKingTake(board, i, j, i, j, [1, 3], new KingTree({ currentHeight: i, currentWidth: j }));
+                if (resultTree.DownLeft != null || resultTree.DownRight != null || resultTree.UpLeft != null || resultTree.UpRight != null) {
+                    var treeArray = kingTreeToArray(resultTree);
+                    treeArray.forEach(element => {
+                        res.push(element);
+                    });
+                }
             }
         }
     }
@@ -188,7 +279,64 @@ function treeToArray(mainTree) {
             return iter(tree.Left, tempArray.concat(tree.Value))
         }
         else if (tree.Right != null) {
-            iter(tree.Right, tempArray.concat(tree.Value))
+            return iter(tree.Right, tempArray.concat(tree.Value))
+        }
+        else {
+            result.push(tempArray.concat(tree.Value));
+        }
+    }
+
+    var result = [];
+    iter(mainTree, []);
+    return result;
+}
+
+function kingTreeToArray(mainTree) {
+    function iter(tree, tempArray) {
+        if (tree.DownLeft != null && tree.DownRight != null && tree.UpLeft != null && tree.UpRight != null) {
+            return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value) + iter(tree.UpRight, tempArray.concat(tree.Value)));
+        }
+        else if (tree.DownLeft != null && tree.DownRight != null && tree.UpLeft != null) {
+            return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value));
+        }
+        else if (tree.DownLeft != null && tree.DownRight != null && tree.UpRight != null) {
+            return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
+        }
+        else if (tree.DownLeft != null && tree.UpLeft != null && tree.UpRight != null) {
+            return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
+        }
+        else if (tree.DownRight != null && tree.UpLeft != null && tree.UpRight != null) {
+            return iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
+        }
+        else if (tree.DownLeft != null && tree.DownRight != null) {
+            return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value));
+        }
+        else if (tree.DownLeft != null && tree.UpLeft != null) {
+            return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value));
+        }
+        else if (tree.DownLeft != null && tree.UpRight != null) {
+            return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
+        }
+        else if (tree.DownRight != null && tree.UpLeft != null) {
+            return iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value));
+        }
+        else if (tree.DownLeft != null && tree.UpRight != null) {
+            return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
+        }
+        else if (tree.UpLeft != null && tree.UpRight != null) {
+            return iter(tree.UpLeft, tempArray.concat(tree.Value) + iter(tree.UpRight, tempArray.concat(tree.Value)));
+        }
+        else if (tree.DownLeft != null) {
+            return iter(tree.DownLeft, tempArray.concat(tree.Value))
+        }
+        else if (tree.DownRight != null) {
+            return iter(tree.DownRight, tempArray.concat(tree.Value))
+        }
+        else if (tree.UpLeft != null) {
+            return iter(tree.UpLeft, tempArray.concat(tree.Value))
+        }
+        else if (tree.UpRight != null) {
+            return iter(tree.UpRight, tempArray.concat(tree.Value))
         }
         else {
             result.push(tempArray.concat(tree.Value));
@@ -204,11 +352,11 @@ function pickMoveForPlayer2() {
     let board = [
         [2, 0, 2, 0, 2, 0, 2, 0],
         [0, 2, 0, 2, 0, 2, 0, 2],
-        [4, 0, 4, 0, 2, 0, 2, 0],
+        [4, 0, 7, 0, 7, 0, 7, 0],
         [0, 1, 0, 1, 0, 1, 0, 5],
         [5, 0, 5, 0, 5, 0, 5, 0],
         [0, 1, 0, 1, 0, 1, 0, 1],
-        [1, 0, 1, 0, 5, 0, 1, 0],
+        [1, 0, 1, 0, 1, 0, 1, 0],
         [0, 1, 0, 1, 0, 1, 0, 1],
     ]
     let takeMoves = FindAvailableTakeMoves(board);
@@ -216,7 +364,7 @@ function pickMoveForPlayer2() {
         let randomNumber = Math.floor((Math.random() * takeMoves.length));
         var takeMove = takeMoves[randomNumber];
         let takes = [];
-        for (let index = 1; index < takeMove.length; index++){
+        for (let index = 1; index < takeMove.length; index++) {
             const element = takeMove[index];
             takes.push({
                 height: element.takeHeight,
@@ -226,18 +374,18 @@ function pickMoveForPlayer2() {
         return {
             currentHeight: takeMove[0].currentHeight,
             currentWidth: takeMove[0].currentWidth,
-            nextHeight: takeMove[takeMove.length-1].nextHeight,
-            nextWidth: takeMove[takeMove.length-1].nextWidth,
+            nextHeight: takeMove[takeMove.length - 1].nextHeight,
+            nextWidth: takeMove[takeMove.length - 1].nextWidth,
             take: true,
             takes: takes
         };
     }
 
-    // let moves = FindAvailableMoves(board)
-    // if (moves.length !== 0) {
-    //     let randomNumber = Math.floor((Math.random() * moves.length));
-    //     return (moves[randomNumber]);
-    // }
+    let moves = FindAvailableMoves(board)
+    if (moves.length !== 0) {
+        let randomNumber = Math.floor((Math.random() * moves.length));
+        return (moves[randomNumber]);
+    }
 }
 
 let move = pickMoveForPlayer2();
