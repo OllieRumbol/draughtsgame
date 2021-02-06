@@ -1,3 +1,7 @@
+export{
+    checkMoveUpLeft
+}
+
 class Tree {
     constructor(value) {
         this.Value = value;
