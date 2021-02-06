@@ -235,11 +235,11 @@ export default function Board(props) {
     }
 
     function undo() {
-        if (showTips === false) {
-            setShowTips(true);
-        }
-
         if (listOfMoves.length !== 0) {
+            if (showTips === false) {
+                setShowTips(true);
+            }
+
             let temp = listOfMoves[listOfMoves.length - 1];
             for (let i = 0; i < counters.length; i++) {
                 for (let j = 0; j < counters[i].length; j++) {
