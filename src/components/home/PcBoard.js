@@ -306,7 +306,8 @@ export default function PcBoard(props) {
 
     useEffect(() => {
         noOneCanMoveCheck();
-        let jumpAgain = false;
+        let player2ToGoNext = true;
+        let validMove = false;
         //Player1 
         if (props.turn) {
             if (counterToMove != null && squareToMoveTo != null) {
@@ -315,22 +316,24 @@ export default function PcBoard(props) {
                     if (canTake.result) {
                         saveBoard();
                         takeCounter(canTake.height, canTake.width);
+                        validMove = true;
                         if (checkToJumpUpAgain(2)) {
-                            jumpAgain = true;
+                            player2ToGoNext = false;
                             setShowJumpModal(true);
                         }
                     }
                     else if (checkMoveCounter(-1)) {
                         saveBoard();
                         moveCounter();
+                        validMove = true;
                     }
                 }
-
-                if (counterToMove.state === 3) {
+                else if (counterToMove.state === 3) {
                     if (counterToMove.height - 1 === squareToMoveTo.height || counterToMove.height + 1 === squareToMoveTo.height) {
                         if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
                             saveBoard();
                             moveCounter();
+                            validMove = true;
                         }
                     }
                     else if (counterToMove.height - 2 === squareToMoveTo.height || counterToMove.height + 2 === squareToMoveTo.height) {
@@ -341,8 +344,9 @@ export default function PcBoard(props) {
                             if (counters[res][res2] === 2 || counters[res][res2] === 4) {
                                 saveBoard();
                                 takeCounter(res, res2);
+                                validMove = true;
                                 if (checkToJumpUpAgain(2) || checkToJumpUpAgain(4) || checkToJumpDownAgain(2) || checkToJumpDownAgain(4)) {
-                                    jumpAgain = true;
+                                    player2ToGoNext = false;
                                     setShowJumpModal(true);
                                 }
                             }
@@ -354,9 +358,13 @@ export default function PcBoard(props) {
                 setShowTips(true);
                 setCounterToMove(null);
                 setSquareToMoveTo(null);
-                if (jumpAgain === false) {
+
+                if (player2ToGoNext && validMove) {
                     player2Go();
                 }
+                else if(validMove === false){
+                    alert("Invalid move");
+                }   
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
