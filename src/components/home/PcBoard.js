@@ -55,6 +55,16 @@ export default function PcBoard(props) {
         })
     }
 
+    function checkMoveCounter(value) {
+        if (counterToMove.height + value === squareToMoveTo.height) {
+            if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     function moveCounter() {
         counters[counterToMove.height][counterToMove.width] = 5;
         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
@@ -63,6 +73,26 @@ export default function PcBoard(props) {
         setCounters(counters);
         setSquares(renderSquares());
         props.setTurn(false);
+    }
+
+    function checkTakeCounter(value, playerToTake) {
+        if (counterToMove.height + value === squareToMoveTo.height) {
+            if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
+                let res = (squareToMoveTo.height + counterToMove.height) / 2;
+                let res2 = (squareToMoveTo.width + counterToMove.width) / 2
+                if (counters[res][res2] === playerToTake) {
+                    return {
+                        result: true,
+                        height: res,
+                        width: res2
+                    }
+                }
+            }
+        }
+
+        return {
+            result: false
+        }
     }
 
     function takeCounter(res, res2) {
@@ -145,8 +175,6 @@ export default function PcBoard(props) {
             props.setResultsModalMessage("Player 2 can no longer move. Player 1 wins. I hope you had fun playing.");
             props.setShowResultModal(true);
         }
-
-        return;
     }
 
     function checkToJumpUpAgain(value) {
@@ -192,36 +220,6 @@ export default function PcBoard(props) {
         }
         catch {
             return false;
-        }
-    }
-
-    function checkMoveCounter(value) {
-        if (counterToMove.height + value === squareToMoveTo.height) {
-            if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    function checkTakeCounter(value, playerToTake) {
-        if (counterToMove.height + value === squareToMoveTo.height) {
-            if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
-                let res = (squareToMoveTo.height + counterToMove.height) / 2;
-                let res2 = (squareToMoveTo.width + counterToMove.width) / 2
-                if (counters[res][res2] === playerToTake) {
-                    return {
-                        result: true,
-                        height: res,
-                        width: res2
-                    }
-                }
-            }
-        }
-
-        return {
-            result: false
         }
     }
 
