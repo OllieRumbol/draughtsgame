@@ -1,5 +1,6 @@
-export{
-    checkMoveUpLeft
+export {
+    checkMoveUpLeft,
+    pickMoveForPlayer2
 }
 
 class Tree {
@@ -167,16 +168,16 @@ function FindAvailableMoves(board) {
             }
             else if (piece === 4) {
                 if (checkMoveDownLeft(board, i, j)) {
-                    results.push(results.push(factoryForMove(i, j, i + 1, j - 1)));
+                    results.push(factoryForMove(i, j, i + 1, j - 1));
                 }
                 if (checkMoveDownRight(board, i, j)) {
-                    results.push(results.push(factoryForMove(i, j, i + 1, j + 1)));
+                    results.push(factoryForMove(i, j, i + 1, j + 1));
                 }
                 if (checkMoveUpLeft(board, i, j)) {
-                    results.push(results.push(factoryForMove(i, j, i - 1, j - 1)));
+                    results.push(factoryForMove(i, j, i - 1, j - 1));
                 }
                 if (checkMoveUpRight(board, i, j)) {
-                    results.push(results.push(factoryForMove(i, j, i - 1, j + 1)));
+                    results.push(factoryForMove(i, j, i - 1, j + 1));
                 }
             }
         }
@@ -334,18 +335,5 @@ function pickMoveForPlayer2(board) {
         return (moves[randomNumber]);
     }
 }
-
-let board = [
-    [2, 0, 2, 0, 2, 0, 2, 0],
-    [0, 2, 0, 2, 0, 2, 0, 2],
-    [2, 0, 2, 0, 2, 0, 2, 0],
-    [0, 1, 0, 5, 0, 5, 0, 5],
-    [5, 0, 5, 0, 5, 0, 5, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-]
-let move = pickMoveForPlayer2(board);
-console.log(move);
 
 
