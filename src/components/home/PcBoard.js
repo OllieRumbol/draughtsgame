@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import Square from './Square';
 import JumpModal from './JumpModal';
+import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import '../../style/Board.css';
 import { findPlayerMoves } from '../../logic/playerTips';
+import { pickMoveForPlayer2 } from '../../logic/automatedPlayerV1';
 
-export default function Board(props) {
+export default function PcBoard(props) {
     //0 - Counter is never there
     //1 - Player 1 Counter 
     //2 - Player 2 Counter
@@ -25,6 +26,7 @@ export default function Board(props) {
         [1, 0, 1, 0, 1, 0, 1, 0],
         [0, 1, 0, 1, 0, 1, 0, 1],
     ]
+
     const [counters, setCounters] = useState(start);
 
     const [counterToMove, setCounterToMove] = useState(null);
@@ -36,7 +38,7 @@ export default function Board(props) {
     const [squares, setSquares] = useState(renderSquares());
 
     const [showJumpModal, setShowJumpModal] = useState(false);
-    const [JumpModalValue, setJumpModalValue] = useState(false);
+    const [JumpModalValue, setJumpModalValue] = useState(null);
 
     const [listOfMoves, setListOfMoves] = useState([]);
 
@@ -53,6 +55,16 @@ export default function Board(props) {
         })
     }
 
+    function checkMoveCounter(value) {
+        if (counterToMove.height + value === squareToMoveTo.height) {
+            if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     function moveCounter() {
         counters[counterToMove.height][counterToMove.width] = 5;
         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
@@ -60,17 +72,34 @@ export default function Board(props) {
         kingMeCheck();
         setCounters(counters);
         setSquares(renderSquares());
-        props.setTurn(!props.turn);
+        props.setTurn(false);
+    }
+
+    function checkTakeCounter(value, playerToTake) {
+        if (counterToMove.height + value === squareToMoveTo.height) {
+            if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
+                let res = (squareToMoveTo.height + counterToMove.height) / 2;
+                let res2 = (squareToMoveTo.width + counterToMove.width) / 2
+                if (counters[res][res2] === playerToTake) {
+                    return {
+                        result: true,
+                        height: res,
+                        width: res2
+                    }
+                }
+            }
+        }
+
+        return {
+            result: false
+        }
     }
 
     function takeCounter(res, res2) {
         counters[counterToMove.height][counterToMove.width] = 5;
         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
-        if (counters[res][res2] === 1 || counters[res][res2] === 3) {
-            props.setPlayer1Counter(props.player1Counter + 1);
-        }
-        else if (counters[res][res2] === 2 || counters[res][res2] === 4) {
+        if (counters[res][res2] === 2 || counters[res][res2] === 4) {
             props.setPlayer2Counter(props.player2Counter + 1);
         }
 
@@ -79,7 +108,7 @@ export default function Board(props) {
         kingMeCheck();
         setCounters(counters);
         setSquares(renderSquares());
-        props.setTurn(!props.turn);
+        props.setTurn(false);
     }
 
     function kingMeCheck() {
@@ -87,12 +116,6 @@ export default function Board(props) {
         if (counterToMove.state === 1) {
             if (squareToMoveTo.height === 0) {
                 counters[squareToMoveTo.height][squareToMoveTo.width] = 3;
-            }
-        }
-        //Player 2 check
-        else if (counterToMove.state === 2) {
-            if (squareToMoveTo.height === 7) {
-                counters[squareToMoveTo.height][squareToMoveTo.width] = 4;
             }
         }
     }
@@ -117,26 +140,22 @@ export default function Board(props) {
                 counters[element.height][element.width] = 6;
             });
         }
-        else if (props.turn === false) {
-            let res = findPlayerMoves(counters, 2).concat(findPlayerMoves(counters, 4));
-            res.forEach(element => {
-                counters[element.height][element.width] = 6;
-            });
-        }
     }
 
     function showPlayerTips() {
-        if (showTips) {
-            displayTips();
-            setShowTips(false);
-        }
-        else {
-            clearTips();
-            setShowTips(true);
-        }
+        if (props.turn) {
+            if (showTips) {
+                displayTips();
+                setShowTips(false);
+            }
+            else {
+                clearTips();
+                setShowTips(true);
+            }
 
-        setCounters(counters);
-        setSquares(renderSquares());
+            setCounters(counters);
+            setSquares(renderSquares());
+        }
     }
 
     function noOneCanMoveCheck() {
@@ -204,36 +223,6 @@ export default function Board(props) {
         }
     }
 
-    function checkMoveCounter(value) {
-        if (counterToMove.height + value === squareToMoveTo.height) {
-            if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    function checkTakeCounter(value, playerToTake) {
-        if (counterToMove.height + value === squareToMoveTo.height) {
-            if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
-                let res = (squareToMoveTo.height + counterToMove.height) / 2;
-                let res2 = (squareToMoveTo.width + counterToMove.width) / 2
-                if (counters[res][res2] === playerToTake) {
-                    return {
-                        result: true,
-                        height: res,
-                        width: res2
-                    }
-                }
-            }
-        }
-
-        return {
-            result: false
-        }
-    }
-
     function undo() {
         if (listOfMoves.length !== 0) {
             if (showTips === false) {
@@ -289,102 +278,114 @@ export default function Board(props) {
         return counter
     }
 
+    function player2Go() {
+        setTimeout(() => {
+            let player2Move = pickMoveForPlayer2(counters);
+            if (player2Move !== null && player2Move !== {} && player2Move !== undefined) {
+                if (player2Move.take) {
+                    player2Move.takes.forEach(element => {
+                        counters[element.height][element.width] = 5;
+                    });
+                    props.setPlayer1Counter(props.player1Counter + player2Move.takes.length);
+                }
+
+                let tempValue = counters[player2Move.currentHeight][player2Move.currentWidth];
+                counters[player2Move.currentHeight][player2Move.currentWidth] = 5;
+                counters[player2Move.nextHeight][player2Move.nextWidth] = tempValue;
+
+                if (player2Move.nextHeight === 7) {
+                    counters[player2Move.nextHeight][player2Move.nextWidth] = 4;
+                }
+
+                setCounters(counters);
+                setSquares(renderSquares());
+                props.setTurn(true);
+            }
+        }, 500)
+    }
+
     useEffect(() => {
         noOneCanMoveCheck();
-        if (counterToMove != null && squareToMoveTo != null) {
-            //Player1 
-            if (props.turn === true) {
+        let player2ToGoNext = true;
+        let validMove = false;
+        //Player1 
+        if (props.turn) {
+            if (counterToMove != null && squareToMoveTo != null) {
                 if (counterToMove.state === 1) {
                     let canTake = checkTakeCounter(-2, 2);
                     if (canTake.result) {
                         saveBoard();
                         takeCounter(canTake.height, canTake.width);
+                        validMove = true;
                         if (checkToJumpUpAgain(2)) {
+                            player2ToGoNext = false;
                             setShowJumpModal(true);
                         }
                     }
                     else if (checkMoveCounter(-1)) {
                         saveBoard();
                         moveCounter();
+                        validMove = true;
                     }
                 }
-            }
-            //Player 2
-            if (props.turn === false) {
-                if (counterToMove.state === 2) {
-                    let canTake = checkTakeCounter(2, 1);
-                    if (canTake.result) {
-                        saveBoard();
-                        takeCounter(canTake.height, canTake.width);
-                        if (checkToJumpUpAgain(1)) {
-                            setShowJumpModal(true);
-                        }
-                    }
-                    else if (checkMoveCounter(1)) {
-                        saveBoard();
-                        moveCounter();
-                    }
-
-                }
-            }
-            //Player 1 or 2 king
-            if (counterToMove.state === 3 || counterToMove.state === 4) {
-                if (counterToMove.height - 1 === squareToMoveTo.height || counterToMove.height + 1 === squareToMoveTo.height) {
-                    if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
-                        if ((counterToMove.state === 3 && props.turn === true) || (counterToMove.state === 4 && props.turn === false)) {
+                else if (counterToMove.state === 3) {
+                    if (counterToMove.height - 1 === squareToMoveTo.height || counterToMove.height + 1 === squareToMoveTo.height) {
+                        if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
                             saveBoard();
                             moveCounter();
+                            validMove = true;
                         }
                     }
-                }
-                else if (counterToMove.height - 2 === squareToMoveTo.height || counterToMove.height + 2 === squareToMoveTo.height) {
-                    if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
-                        let res = (squareToMoveTo.height + counterToMove.height) / 2;
-                        let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
-                        //Player 1 king takes player 2
-                        if (props.turn === true) {
-                            if (counterToMove.state === 3 && (counters[res][res2] === 2 || counters[res][res2] === 4)) {
+                    else if (counterToMove.height - 2 === squareToMoveTo.height || counterToMove.height + 2 === squareToMoveTo.height) {
+                        if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
+                            let res = (squareToMoveTo.height + counterToMove.height) / 2;
+                            let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
+                            //Player 1 king takes player 2
+                            if (counters[res][res2] === 2 || counters[res][res2] === 4) {
                                 saveBoard();
                                 takeCounter(res, res2);
+                                validMove = true;
                                 if (checkToJumpUpAgain(2) || checkToJumpUpAgain(4) || checkToJumpDownAgain(2) || checkToJumpDownAgain(4)) {
-                                    setShowJumpModal(true);
-                                }
-                            }
-                        }
-                        //Player 2 king takes player 1
-                        else if (props.turn === false) {
-                            if (counterToMove.state === 4 && (counters[res][res2] === 1 || counters[res][res2] === 3)) {
-                                saveBoard();
-                                takeCounter(res, res2);
-                                if (checkToJumpUpAgain(1) || checkToJumpUpAgain(3) || checkToJumpDownAgain(1) || checkToJumpDownAgain(3)) {
+                                    player2ToGoNext = false;
                                     setShowJumpModal(true);
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            clearTips();
-            setShowTips(true);
-            setCounterToMove(null);
-            setSquareToMoveTo(null);
+                clearTips();
+                setShowTips(true);
+                setCounterToMove(null);
+                setSquareToMoveTo(null);
+
+                if (player2ToGoNext && validMove) {
+                    player2Go();
+                }
+                else if(validMove === false){
+                    alert("Invalid move");
+                }   
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [squareToMoveTo, counterToMove, counters])
 
     useEffect(() => {
         if (JumpModalValue) {
-            props.setTurn(!props.turn);
-            setJumpModalValue(false);
+            props.setTurn(true);
+            setJumpModalValue(null);
         }
+        else if (JumpModalValue === false) {
+            player2Go();
+            setJumpModalValue(null);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JumpModalValue, props])
 
     return (
-        <div className="container fluid">
-
+        <Container fluid>
             <div className="d-flex justify-content-center mb-3">
-                <h2>2 Player Mode</h2>
+                <h2>PC Mode</h2>
             </div>
 
             <ButtonToolbar className="d-flex justify-content-center">
@@ -405,6 +406,6 @@ export default function Board(props) {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </Container>
     )
 }

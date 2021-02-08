@@ -11,6 +11,11 @@ export default function ResultModal(props) {
         handleClose();
     }
 
+    const handleNo = () => {
+        props.setJumpModalValue(false);
+        handleClose();
+    }
+
     return (
         <div>
             <Modal show={props.show} onHide={handleClose}>
@@ -20,7 +25,7 @@ export default function ResultModal(props) {
                 <Modal.Body>In draughts players can jump multiple times to take multiple pieces from their opponent.</Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={handleYes}>Yes</Button>
-                    <Button variant="primary" onClick={handleClose}>No</Button>
+                    <Button variant="primary" onClick={handleNo}>No</Button>
                 </Modal.Footer>
             </Modal>
         </div>
