@@ -66,13 +66,14 @@ export default function PcBoard(props) {
     }
 
     function takeCounter(res, res2) {
-        counters[res][res2] = 5;
         counters[counterToMove.height][counterToMove.width] = 5;
         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
-        if (counters[res][res2] === 1 || counters[res][res2] === 3) {
-            props.setPlayer1Counter(props.player1Counter + 1);
+        if (counters[res][res2] === 2 || counters[res][res2] === 4) {
+            props.setPlayer2Counter(props.player2Counter + 1);
         }
+
+        counters[res][res2] = 5;
 
         kingMeCheck();
         setCounters(counters);
