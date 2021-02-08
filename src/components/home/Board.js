@@ -382,6 +382,11 @@ export default function Board(props) {
 
     return (
         <div className="container fluid">
+
+            <div className="d-flex justify-content-center mb-3">
+                <h2>2 Player Mode</h2>
+            </div>
+
             <ButtonToolbar className="d-flex justify-content-center">
                 <ButtonGroup className="ml-2 mr-2 mb-4">
                     <Button onClick={showPlayerTips}>{tipButtonText}</Button>
