@@ -26,17 +26,17 @@ export default function GameSettings(props) {
                     <div>
                         <h2 className="pb-2">Opponent</h2>
                         <div>
-                            <label class="radioContainer">
+                            <label className="radioContainer">
                                 <div className="topper">PC</div>
-                                <input type="radio" name="radio" className="hide" value="true" onChange={context.handlePcOr2PlayerChange} />
-                                <span class="checkMark"></span>
+                                <input type="radio" name="radio" className="hide" value={true} onChange={context.handlePcOr2PlayerChange} />
+                                <span className="checkMark"></span>
                             </label>
                         </div>
                         <div>
-                            <label class="radioContainer">
+                            <label className="radioContainer">
                                 <div className="topper">2 Player</div>
-                                <input type="radio" name="radio" value="false" onChange={context.handlePcOr2PlayerChange} />
-                                <span class="checkMark"></span>
+                                <input type="radio" name="radio" value={false} onChange={context.handlePcOr2PlayerChange} />
+                                <span className="checkMark"></span>
                             </label>
                         </div>
                     </div>
