@@ -1,6 +1,17 @@
-// export {
-//     evaluate
-// }
+module.exports = {
+    minimax,
+    evaluate,
+    GetAvailableBoards,
+    FindAvailableTakeMoves,
+    checkKingTake,
+    checkTakeUp,
+    checkTakeDown,
+    FindAvailableMoves,
+    checkMoveDownRight,
+    checkMoveDownLeft,
+    checkMoveUpRight,
+    checkMoveUpLeft
+}
 
 class Tree {
     constructor(value) {
@@ -376,7 +387,7 @@ function GetAvailableBoards(board, player) {
             })
         });
 
-        tempValue = tempBoard[takeMove[0].currentHeight][takeMove[0].currentWidth];
+        let tempValue = tempBoard[takeMove[0].currentHeight][takeMove[0].currentWidth];
         tempBoard[takeMove[0].currentHeight][takeMove[0].currentWidth] = 5;
         tempBoard[takeMove[takeMove.length - 1].nextHeight][takeMove[takeMove.length - 1].nextWidth] = tempValue;
 
@@ -397,7 +408,7 @@ function GetAvailableBoards(board, player) {
             tempBoard[i] = board[i].slice();
         }
 
-        tempValue = tempBoard[move.currentHeight][move.currentWidth];
+        let tempValue = tempBoard[move.currentHeight][move.currentWidth];
         tempBoard[move.currentHeight][move.currentWidth] = 5;
         tempBoard[move.nextHeight][move.nextWidth] = tempValue;
 
@@ -472,18 +483,4 @@ function minimax(board, depth, minOrMax) {
         return [minEval, bestMove];
     }
 }
-
-let board = [
-    [2, 0, 2, 0, 2, 0, 2, 0],
-    [0, 2, 0, 2, 0, 2, 0, 2],
-    [2, 0, 2, 0, 2, 0, 2, 0],
-    [0, 1, 0, 5, 0, 5, 0, 5],
-    [5, 0, 5, 0, 5, 0, 5, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-];
-
-let result = minimax(board, 2, true);
-console.log(result);
 
