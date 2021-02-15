@@ -11,7 +11,9 @@ export default function GameSettings(props) {
 
     const handleSubmit = () => {
         if (context.pcOr2Player != null) {
-            props.setHasSetGameSettings(true);
+            if ((context.pcOr2Player === "true" && context.easyOrHard !== null) || context.pcOr2Player === "false") {
+                props.setHasSetGameSettings(true);
+            }
         }
     }
 
@@ -28,7 +30,7 @@ export default function GameSettings(props) {
                         <div>
                             <label className="radioContainer">
                                 <div className="topper">PC</div>
-                                <input type="radio" name="radio" className="hide" value={true} onChange={context.handlePcOr2PlayerChange} />
+                                <input type="radio" name="radio" value={true} onChange={context.handlePcOr2PlayerChange} />
                                 <span className="checkMark"></span>
                             </label>
                         </div>
@@ -39,6 +41,26 @@ export default function GameSettings(props) {
                                 <span className="checkMark"></span>
                             </label>
                         </div>
+                        {
+                            context.pcOr2Player === "true" &&
+                            <div>
+                                <h2 className="pb-2">Difficulty</h2>
+                                <div>
+                                    <label className="radioContainer">
+                                        <div className="topper">Easy</div>
+                                        <input type="radio" name="radio2" value={true} onChange={context.handleEasyOrHard} />
+                                        <span className="checkMark"></span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label className="radioContainer">
+                                        <div className="topper">Hard</div>
+                                        <input type="radio" name="radio2" value={false} onChange={context.handleEasyOrHard} />
+                                        <span className="checkMark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        }
                     </div>
                     <div>
                         <Button variant="success" onClick={handleSubmit}>Submit</Button>
