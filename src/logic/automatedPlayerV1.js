@@ -44,7 +44,7 @@ class KingTree {
     static kingTreeToArray(mainTree) {
         function iter(tree, tempArray) {
             if (tree.DownLeft != null && tree.DownRight != null && tree.UpLeft != null && tree.UpRight != null) {
-                return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value) + iter(tree.UpRight, tempArray.concat(tree.Value)));
+                return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
             }
             else if (tree.DownLeft != null && tree.DownRight != null && tree.UpLeft != null) {
                 return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value));
@@ -74,7 +74,7 @@ class KingTree {
                 return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
             }
             else if (tree.UpLeft != null && tree.UpRight != null) {
-                return iter(tree.UpLeft, tempArray.concat(tree.Value) + iter(tree.UpRight, tempArray.concat(tree.Value)));
+                return iter(tree.UpLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
             }
             else if (tree.DownLeft != null) {
                 return iter(tree.DownLeft, tempArray.concat(tree.Value))
@@ -149,7 +149,6 @@ function factoryForMove(height, width, moveHeight, moveWidth) {
         currentWidth: width,
         nextHeight: moveHeight,
         nextWidth: moveWidth,
-        take: false
     }
 }
 
@@ -324,7 +323,6 @@ function pickMoveForPlayer2(board) {
             currentWidth: takeMove[0].currentWidth,
             nextHeight: takeMove[takeMove.length - 1].nextHeight,
             nextWidth: takeMove[takeMove.length - 1].nextWidth,
-            take: true,
             takes: takes
         };
     }
