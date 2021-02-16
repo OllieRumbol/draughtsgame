@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Square from './Square';
 import JumpModal from './JumpModal';
 import Container from 'react-bootstrap/Container';
@@ -7,6 +7,8 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { findPlayerMoves } from '../../logic/playerTips';
 import { pickMoveForPlayer2 } from '../../logic/automatedPlayerV1';
+import { minimax } from '../../logic/automatedPlayerV2';
+import { MyContext } from '../../store/MyProvider';
 
 export default function PcBoard(props) {
     //0 - Counter is never there
@@ -41,6 +43,8 @@ export default function PcBoard(props) {
     const [JumpModalValue, setJumpModalValue] = useState(null);
 
     const [listOfMoves, setListOfMoves] = useState([]);
+
+    const context = useContext(MyContext);
 
     function renderSquares() {
         return counters.map((row, index) => {
@@ -280,9 +284,16 @@ export default function PcBoard(props) {
 
     function player2Go() {
         setTimeout(() => {
-            let player2Move = pickMoveForPlayer2(counters);
+            let player2Move;
+            if(context.handleEasyOrHard === "true"){
+                player2Move = pickMoveForPlayer2(counters);
+            }
+            else{
+                player2Move = minimax(counters, 4, true)[1];
+            }
+            
             if (player2Move !== null && player2Move !== {} && player2Move !== undefined) {
-                if (player2Move.take) {
+                if (player2Move.takes.length !== 0) {
                     player2Move.takes.forEach(element => {
                         counters[element.height][element.width] = 5;
                     });

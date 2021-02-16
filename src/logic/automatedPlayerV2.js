@@ -54,7 +54,7 @@ class KingTree {
     static kingTreeToArray(mainTree) {
         function iter(tree, tempArray) {
             if (tree.DownLeft != null && tree.DownRight != null && tree.UpLeft != null && tree.UpRight != null) {
-                return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value) + iter(tree.UpRight, tempArray.concat(tree.Value)));
+                return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
             }
             else if (tree.DownLeft != null && tree.DownRight != null && tree.UpLeft != null) {
                 return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.DownRight, tempArray.concat(tree.Value)) + iter(tree.UpLeft, tempArray.concat(tree.Value));
@@ -84,7 +84,7 @@ class KingTree {
                 return iter(tree.DownLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
             }
             else if (tree.UpLeft != null && tree.UpRight != null) {
-                return iter(tree.UpLeft, tempArray.concat(tree.Value) + iter(tree.UpRight, tempArray.concat(tree.Value)));
+                return iter(tree.UpLeft, tempArray.concat(tree.Value)) + iter(tree.UpRight, tempArray.concat(tree.Value));
             }
             else if (tree.DownLeft != null) {
                 return iter(tree.DownLeft, tempArray.concat(tree.Value))
@@ -184,7 +184,7 @@ function FindAvailableMoves(board, player) {
                     results.push(factoryForMove(i, j, i + 1, j + 1));
                 }
             }
-            else if (piece === 3 && player === 1 || piece === 4 && player === 2) {
+            else if ((piece === 3 && player === 1) || (piece === 4 && player === 2)) {
                 if (checkMoveDownLeft(board, i, j)) {
                     results.push(factoryForMove(i, j, i + 1, j - 1));
                 }
