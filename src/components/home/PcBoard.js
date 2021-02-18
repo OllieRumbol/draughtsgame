@@ -285,13 +285,13 @@ export default function PcBoard(props) {
     function player2Go() {
         setTimeout(() => {
             let player2Move;
-            if(context.handleEasyOrHard === "true"){
+            if (context.handleEasyOrHard === "true") {
                 player2Move = pickMoveForPlayer2(counters);
             }
-            else{
+            else {
                 player2Move = minimax(counters, 4, true)[1];
             }
-            
+
             if (player2Move !== null && player2Move !== {} && player2Move !== undefined) {
                 if (player2Move.takes.length !== 0) {
                     player2Move.takes.forEach(element => {
@@ -373,9 +373,9 @@ export default function PcBoard(props) {
                 if (player2ToGoNext && validMove) {
                     player2Go();
                 }
-                else if(validMove === false){
+                else if (validMove === false) {
                     alert("Invalid move");
-                }   
+                }
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -401,10 +401,10 @@ export default function PcBoard(props) {
 
             <ButtonToolbar className="d-flex justify-content-center">
                 <ButtonGroup className="ml-2 mr-2 mb-4">
-                    <Button onClick={showPlayerTips}>{tipButtonText}</Button>
+                    <Button onClick={showPlayerTips} size="lg">{tipButtonText}</Button>
                 </ButtonGroup>
                 <ButtonGroup className="ml-2 mr-2 mb-4">
-                    <Button onClick={undo}>Undo</Button>
+                    <Button onClick={undo} size="lg">Undo</Button>
                 </ButtonGroup>
             </ButtonToolbar>
 

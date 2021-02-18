@@ -1,13 +1,77 @@
+@media only screen and (min-width: 800px) {
+  .circle {
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+    font: 65px Arial, sans-serif;
+    border: 3px solid #000;
+  }
+
+  .yellow {
+    border-width: thick !important;
+  }
+}
+
+@media only screen and (min-width: 650px) and (max-width: 799px) {
+  .circle {
+    width: 80px;
+    height: 80px;
+    padding: 8px;
+    font: 50px Arial, sans-serif;
+    border: 3px solid #000;
+  }
+
+  .yellow {
+    border-width: thick !important;
+  }
+}
+
+@media only screen and (min-width: 450px) and (max-width: 649px) {
+  .circle {
+    width: 60px;
+    height: 60px;
+    padding: 6px;
+    font: 40px Arial, sans-serif;
+    border: 3px solid #000;
+  }
+
+  .yellow {
+    border-width: thick !important;
+  }
+}
+
+@media only screen and (min-width: 300px) and (max-width: 449px) {
+  .circle {
+    width: 45px;
+    height: 45px;
+    padding: 5px;
+    font: 30px Arial, sans-serif;
+    border: 2px solid #000;
+  }
+
+  .yellow {
+    border-width: medium !important;
+  }
+}
+
+@media only screen and (max-width: 299px) {
+  .circle {
+    width: 30px;
+    height: 30px;
+    padding: 3px;
+    font: 20px Arial, sans-serif;
+    border: 2px solid #000;
+  }
+
+  .yellow {
+    border-width: thin !important;
+  }
+}
+
 .circle {
   border-radius: 50%;
-  width: 100px;
-  height: 100px;
-  padding: 10px;
-  background: #fff;
-  border: 3px solid #000;
   color: #ffbf00;
   text-align: center;
-  font: 65px Arial, sans-serif;
 }
 
 .red {
@@ -19,9 +83,10 @@
 }
 
 .yellow {
-  border-color: #ffbf00;
-  border-width: thick;
-  border-style: solid;
+  border-color: #ffbf00 !important;
+  border-style: solid !important;
+}
+
 .circle2 {
   width: 100px;
   height: 100px;
