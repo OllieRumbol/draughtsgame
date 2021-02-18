@@ -390,10 +390,10 @@ export default function Board(props) {
 
             <ButtonToolbar className="d-flex justify-content-center">
                 <ButtonGroup className="ml-2 mr-2 mb-4">
-                    <Button onClick={showPlayerTips}>{tipButtonText}</Button>
+                    <Button onClick={showPlayerTips} size="lg">{tipButtonText}</Button>
                 </ButtonGroup>
                 <ButtonGroup className="ml-2 mr-2 mb-4">
-                    <Button onClick={undo}>Undo</Button>
+                    <Button onClick={undo} size="lg">Undo</Button>
                 </ButtonGroup>
             </ButtonToolbar>
 

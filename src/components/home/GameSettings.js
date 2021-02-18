@@ -63,11 +63,12 @@ export default function GameSettings(props) {
                         }
                     </div>
                     <div>
-                        <Button variant="success" onClick={handleSubmit}>Submit</Button>
+                        <Button variant="success" onClick={handleSubmit} size="lg">Submit</Button>
                     </div>
                 </Col>
                 <Col xl="1"></Col>
             </Row>
+            <br></br>
         </Container>
     )
 }
