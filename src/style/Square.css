@@ -1,6 +1,39 @@
+@media only screen and (min-width: 800px) {
+  .square {
+    height: 100px;
+    width: 100px;
+  }
+}
+
+@media only screen and (min-width: 650px) and (max-width: 799px) {
+  .square {
+    height: 80px;
+    width: 80px;
+  }
+}
+
+@media only screen and (min-width: 450px) and (max-width: 649px) {
+  .square {
+    height: 60px;
+    width: 60px;
+  }
+}
+
+@media only screen and (min-width: 300px) and (max-width: 449px) {
+  .square {
+    height: 45px;
+    width: 45px;
+  }
+}
+
+@media only screen and (max-width: 299px) {
+  .square {
+    height: 30px;
+    width: 30px;
+  }
+}
+
 .square {
-  height: 100px;
-  width: 100px;
   margin: 0 !important;
 }
 
