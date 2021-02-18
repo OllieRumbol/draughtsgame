@@ -20,25 +20,30 @@ export default function App() {
     <MyProvider>
       <Router>
         <Container fluid>
-          <Jumbotron fluid>
+          <Jumbotron fluid className="pb-3">
             <Container>
-              <h1 data-testid="title" className="display-1 font-weight-bold">Draughts Game</h1>
-              <h4>A draughts game built in react js</h4>
+              <div className="d-flex justify-content-center">
+                <h1 data-testid="title" className="font-weight-bold title">Draughts Game</h1>
+              </div>
+              <br></br>
+              <div className="d-flex justify-content-center">
+                <h4>A draughts game built in react js</h4>
+              </div>
               <hr className="my-4"></hr>
-              <ButtonToolbar>
+              <ButtonToolbar className="d-flex justify-content-center">
                 <Link to="/">
-                  <ButtonGroup className="mr-2">
-                    <Button data-testid="link" variant="primary">Home</Button>
+                  <ButtonGroup className="mr-3 mb-3">
+                    <Button data-testid="link" variant="primary" size="lg">Home</Button>
                   </ButtonGroup>
                 </Link>
                 <Link to="/howtoplay">
-                  <ButtonGroup className="mr-2">
-                    <Button data-testid="link" variant="primary">How to play</Button>
+                  <ButtonGroup className="mr-3 mb-3">
+                    <Button data-testid="link" variant="primary" size="lg">How to play</Button>
                   </ButtonGroup>
                 </Link>
                 <Link to="/about">
-                  <ButtonGroup className="mr-2">
-                    <Button data-testid="link" variant="primary">About</Button>
+                  <ButtonGroup className="mr-3 mb-3">
+                    <Button data-testid="link" variant="primary" size="lg">About</Button>
                   </ButtonGroup>
                 </Link>
               </ButtonToolbar>
