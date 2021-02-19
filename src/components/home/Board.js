@@ -291,7 +291,6 @@ export default function Board(props) {
     }
 
     useEffect(() => {
-        noOneCanMoveCheck();
         if (counterToMove != null && squareToMoveTo != null) {
             //Player1 
             if (props.turn === true) {
@@ -365,11 +364,12 @@ export default function Board(props) {
                     }
                 }
             }
-
+            
             clearTips();
             setShowTips(true);
             setCounterToMove(null);
             setSquareToMoveTo(null);
+            noOneCanMoveCheck();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [squareToMoveTo, counterToMove, counters])
