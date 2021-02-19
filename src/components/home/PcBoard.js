@@ -316,7 +316,6 @@ export default function PcBoard(props) {
     }
 
     useEffect(() => {
-        noOneCanMoveCheck();
         let player2ToGoNext = true;
         let validMove = false;
         //Player1 
@@ -376,6 +375,8 @@ export default function PcBoard(props) {
                 else if (validMove === false) {
                     alert("Invalid move");
                 }
+
+                noOneCanMoveCheck();
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
