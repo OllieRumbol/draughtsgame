@@ -311,6 +311,7 @@ export default function PcBoard(props) {
                 setCounters(counters);
                 setSquares(renderSquares());
                 props.setTurn(true);
+                noOneCanMoveCheck();
             }
         }, 500)
     }
