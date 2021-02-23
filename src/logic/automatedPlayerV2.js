@@ -245,7 +245,7 @@ function checkTakeUp(board, i, j, playerToTake, tree) {
         if (playerToTake.includes(board[i - 1][j - 1])) {
             if (board[i - 2][j - 2] === 5 || board[i - 2][j - 2] === 6) {
                 tree.Left = new Tree(factoryForTakeMove(i - 1, j - 1, i - 2, j - 2));
-                checkTakeDown(board, i - 2, j - 2, playerToTake, tree.Left);
+                checkTakeUp(board, i - 2, j - 2, playerToTake, tree.Left);
             }
         }
     }
@@ -256,7 +256,7 @@ function checkTakeUp(board, i, j, playerToTake, tree) {
         if (playerToTake.includes(board[i - 1][j + 1])) {
             if (board[i - 2][j + 2] === 5 || board[i - 2][j + 2] === 6) {
                 tree.Right = new Tree(factoryForTakeMove(i - 1, j + 1, i - 2, j + 2));
-                checkTakeDown(board, i - 2, j + 2, playerToTake, tree.Right);
+                checkTakeUp(board, i - 2, j + 2, playerToTake, tree.Right);
             }
         }
     }
