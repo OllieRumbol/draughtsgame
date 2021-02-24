@@ -368,6 +368,7 @@ function FindAvailableTakeMoves(board, player) {
     return res;
 }
 
+
 function GetAvailableBoards(board, player) {
     let boardInfos = [];
     let takeMoves = FindAvailableTakeMoves(board, player);
@@ -428,26 +429,146 @@ function GetAvailableBoards(board, player) {
 function evaluate(board) {
     let player1Counter = 0;
     let player2Counter = 0;
+    let player1TakeMoves = GetPiecesTaken(FindAvailableTakeMoves(board, 1));
+    let player2TakeMoves = GetPiecesTaken(FindAvailableTakeMoves(board, 2));
 
+    // 1 point: If the king can be taken
+    // 2 points: If the single piece can be taken
+    // 3 points: If the single piece cant be taken
+    // 4 points: If king can't be taken
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
             if (board[i][j] === 1) {
-                player1Counter = player1Counter + 1;
+                if (CanPieceBeTaken(player2TakeMoves, i, j)) {
+                    player1Counter = player1Counter + 2;
+                }
+                else {
+                    player1Counter = player1Counter + 3;
+                }
             }
             else if (board[i][j] === 2) {
-                player2Counter = player2Counter + 1;
+                if (CanPieceBeTaken(player1TakeMoves, i, j)) {
+                    player2Counter = player2Counter + 2;
+                }
+                else {
+                    player2Counter = player2Counter + 3;
+                }
             }
             else if (board[i][j] === 3) {
-                player1Counter = player1Counter + 2;
+                if (CanPieceBeTaken(player2TakeMoves, i, j)) {
+                    player1Counter = player1Counter + 1;
+                }
+                else {
+                    player1Counter = player1Counter + 4;
+                }
             }
             else if (board[i][j] === 4) {
-                player2Counter = player2Counter + 2;
+                if (CanPieceBeTaken(player1TakeMoves, i, j)) {
+                    player2Counter = player2Counter + 1;
+                }
+                else {
+                    player2Counter = player2Counter + 4;
+                }
             }
         }
     }
+    
     return player2Counter - player1Counter;
 }
 
+function GetPiecesTaken(takeMoves) {
+    let results = [];
+
+    takeMoves.forEach(takeMove => {
+        takeMove.slice(1).forEach(take => {
+            results.push({
+                height: take.takeHeight,
+                width: take.takeWidth
+            })
+        });
+    });
+
+    return results;
+}
+
+function CanPieceBeTaken(takes, height, width) {
+    let result = false;
+    takes.forEach(element => {
+        if (element.height === height && element.width === width) {
+            result = true;
+        }
+    });
+
+    return result;
+}
+
+// function findBiggest(moves) {
+//     let maxValue = -1000;
+//     moves.forEach(element => {
+//         maxValue = Math.max(maxValue, element[0]);
+//     });
+
+//     return maxValue;
+// }
+
+// function findSmallest(moves) {
+//     let minValue = 1000;
+//     moves.forEach(element => {
+//         minValue = Math.min(minValue, element[0]);
+//     });
+
+//     return minValue;
+// }
+
+// function filterMoves(moves, value) {
+//     return moves.filter(move => {
+//         return move[0] === value;
+//     });
+// }
+
+// function minimax(board, depth, minOrMax) {
+//     if (depth === 0) {
+//         return [evaluate(board), board];
+//     }
+
+//     if (minOrMax) {
+//         let moves = [];
+//         let bestMove = [-1000, null];
+//         let player2MovesBoards = GetAvailableBoards(board, 2);
+//         player2MovesBoards.forEach(boardInfo => {
+//             let move = minimax(boardInfo.board, depth - 1, false)[0];
+//             moves.push([move, boardInfo]);
+//         });
+
+//         if (moves.length !== 0) {
+//             let biggestValue = findBiggest(moves);
+//             let biggestMoves = filterMoves(moves, biggestValue);
+//             let randomNumber = Math.floor((Math.random() * biggestMoves.length));
+
+//             bestMove = biggestMoves[randomNumber];
+//         }
+
+//         return bestMove;
+//     }
+//     else {
+//         let moves = [];
+//         let bestMove = [1000, null]
+//         let player1MovesBoards = GetAvailableBoards(board, 1);
+//         player1MovesBoards.forEach(boardInfo => {
+//             let move = minimax(boardInfo.board, depth - 1, true)[0];
+//             moves.push([move, boardInfo]);
+//         });
+
+//         if (moves.length !== 0) {
+//             let smallestValue = findSmallest(moves);
+//             let smallestMoves = filterMoves(moves, smallestValue);
+//             let randomNumber = Math.floor((Math.random() * smallestMoves.length));
+//             bestMove = smallestMoves[randomNumber];
+//         }
+
+//         return bestMove;
+//     }
+// }
 
 function minimax(board, depth, minOrMax) {
     if (depth === 0) {
@@ -483,4 +604,21 @@ function minimax(board, depth, minOrMax) {
         return [minEval, bestMove];
     }
 }
+
+// FOR DEBUG
+// let board = [
+//     [0, 2, 0, 2, 0, 5, 0, 5],
+//     [2, 0, 5, 0, 2, 0, 2, 0],
+//     [0, 2, 0, 2, 0, 2, 0, 2],
+//     [2, 0, 2, 0, 5, 0, 2, 0],
+//     [0, 1, 0, 1, 0, 1, 0, 1],
+//     [1, 0, 1, 0, 1, 0, 1, 0],
+//     [0, 5, 0, 5, 0, 5, 0, 5],
+//     [1, 0, 1, 0, 1, 0, 1, 0]
+// ];
+
+// //let result = minimax(board, 2, true);
+// // //let result = evaluate(board);
+
+// //console.log(result);
 

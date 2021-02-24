@@ -163,6 +163,7 @@ export default function PcBoard(props) {
     }
 
     function noOneCanMoveCheck() {
+        let result = false;
         let player1Moves = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
         let player2Moves = findPlayerMoves(counters, 2).concat(findPlayerMoves(counters, 4));
 
@@ -170,15 +171,20 @@ export default function PcBoard(props) {
             props.setResultsModalTitle("Tied game");
             props.setResultsModalMessage("No player can move. Therefore the game ends in a tie. I hope you had fun playing.");
             props.setShowResultModal(true);
+            result = true;
         } else if (player1Moves.length === 0) {
             props.setResultsModalTitle("Player 2 wins");
             props.setResultsModalMessage("Player 1 can no longer move. Player 2 wins. I hope you had fun playing.");
             props.setShowResultModal(true);
+            result = true;
         } else if (player2Moves.length === 0) {
             props.setResultsModalTitle("Player 1 wins");
             props.setResultsModalMessage("Player 2 can no longer move. Player 1 wins. I hope you had fun playing.");
             props.setShowResultModal(true);
+            result = true;
         }
+
+        return result;
     }
 
     function checkToJumpUpAgain(value) {
@@ -311,6 +317,7 @@ export default function PcBoard(props) {
                 setCounters(counters);
                 setSquares(renderSquares());
                 props.setTurn(true);
+                noOneCanMoveCheck();
             }
         }, 500)
     }
@@ -369,14 +376,17 @@ export default function PcBoard(props) {
                 setCounterToMove(null);
                 setSquareToMoveTo(null);
 
+                let result = noOneCanMoveCheck();
+                if (result) {
+                    player2ToGoNext = false;
+                }
+
                 if (player2ToGoNext && validMove) {
                     player2Go();
                 }
                 else if (validMove === false) {
                     alert("Invalid move");
                 }
-
-                noOneCanMoveCheck();
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
