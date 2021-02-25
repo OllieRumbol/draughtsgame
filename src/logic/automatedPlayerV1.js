@@ -149,6 +149,7 @@ function factoryForMove(height, width, moveHeight, moveWidth) {
         currentWidth: width,
         nextHeight: moveHeight,
         nextWidth: moveWidth,
+        takes: []
     }
 }
 
