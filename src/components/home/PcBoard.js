@@ -7,7 +7,8 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { findPlayerMoves } from '../../logic/playerTips';
 import { pickMoveForPlayer2 } from '../../logic/automatedPlayerV1';
-import { minimax } from '../../logic/automatedPlayerV2';
+import { minimax as automatedPlayerV2 } from '../../logic/automatedPlayerV2';
+import { minimax as automatedPlayerV3 } from '../../logic/automatedPlayerV3';
 import { MyContext } from '../../store/MyProvider';
 
 export default function PcBoard(props) {
@@ -291,11 +292,14 @@ export default function PcBoard(props) {
     function player2Go() {
         setTimeout(() => {
             let player2Move;
-            if (context.handleEasyOrHard === "true") {
+            if (context.difficulty === "1") {
                 player2Move = pickMoveForPlayer2(counters);
             }
+            else if (context.difficulty === "2") {
+                player2Move = automatedPlayerV2(counters, 4, true)[1];
+            }
             else {
-                player2Move = minimax(counters, 4, true)[1];
+                player2Move = automatedPlayerV3(counters, 2, true)[1];
             }
 
             if (player2Move !== null && player2Move !== {} && player2Move !== undefined) {
