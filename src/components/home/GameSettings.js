@@ -11,7 +11,7 @@ export default function GameSettings(props) {
 
     const handleSubmit = () => {
         if (context.pcOr2Player != null) {
-            if ((context.pcOr2Player === "true" && context.easyOrHard !== null) || context.pcOr2Player === "false") {
+            if ((context.pcOr2Player === "true" && context.difficulty !== "0") || context.pcOr2Player === "false") {
                 props.setHasSetGameSettings(true);
             }
         }
@@ -26,18 +26,20 @@ export default function GameSettings(props) {
                         <h1>Game settings</h1>
                     </div>
                     <div>
-                        <h2 className="pb-2">Opponent</h2>
+                        <div>
+                            <h2 className="pb-2">Opponent</h2>
+                        </div>
                         <div>
                             <label className="radioContainer">
                                 <div className="topper">PC</div>
-                                <input type="radio" name="radio" value={true} onChange={context.handlePcOr2PlayerChange} />
+                                <input type="radio" name="radio" value="true" onChange={context.handlePcOr2PlayerChange} checked={context.pcOr2Player === "true"} />
                                 <span className="checkMark"></span>
                             </label>
                         </div>
                         <div>
                             <label className="radioContainer">
                                 <div className="topper">2 Player</div>
-                                <input type="radio" name="radio" value={false} onChange={context.handlePcOr2PlayerChange} />
+                                <input type="radio" name="radio" value="false" onChange={context.handlePcOr2PlayerChange} checked={context.pcOr2Player === "false"} />
                                 <span className="checkMark"></span>
                             </label>
                         </div>
@@ -48,14 +50,21 @@ export default function GameSettings(props) {
                                 <div>
                                     <label className="radioContainer">
                                         <div className="topper">Easy</div>
-                                        <input type="radio" name="radio2" value={true} onChange={context.handleEasyOrHard} />
+                                        <input type="radio" name="radio2" value="1" onChange={context.handleDifficulty} checked={context.difficulty === "1"} />
+                                        <span className="checkMark"></span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label className="radioContainer">
+                                        <div className="topper">Medium</div>
+                                        <input type="radio" name="radio2" value="2" onChange={context.handleDifficulty} checked={context.difficulty === "2"} />
                                         <span className="checkMark"></span>
                                     </label>
                                 </div>
                                 <div>
                                     <label className="radioContainer">
                                         <div className="topper">Hard</div>
-                                        <input type="radio" name="radio2" value={false} onChange={context.handleEasyOrHard} />
+                                        <input type="radio" name="radio2" value="3" onChange={context.handleDifficulty} checked={context.difficulty === "3"} />
                                         <span className="checkMark"></span>
                                     </label>
                                 </div>
