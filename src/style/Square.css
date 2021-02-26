@@ -21,8 +21,8 @@
 
 @media only screen and (min-width: 300px) and (max-width: 449px) {
   .square {
-    height: 45px;
-    width: 45px;
+    height: 40px;
+    width: 40px;
   }
 }
 
