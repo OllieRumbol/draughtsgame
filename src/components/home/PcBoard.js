@@ -47,6 +47,8 @@ export default function PcBoard(props) {
 
     const context = useContext(MyContext);
 
+    let mode = context.difficulty === "1" ? "Easy" : context.difficulty === "2" ? "Medium" : "Hard"
+
     function renderSquares() {
         return counters.map((row, index) => {
             let y = index;
@@ -411,10 +413,10 @@ export default function PcBoard(props) {
     return (
         <Container fluid>
             <div className="d-flex justify-content-center mb-3">
-                <h2>PC Mode</h2>
+                <h2>PC Mode: {mode}</h2>
             </div>
 
-            <ButtonToolbar className="d-flex justify-content-center">
+            <ButtonToolbar className="d-flex justify-content-center mb-2">
                 <ButtonGroup className="ml-2 mr-2 mb-4">
                     <Button onClick={showPlayerTips} size="lg">{tipButtonText}</Button>
                 </ButtonGroup>
