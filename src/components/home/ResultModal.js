@@ -10,7 +10,7 @@ export default function ResultModal(props) {
 
     return (
         <div>
-            <Modal show={props.show} onHide={handleClose}>
+            <Modal show={props.show} onHide={handleClose} backdrop="static">
                 <Modal.Header closeButton>
                     <Modal.Title>{props.title}</Modal.Title>
                 </Modal.Header>
