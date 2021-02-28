@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Square from './Square';
 import JumpModal from './JumpModal';
+import InvalidMoveModal from './InvalidMoveModal';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
@@ -46,6 +47,8 @@ export default function PcBoard(props) {
     const [listOfMoves, setListOfMoves] = useState([]);
 
     const context = useContext(MyContext);
+
+    const [showInvalidMoveModal, setShowInvalidMoveModal] = useState(false);
 
     let mode = context.difficulty === "1" ? "Easy" : context.difficulty === "2" ? "Medium" : "Hard"
 
@@ -391,7 +394,7 @@ export default function PcBoard(props) {
                     player2Go();
                 }
                 else if (validMove === false) {
-                    alert("Invalid move");
+                    setShowInvalidMoveModal(true);
                 }
             }
         }
@@ -426,6 +429,7 @@ export default function PcBoard(props) {
             </ButtonToolbar>
 
             <JumpModal show={showJumpModal} update={setShowJumpModal} setJumpModalValue={setJumpModalValue} />
+            <InvalidMoveModal show={showInvalidMoveModal} update={setShowInvalidMoveModal} />
 
             <div className="d-flex justify-content-center">
                 <table className="gameBorder">
