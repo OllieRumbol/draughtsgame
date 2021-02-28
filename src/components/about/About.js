@@ -42,7 +42,7 @@ export default function About() {
                             <ProjectCard title="Automated 2nd Player Phase 3 Epic" colour="warning" features={["Refactor logic from V1 and V2", "Improve algorithm with alpha beta pruning", "Experiment with different depths ✔", "Improve evaluation function ✔", "Add new setting for new mode and use in frontend ✔"]} status="In progress"></ProjectCard>
                             <ProjectCard title="Tutorial Epic" colour="danger" features={[]} status="Not started"></ProjectCard>
                             <ProjectCard title="Support Epic" colour="danger" features={["Game tips results in no possible moves ✔ (26/1/21)", "Player tips not showing all possible moves for a king ✔ (31/1/21)", "Player tips infinite loop ✔ (1/2/21)", "Double jumps and undo ✔ (2/2/21)", "Undo is hiding player tips when no moves have been made ✔ (6/2/21)", "Change board layout, currently back to front ✔ (16/2/21)", "No more moves check is too late ✔ (18/2/21)", "Clicking off modal closes modal ✔ (26/2/21)"]} status="Paused due to no further work"></ProjectCard>
-                            <ProjectCard title="Technical Debt Epic Epic" colour="danger" features={["Refactor main use effect logic ✔ (28/1/21)", "Refactor player tips logic", "Replace JS alert with bootstrap modal for invalid more"]} status="Paused due to no further work"></ProjectCard>
+                            <ProjectCard title="Technical Debt Epic Epic" colour="danger" features={["Refactor main use effect logic ✔ (28/1/21)", "Refactor player tips logic", "Replace JS alert with bootstrap modal for invalid more ✔ (27/2/21)"]} status="Paused due to no further work"></ProjectCard>
                         </div>
                     </div>
                     <br></br>

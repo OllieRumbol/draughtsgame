@@ -8,7 +8,7 @@ export default function Square(props) {
     const width = props.x;
     const setSquareToMoveTo = props.setSquareToMoveTo;
 
-    function click() {
+    let click = () => {
         if (state === 5 || state === 6) {
             setSquareToMoveTo({ height: height, width: width });
         }

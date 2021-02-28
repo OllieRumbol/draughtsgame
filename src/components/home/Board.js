@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Square from './Square';
 import JumpModal from './JumpModal';
+import InvalidMoveModal from './InvalidMoveModal';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -40,6 +41,8 @@ export default function Board(props) {
     const [JumpModalValue, setJumpModalValue] = useState(false);
 
     const [listOfMoves, setListOfMoves] = useState([]);
+
+    const [showInvalidMoveModal, setShowInvalidMoveModal] = useState(false);
 
     function renderSquares() {
         return counters.map((row, index) => {
@@ -292,6 +295,7 @@ export default function Board(props) {
 
     useEffect(() => {
         if (counterToMove != null && squareToMoveTo != null) {
+            let validMove = false;
             //Player1 
             if (props.turn === true) {
                 if (counterToMove.state === 1) {
@@ -299,6 +303,7 @@ export default function Board(props) {
                     if (canTake.result) {
                         saveBoard();
                         takeCounter(canTake.height, canTake.width);
+                        validMove = true;
                         if (checkToJumpUpAgain(2)) {
                             setShowJumpModal(true);
                         }
@@ -306,6 +311,7 @@ export default function Board(props) {
                     else if (checkMoveCounter(-1)) {
                         saveBoard();
                         moveCounter();
+                        validMove = true;
                     }
                 }
             }
@@ -316,6 +322,7 @@ export default function Board(props) {
                     if (canTake.result) {
                         saveBoard();
                         takeCounter(canTake.height, canTake.width);
+                        validMove = true;
                         if (checkToJumpUpAgain(1)) {
                             setShowJumpModal(true);
                         }
@@ -323,6 +330,7 @@ export default function Board(props) {
                     else if (checkMoveCounter(1)) {
                         saveBoard();
                         moveCounter();
+                        validMove = true;
                     }
 
                 }
@@ -334,6 +342,7 @@ export default function Board(props) {
                         if ((counterToMove.state === 3 && props.turn === true) || (counterToMove.state === 4 && props.turn === false)) {
                             saveBoard();
                             moveCounter();
+                            validMove = true;
                         }
                     }
                 }
@@ -346,6 +355,7 @@ export default function Board(props) {
                             if (counterToMove.state === 3 && (counters[res][res2] === 2 || counters[res][res2] === 4)) {
                                 saveBoard();
                                 takeCounter(res, res2);
+                                validMove = true;
                                 if (checkToJumpUpAgain(2) || checkToJumpUpAgain(4) || checkToJumpDownAgain(2) || checkToJumpDownAgain(4)) {
                                     setShowJumpModal(true);
                                 }
@@ -356,6 +366,7 @@ export default function Board(props) {
                             if (counterToMove.state === 4 && (counters[res][res2] === 1 || counters[res][res2] === 3)) {
                                 saveBoard();
                                 takeCounter(res, res2);
+                                validMove = true;
                                 if (checkToJumpUpAgain(1) || checkToJumpUpAgain(3) || checkToJumpDownAgain(1) || checkToJumpDownAgain(3)) {
                                     setShowJumpModal(true);
                                 }
@@ -363,6 +374,10 @@ export default function Board(props) {
                         }
                     }
                 }
+            }
+
+            if (validMove === false) {
+                setShowInvalidMoveModal(true);
             }
             
             clearTips();
@@ -388,7 +403,7 @@ export default function Board(props) {
                 <h2>2 Player Mode</h2>
             </div>
 
-            <ButtonToolbar className="d-flex justify-content-center">
+            <ButtonToolbar className="d-flex justify-content-center mb-2">
                 <ButtonGroup className="ml-2 mr-2 mb-4">
                     <Button onClick={showPlayerTips} size="lg">{tipButtonText}</Button>
                 </ButtonGroup>
@@ -398,6 +413,7 @@ export default function Board(props) {
             </ButtonToolbar>
 
             <JumpModal show={showJumpModal} update={setShowJumpModal} setJumpModalValue={setJumpModalValue} />
+            <InvalidMoveModal show={showInvalidMoveModal} update={setShowInvalidMoveModal} />
 
             <div className="d-flex justify-content-center">
                 <table className="gameBorder">
