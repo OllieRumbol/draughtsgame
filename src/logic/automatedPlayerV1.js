@@ -227,7 +227,7 @@ function checkKingTake(board, i, j, i2, j2, playerToTake, tree) {
         if (playerToTake.includes(board[i2 + 1][j2 - 1])) {
             if (board[i2 + 2][j2 - 2] === 5 || board[i2 + 2][j2 - 2] === 6) {
                 if (i !== i2 + 2 || j !== j2 - 2) {
-                    tree.DownLeft = new Tree(factoryForTakeMove(i2 + 1, j2 - 1, i2 + 2, j2 - 2));
+                    tree.DownLeft = new KingTree(factoryForTakeMove(i2 + 1, j2 - 1, i2 + 2, j2 - 2));
                     checkKingTake(board, i2, j2, i2 + 2, j2 - 2, playerToTake, tree.DownLeft);
                 }
             }
@@ -240,7 +240,7 @@ function checkKingTake(board, i, j, i2, j2, playerToTake, tree) {
         if (playerToTake.includes(board[i2 + 1][j2 + 1])) {
             if (board[i2 + 2][j2 + 2] === 5 || board[i2 + 2][j2 + 2] === 6) {
                 if (i !== i2 + 2 || j !== j2 + 2) {
-                    tree.DownRight = new Tree(factoryForTakeMove(i2 + 1, j2 + 1, i2 + 2, j2 + 2));
+                    tree.DownRight = new KingTree(factoryForTakeMove(i2 + 1, j2 + 1, i2 + 2, j2 + 2));
                     checkKingTake(board, i2, j2, i2 + 2, j2 + 2, playerToTake, tree.DownRight);
                 }
             }
@@ -253,7 +253,7 @@ function checkKingTake(board, i, j, i2, j2, playerToTake, tree) {
         if (playerToTake.includes(board[i2 - 1][j2 - 1])) {
             if (board[i2 - 2][j2 - 2] === 5 || board[i2 - 2][j2 - 2] === 6) {
                 if (i !== i2 - 2 || j !== j2 - 2) {
-                    tree.UpLeft = new Tree(factoryForTakeMove(i2 - 1, j2 - 1, i2 - 2, j2 - 2));
+                    tree.UpLeft = new KingTree(factoryForTakeMove(i2 - 1, j2 - 1, i2 - 2, j2 - 2));
                     checkKingTake(board, i2, j2, i2 - 2, j2 - 2, playerToTake, tree.UpLeft);
                 }
             }
@@ -266,7 +266,7 @@ function checkKingTake(board, i, j, i2, j2, playerToTake, tree) {
         if (playerToTake.includes(board[i2 - 1][j2 + 1])) {
             if (board[i2 - 2][j2 + 2] === 5 || board[i2 - 2][j2 + 2] === 6) {
                 if (i !== i2 - 2 || j !== j2 + 2) {
-                    tree.UpRight = new Tree(factoryForTakeMove(i2 - 1, j2 + 1, i2 - 2, j2 + 2));
+                    tree.UpRight = new KingTree(factoryForTakeMove(i2 - 1, j2 + 1, i2 - 2, j2 + 2));
                     checkKingTake(board, i2, j2, i2 - 2, j2 + 2, playerToTake, tree.UpRight);
                 }
             }
