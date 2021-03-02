@@ -116,13 +116,13 @@ export default function Board(props) {
 
     function displayTips() {
         if (props.turn === true) {
-            let res = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
+            let res = findPlayerMoves(counters, 1);
             res.forEach(element => {
                 counters[element.height][element.width] = 6;
             });
         }
         else if (props.turn === false) {
-            let res = findPlayerMoves(counters, 2).concat(findPlayerMoves(counters, 4));
+            let res = findPlayerMoves(counters, 2);
             res.forEach(element => {
                 counters[element.height][element.width] = 6;
             });
@@ -144,8 +144,8 @@ export default function Board(props) {
     }
 
     function noOneCanMoveCheck() {
-        let player1Moves = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
-        let player2Moves = findPlayerMoves(counters, 2).concat(findPlayerMoves(counters, 4));
+        let player1Moves = findPlayerMoves(counters, 1);
+        let player2Moves = findPlayerMoves(counters, 2);
 
         if (player1Moves.length === 0 && player2Moves.length === 0) {
             props.setResultsModalTitle("Tied game");
@@ -379,7 +379,7 @@ export default function Board(props) {
             if (validMove === false) {
                 setShowInvalidMoveModal(true);
             }
-            
+
             clearTips();
             setShowTips(true);
             setCounterToMove(null);
