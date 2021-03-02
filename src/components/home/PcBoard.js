@@ -145,7 +145,7 @@ export default function PcBoard(props) {
 
     function displayTips() {
         if (props.turn === true) {
-            let res = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
+            let res = findPlayerMoves(counters, 1);
             res.forEach(element => {
                 counters[element.height][element.width] = 6;
             });
@@ -170,8 +170,8 @@ export default function PcBoard(props) {
 
     function noOneCanMoveCheck() {
         let result = false;
-        let player1Moves = findPlayerMoves(counters, 1).concat(findPlayerMoves(counters, 3));
-        let player2Moves = findPlayerMoves(counters, 2).concat(findPlayerMoves(counters, 4));
+        let player1Moves = findPlayerMoves(counters, 1);
+        let player2Moves = findPlayerMoves(counters, 2);
 
         if (player1Moves.length === 0 && player2Moves.length === 0) {
             props.setResultsModalTitle("Tied game");
