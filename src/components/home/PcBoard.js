@@ -331,6 +331,14 @@ export default function PcBoard(props) {
         }, 500)
     }
 
+    function giveUp(){
+        if(props.turn === true){
+            props.setResultsModalTitle("Player 2 wins");
+            props.setResultsModalMessage("Player 1 has given up on the game.");
+            props.setShowResultModal(true);
+        }
+    }
+
     useEffect(() => {
         let player2ToGoNext = true;
         let validMove = false;
@@ -425,6 +433,9 @@ export default function PcBoard(props) {
                 </ButtonGroup>
                 <ButtonGroup className="ml-2 mr-2 mb-4">
                     <Button onClick={undo} size="lg">Undo</Button>
+                </ButtonGroup>
+                <ButtonGroup className="ml-2 mr-2 mb-4">
+                    <Button onClick={giveUp} variant="danger" size="lg">Give up</Button>
                 </ButtonGroup>
             </ButtonToolbar>
 
