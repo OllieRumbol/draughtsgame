@@ -22,7 +22,7 @@ export default function Home(props) {
 
     //Player 1 - true
     //Player 2 - false
-    const [turn, setTurn] = useState(true);
+    const [turn, setTurn] = useState(context.whoGoesFirst);
 
     useEffect(() => {
         if (player1Counter === 12) {
@@ -44,7 +44,7 @@ export default function Home(props) {
             <Col xl="1"></Col>
             <Col xl="7">
                 {
-                    context.pcOr2Player === "true" ?
+                    context.pcOr2Player === true ?
                         <PcBoard player1Counter={player1Counter} setPlayer1Counter={setPlayer1Counter} player2Counter={player2Counter} setPlayer2Counter={setPlayer2Counter} turn={turn} setTurn={setTurn} setResultsModalTitle={setResultsModalTitle} setShowResultModal={setShowResultModal} setResultsModalMessage={setResultsModalMessage} /> :
                         <Board player1Counter={player1Counter} setPlayer1Counter={setPlayer1Counter} player2Counter={player2Counter} setPlayer2Counter={setPlayer2Counter} turn={turn} setTurn={setTurn} setResultsModalTitle={setResultsModalTitle} setShowResultModal={setShowResultModal} setResultsModalMessage={setResultsModalMessage} />
                 }

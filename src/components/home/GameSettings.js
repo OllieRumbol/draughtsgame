@@ -10,11 +10,7 @@ export default function GameSettings(props) {
     const context = useContext(MyContext);
 
     const handleSubmit = () => {
-        if (context.pcOr2Player != null) {
-            if ((context.pcOr2Player === "true" && context.difficulty !== "0") || context.pcOr2Player === "false") {
-                props.setHasSetGameSettings(true);
-            }
-        }
+        props.setHasSetGameSettings(true);
     }
 
     return (
@@ -31,45 +27,62 @@ export default function GameSettings(props) {
                         </div>
                         <div>
                             <label className="radioContainer">
-                                <div className="topper">PC</div>
-                                <input type="radio" name="radio" value="true" onChange={context.handlePcOr2PlayerChange} checked={context.pcOr2Player === "true"} />
+                                <div className="topper">2 Player</div>
+                                <input type="radio" name="radio" value="false" onChange={context.handlePcOr2PlayerChange} checked={context.pcOr2Player === false} />
                                 <span className="checkMark"></span>
                             </label>
                         </div>
                         <div>
                             <label className="radioContainer">
-                                <div className="topper">2 Player</div>
-                                <input type="radio" name="radio" value="false" onChange={context.handlePcOr2PlayerChange} checked={context.pcOr2Player === "false"} />
+                                <div className="topper">PC</div>
+                                <input type="radio" name="radio" value="true" onChange={context.handlePcOr2PlayerChange} checked={context.pcOr2Player === true} />
                                 <span className="checkMark"></span>
                             </label>
                         </div>
                         {
-                            context.pcOr2Player === "true" &&
+                            context.pcOr2Player === true &&
                             <div>
                                 <h2 className="pb-2">Difficulty</h2>
                                 <div>
                                     <label className="radioContainer">
                                         <div className="topper">Easy</div>
-                                        <input type="radio" name="radio2" value="1" onChange={context.handleDifficulty} checked={context.difficulty === "1"} />
+                                        <input type="radio" name="radio2" value="1" onChange={context.handleDifficulty} checked={context.difficulty === 1} />
                                         <span className="checkMark"></span>
                                     </label>
                                 </div>
                                 <div>
                                     <label className="radioContainer">
                                         <div className="topper">Medium</div>
-                                        <input type="radio" name="radio2" value="2" onChange={context.handleDifficulty} checked={context.difficulty === "2"} />
+                                        <input type="radio" name="radio2" value="2" onChange={context.handleDifficulty} checked={context.difficulty === 2} />
                                         <span className="checkMark"></span>
                                     </label>
                                 </div>
                                 <div>
                                     <label className="radioContainer">
                                         <div className="topper">Hard</div>
-                                        <input type="radio" name="radio2" value="3" onChange={context.handleDifficulty} checked={context.difficulty === "3"} />
+                                        <input type="radio" name="radio2" value="3" onChange={context.handleDifficulty} checked={context.difficulty === 3} />
                                         <span className="checkMark"></span>
                                     </label>
                                 </div>
                             </div>
                         }
+                        <div>
+                            <h2 className="pb-2">Who goes first</h2>
+                        </div>
+                        <div>
+                            <label className="radioContainer">
+                                <div className="topper">Player 1</div>
+                                <input type="radio" name="radio3" value="true" onChange={context.handleWhoGoesFirstChange} checked={context.whoGoesFirst === true} />
+                                <span className="checkMark"></span>
+                            </label>
+                        </div>
+                        <div>
+                            <label className="radioContainer">
+                                <div className="topper">Player 2</div>
+                                <input type="radio" name="radio3" value="false" onChange={context.handleWhoGoesFirstChange} checked={context.whoGoesFirst === false} />
+                                <span className="checkMark"></span>
+                            </label>
+                        </div>
                     </div>
                     <div>
                         <Button variant="success" onClick={handleSubmit} size="lg">Submit</Button>
