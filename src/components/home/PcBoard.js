@@ -50,7 +50,7 @@ export default function PcBoard(props) {
 
     const [showInvalidMoveModal, setShowInvalidMoveModal] = useState(false);
 
-    let mode = context.difficulty === "1" ? "Easy" : context.difficulty === "2" ? "Medium" : "Hard"
+    let mode = context.difficulty === 1 ? "Easy" : context.difficulty === 2 ? "Medium" : "Hard"
 
     function renderSquares() {
         return counters.map((row, index) => {
@@ -297,11 +297,11 @@ export default function PcBoard(props) {
     function player2Go() {
         setTimeout(() => {
             let player2Move;
-            if (context.difficulty === "1") {
+            if (context.difficulty === 1) {
                 player2Move = pickMoveForPlayer2(counters);
             }
-            else if (context.difficulty === "2") {
                 player2Move = automatedPlayerV2(counters, 4, true)[1];
+            else if (context.difficulty === 2) {
             }
             else {
                 player2Move = automatedPlayerV3(counters, 2, true)[1];
@@ -420,6 +420,11 @@ export default function PcBoard(props) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JumpModalValue, props])
+
+    if(context.whoGoesFirst === false){
+        player2Go();
+        context.setWhoGoesFirst(null);
+    }
 
     return (
         <Container fluid>
