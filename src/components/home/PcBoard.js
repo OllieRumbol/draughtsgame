@@ -300,8 +300,8 @@ export default function PcBoard(props) {
             if (context.difficulty === 1) {
                 player2Move = pickMoveForPlayer2(counters);
             }
-                player2Move = automatedPlayerV2(counters, 4, true)[1];
             else if (context.difficulty === 2) {
+                player2Move = automatedPlayerV2(counters, 4, true)[1];
             }
             else {
                 player2Move = automatedPlayerV3(counters, 2, true)[1];
