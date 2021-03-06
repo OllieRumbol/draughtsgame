@@ -1,4 +1,4 @@
-import { FindAvailableMoves, FindAvailableTakeMoves } from './helpers/findMove';
+import { FindAvailableMoves } from './helpers/findMove';
 
 export {
     minimax,
@@ -8,57 +8,26 @@ export {
 
 function GetAvailableBoards(board, player) {
     let boardInfos = [];
-    let takeMoves = FindAvailableTakeMoves(board, player);
-
-    takeMoves.forEach(takeMove => {
-        let tempBoard = [];
-        for (let i = 0; i < board.length; i++) {
-            tempBoard[i] = board[i].slice();
-        }
-
-        let takes = [];
-        takeMove.slice(1).forEach(take => {
-            tempBoard[take.takeHeight][take.takeWidth] = 5;
-            takes.push({
-                height: take.takeHeight,
-                width: take.takeWidth
-            })
-        });
-
-        let tempValue = tempBoard[takeMove[0].currentHeight][takeMove[0].currentWidth];
-        tempBoard[takeMove[0].currentHeight][takeMove[0].currentWidth] = 5;
-        tempBoard[takeMove[takeMove.length - 1].nextHeight][takeMove[takeMove.length - 1].nextWidth] = tempValue;
-
-        boardInfos.push({
-            board: tempBoard,
-            currentHeight: takeMove[0].currentHeight,
-            currentWidth: takeMove[0].currentWidth,
-            nextHeight: takeMove[takeMove.length - 1].nextHeight,
-            nextWidth: takeMove[takeMove.length - 1].nextWidth,
-            takes: takes
-        });
-    });
-
     let moves = FindAvailableMoves(board, player);
+
     moves.forEach(move => {
         let tempBoard = [];
         for (let i = 0; i < board.length; i++) {
             tempBoard[i] = board[i].slice();
         }
 
+        move.takes.forEach(take => {
+            tempBoard[take.height][take.width] = 5;
+        });
+
         let tempValue = tempBoard[move.currentHeight][move.currentWidth];
         tempBoard[move.currentHeight][move.currentWidth] = 5;
         tempBoard[move.nextHeight][move.nextWidth] = tempValue;
 
-        boardInfos.push({
-            board: tempBoard,
-            currentHeight: move.currentHeight,
-            currentWidth: move.currentWidth,
-            nextHeight: move.nextHeight,
-            nextWidth: move.nextWidth,
-            takes: move.takes
-        });
-    })
+        move.board = tempBoard
+
+        boardInfos.push(move);
+    });
 
     return boardInfos;
 }
@@ -66,8 +35,8 @@ function GetAvailableBoards(board, player) {
 function evaluate(board) {
     let player1Counter = 0;
     let player2Counter = 0;
-    let player1TakeMoves = GetPiecesTaken(FindAvailableTakeMoves(board, 1));
-    let player2TakeMoves = GetPiecesTaken(FindAvailableTakeMoves(board, 2));
+    let player1TakeMoves = GetPiecesTaken(FindAvailableMoves(board, 1));
+    let player2TakeMoves = GetPiecesTaken(FindAvailableMoves(board, 2));
 
     // 1 point: If the king can be taken
     // 2 points: If the single piece can be taken
@@ -113,15 +82,12 @@ function evaluate(board) {
     return player2Counter - player1Counter;
 }
 
-function GetPiecesTaken(takeMoves) {
+function GetPiecesTaken(moves) {
     let results = [];
 
-    takeMoves.forEach(takeMove => {
-        takeMove.slice(1).forEach(take => {
-            results.push({
-                height: take.takeHeight,
-                width: take.takeWidth
-            })
+    moves.forEach(move => {
+        move.takes.forEach(take => {
+            results.push(take);
         });
     });
 
