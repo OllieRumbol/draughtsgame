@@ -1,6 +1,25 @@
-import { FindAvailableMoves, FindAvailableTakeMoves } from './helpers/findMove';
+import { FindAvailableMoves } from './helpers/findMove';
 
-export { findPlayerMoves, removeDuplicates }
+export { findPlayerMoves, removeDuplicates, filterMoves }
+
+function findPlayerMoves(board, tipFor) {
+    let moves = FindAvailableMoves(board, tipFor);
+    let filteredMoves = filterMoves(moves);
+    return removeDuplicates(filteredMoves);
+}
+
+function filterMoves(moves) {
+    let result = [];
+
+    moves.forEach(move => {
+        result.push({
+            height: move.nextHeight,
+            width: move.nextWidth
+        });
+    });
+
+    return result;
+}
 
 function removeDuplicates(list) {
     let newList = [];
@@ -24,46 +43,6 @@ function removeDuplicates(list) {
     });
 
     return newList;
-}
-
-function filterMoves(moves) {
-    let result = [];
-
-    moves.forEach(move => {
-        result.push({
-            height: move.nextHeight,
-            width: move.nextWidth
-        });
-    });
-
-    return result;
-}
-
-function filterTakeMoves(listOfTakeMoves) {
-    let result = [];
-
-    listOfTakeMoves.forEach(takeMoves => {
-        takeMoves.slice(1).forEach(takeMove => {
-            result.push({
-                height: takeMove.nextHeight,
-                width: takeMove.nextWidth
-            });
-        });
-    });
-
-    return result;
-}
-
-function findPlayerMoves(board, tipFor) {
-    let results = [];
-
-    let takeMoves = FindAvailableTakeMoves(board, tipFor);
-    results = results.concat(filterTakeMoves(takeMoves));
-
-    let moves = FindAvailableMoves(board, tipFor);
-    results = results.concat(filterMoves(moves));
-
-    return removeDuplicates(results);
 }
 
 //DEBUG
