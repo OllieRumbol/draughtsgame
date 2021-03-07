@@ -31,20 +31,3 @@ test('evaluate method', () => {
 
     expect(result).toEqual(0);
 })
-
-test('evaluate method counters to be taken', () => {
-    let board = [
-        [0, 2, 0, 2, 0, 2, 0, 2],
-        [2, 0, 2, 0, 2, 0, 2, 0],
-        [0, 2, 0, 2, 0, 2, 0, 2],
-        [5, 0, 1, 0, 5, 0, 5, 0],
-        [0, 5, 0, 5, 0, 5, 0, 5],
-        [1, 0, 1, 0, 1, 0, 5, 0],
-        [0, 1, 0, 1, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 1, 0],
-    ];
-
-    let result = evaluate(board);
-
-    expect(result).toEqual(1);
-})
