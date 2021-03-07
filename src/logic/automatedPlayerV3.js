@@ -38,42 +38,50 @@ function evaluate(board) {
     let player1TakeMoves = GetPiecesTaken(FindAvailableMoves(board, 1));
     let player2TakeMoves = GetPiecesTaken(FindAvailableMoves(board, 2));
 
-    // 1 point: If the king can be taken
-    // 2 points: If the single piece can be taken
-    // 3 points: If the single piece cant be taken
-    // 4 points: If king can't be taken
+    const numberOfRows = 7;
+    const kingBonusPoints = 2;
+
+    //Spaces in between points to differentiate between pieces
+    // 2 point: If the king can be taken
+    // 4 points: If the single piece can be taken
+    // 6 points: If the single piece cant be taken
+    // 8 points: If king can't be taken
+
+    // Award points based on the row the piece is on, more points a piece gets the further the piece travels
+    // Kings get points for the number of rows on the board plus 2
+
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
             if (board[i][j] === 1) {
                 if (CanPieceBeTaken(player2TakeMoves, i, j)) {
-                    player1Counter = player1Counter + 2;
+                    player1Counter = player1Counter + 4 + (numberOfRows - i);
                 }
                 else {
-                    player1Counter = player1Counter + 3;
+                    player1Counter = player1Counter + 6 + (numberOfRows - i);
                 }
             }
             else if (board[i][j] === 2) {
                 if (CanPieceBeTaken(player1TakeMoves, i, j)) {
-                    player2Counter = player2Counter + 2;
+                    player2Counter = player2Counter + 4 + i;
                 }
                 else {
-                    player2Counter = player2Counter + 3;
+                    player2Counter = player2Counter + 6 + i;
                 }
             }
             else if (board[i][j] === 3) {
                 if (CanPieceBeTaken(player2TakeMoves, i, j)) {
-                    player1Counter = player1Counter + 1;
+                    player1Counter = player1Counter + 2 + numberOfRows + kingBonusPoints;
                 }
                 else {
-                    player1Counter = player1Counter + 4;
+                    player1Counter = player1Counter + 8 + numberOfRows + kingBonusPoints;
                 }
             }
             else if (board[i][j] === 4) {
                 if (CanPieceBeTaken(player1TakeMoves, i, j)) {
-                    player2Counter = player2Counter + 1;
+                    player2Counter = player2Counter + 2 + numberOfRows + kingBonusPoints;
                 }
                 else {
-                    player2Counter = player2Counter + 4;
+                    player2Counter = player2Counter + 8 + numberOfRows + kingBonusPoints;
                 }
             }
         }
