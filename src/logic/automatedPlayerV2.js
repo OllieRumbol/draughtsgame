@@ -37,7 +37,7 @@ function evaluate(board) {
     let player2Counter = 0;
 
     for (let i = 0; i < board.length; i++) {
-        for (let j = 0; j < board[i].length; j++) {
+        for (let j = i % 2 === 1 ? 0 : 1; j < board[i].length; j++) {
             if (board[i][j] === 1) {
                 player1Counter = player1Counter + 1;
             }

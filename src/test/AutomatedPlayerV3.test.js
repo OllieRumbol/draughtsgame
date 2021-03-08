@@ -2,15 +2,6 @@ import {
     minimax,
     evaluate,
     GetAvailableBoards,
-    FindAvailableTakeMoves,
-    checkKingTake,
-    checkTakeUp,
-    checkTakeDown,
-    FindAvailableMoves,
-    checkMoveDownRight,
-    checkMoveDownLeft,
-    checkMoveUpRight,
-    checkMoveUpLeft
 }
 
     from '../logic/automatedPlayerV3';
