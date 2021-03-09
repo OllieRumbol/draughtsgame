@@ -51,7 +51,7 @@ function evaluate(board) {
     // Kings get points for the number of rows on the board plus 2
 
     for (let i = 0; i < board.length; i++) {
-        for (let j = i % 2 === 1 ? 0 : 1; j < board[i].length; j++) {
+        for (let j = 1 - (i % 2); j < board[i].length; j++) {
             if (board[i][j] === 1) {
                 if (CanPieceBeTaken(player2TakeMoves, i, j)) {
                     player1Counter = player1Counter + 4 + (numberOfRows - i);
@@ -107,6 +107,8 @@ function CanPieceBeTaken(takes, height, width) {
     takes.forEach(element => {
         if (element.height === height && element.width === width) {
             result = true;
+            //break
+            return false;
         }
     });
 
