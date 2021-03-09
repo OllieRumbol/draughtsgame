@@ -304,7 +304,7 @@ export default function PcBoard(props) {
                 player2Move = automatedPlayerV2(counters, 4, true)[1];
             }
             else {
-                player2Move = automatedPlayerV3(counters, 2, true)[1];
+                player2Move = automatedPlayerV3(counters, 4, true)[1];
             }
 
             if (player2Move !== null && player2Move !== {} && player2Move !== undefined) {

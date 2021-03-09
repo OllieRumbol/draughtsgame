@@ -29,7 +29,7 @@ function FindAvailableMoves(board, player) {
     let results = [];
     for (let i = 0; i < board.length; i++) {
         // Skip over pieces that cant be player
-        for (let j = i % 2 === 1 ? 0 : 1; j < board[i].length; j += 2) {
+        for (let j = 1 - (i % 2); j < board[i].length; j += 2) {
             let piece = board[i][j]
             if (piece === 1 && player === 1) {
                 if (checkMoveUpLeft(board, i, j)) {
