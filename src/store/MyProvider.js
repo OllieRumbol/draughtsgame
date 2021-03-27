@@ -17,6 +17,9 @@ export default function MyProvider(props) {
   //Player 2: false
   const [whoGoesFirst, setWhoGoesFirst] = useState(true);
 
+  const [displayErrorMessage, setDisplayErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handlePcOr2PlayerChange = (e) => {
     setPcOr2Player(e.target.value === "true");
     if (e.target.value === "false") {
@@ -40,7 +43,11 @@ export default function MyProvider(props) {
       handleDifficulty: handleDifficulty,
       whoGoesFirst: whoGoesFirst,
       setWhoGoesFirst: setWhoGoesFirst,
-      handleWhoGoesFirstChange: handleWhoGoesFirstChange
+      handleWhoGoesFirstChange: handleWhoGoesFirstChange,
+      displayErrorMessage : displayErrorMessage,
+      setDisplayErrorMessage: setDisplayErrorMessage,
+      errorMessage: errorMessage,
+      setErrorMessage: setErrorMessage
     }}>
       {props.children}
     </MyContext.Provider>
