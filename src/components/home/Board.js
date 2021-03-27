@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Square from './Square';
 import JumpModal from './JumpModal';
 import InvalidMoveModal from './InvalidMoveModal';
@@ -7,6 +7,8 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import '../../style/Board.css';
 import { findPlayerMoves } from '../../logic/playerTips';
+import { GetPlayerTips } from '../../logic/api';
+import { MyContext } from '../../store/MyProvider';
 
 export default function Board(props) {
     //0 - Counter is never there
@@ -43,6 +45,8 @@ export default function Board(props) {
     const [listOfMoves, setListOfMoves] = useState([]);
 
     const [showInvalidMoveModal, setShowInvalidMoveModal] = useState(false);
+
+    const context = useContext(MyContext);
 
     function renderSquares() {
         return counters.map((row, index) => {
@@ -114,33 +118,34 @@ export default function Board(props) {
         setSquares(renderSquares());
     }
 
-    function displayTips() {
-        if (props.turn === true) {
-            let res = findPlayerMoves(counters, 1);
-            res.forEach(element => {
-                counters[element.height][element.width] = 6;
+    function displayTips(player) {
+        try {
+            GetPlayerTips(counters, player).then(res => {
+                res.forEach(element => {
+                    counters[element.height][element.width] = 6;
+                });
+
+                setCounters(counters);
+                setSquares(renderSquares());
             });
         }
-        else if (props.turn === false) {
-            let res = findPlayerMoves(counters, 2);
-            res.forEach(element => {
-                counters[element.height][element.width] = 6;
-            });
+        catch (error) {
+            console.log(error);
+            context.setErrorMessage(error);
+            context.setDisplayErrorMessage(true);
         }
     }
 
     function showPlayerTips() {
         if (showTips) {
-            displayTips();
+            let player = props.turn === true ? 1 : 2;
+            displayTips(player);
             setShowTips(false);
         }
         else {
             clearTips();
             setShowTips(true);
         }
-
-        setCounters(counters);
-        setSquares(renderSquares());
     }
 
     function noOneCanMoveCheck() {
