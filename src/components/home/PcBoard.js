@@ -303,7 +303,7 @@ export default function PcBoard(props) {
     function player2Go() {
         setTimeout(() => {
             let version = context.difficulty;
-            let depth = context.difficulty === 1 ? 0 : 6;
+            let depth = context.difficulty === 1 ? 0 : 5;
             try {
                 GetAutomatedPlayerNextMove(version, counters, depth).then(res => {
                     if (res.takes !== []) {
