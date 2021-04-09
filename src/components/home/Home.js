@@ -8,6 +8,7 @@ import Players from '../home/Players';
 import Pieces from '../home/Pieces';
 import PiecesTaken from '../home/PiecesTaken';
 import ResultModal from '../home/ResultModal';
+import AlertBox from '../shared/AlertBox';
 import { MyContext } from '../../store/MyProvider';
 
 export default function Home(props) {
@@ -40,6 +41,7 @@ export default function Home(props) {
 
     return (
         <Row>
+            { context.displayErrorMessage && <AlertBox title='Error connecting to external resources' end='Please check you connection. Further problems please contact support'/> }
             <ResultModal show={showResultModal} update={setShowResultModal} title={resultsModalTitle} message={resultsModalMessage}></ResultModal>
             <Col xl="1"></Col>
             <Col xl="7">

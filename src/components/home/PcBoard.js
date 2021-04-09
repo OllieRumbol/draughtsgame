@@ -7,10 +7,8 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { findPlayerMoves } from '../../logic/playerTips';
-import { pickMoveForPlayer2 } from '../../logic/automatedPlayerV1';
-import { minimax as automatedPlayerV2 } from '../../logic/automatedPlayerV2';
-import { minimax as automatedPlayerV3 } from '../../logic/automatedPlayerV3';
 import { MyContext } from '../../store/MyProvider';
+import { GetAutomatedPlayerNextMove, GetPlayerTips } from '../../logic/api';
 
 export default function PcBoard(props) {
     //0 - Counter is never there
@@ -145,10 +143,21 @@ export default function PcBoard(props) {
 
     function displayTips() {
         if (props.turn === true) {
-            let res = findPlayerMoves(counters, 1);
-            res.forEach(element => {
-                counters[element.height][element.width] = 6;
-            });
+            try {
+                GetPlayerTips(counters, 1).then(res => {
+                    res.forEach(element => {
+                        counters[element.height][element.width] = 6;
+                    });
+
+                    setCounters(counters);
+                    setSquares(renderSquares());
+                });
+            }
+            catch (error) {
+                console.log(error);
+                context.setErrorMessage(error);
+                context.setDisplayErrorMessage(true);
+            }
         }
     }
 
@@ -162,9 +171,6 @@ export default function PcBoard(props) {
                 clearTips();
                 setShowTips(true);
             }
-
-            setCounters(counters);
-            setSquares(renderSquares());
         }
     }
 
@@ -296,43 +302,41 @@ export default function PcBoard(props) {
 
     function player2Go() {
         setTimeout(() => {
-            let player2Move;
-            if (context.difficulty === 1) {
-                player2Move = pickMoveForPlayer2(counters);
-            }
-            else if (context.difficulty === 2) {
-                player2Move = automatedPlayerV2(counters, 4, true)[1];
-            }
-            else {
-                player2Move = automatedPlayerV3(counters, 4, true)[1];
-            }
+            let version = context.difficulty;
+            let depth = context.difficulty === 1 ? 0 : 5;
+            try {
+                GetAutomatedPlayerNextMove(version, counters, depth).then(res => {
+                    if (res.takes !== []) {
+                        res.takes.forEach(element => {
+                            counters[element.height][element.width] = 5;
+                        });
+                        props.setPlayer1Counter(props.player1Counter + res.takes.length);
+                    }
 
-            if (player2Move !== null && player2Move !== {} && player2Move !== undefined) {
-                if (player2Move.takes.length !== 0) {
-                    player2Move.takes.forEach(element => {
-                        counters[element.height][element.width] = 5;
-                    });
-                    props.setPlayer1Counter(props.player1Counter + player2Move.takes.length);
-                }
+                    let tempValue = counters[res.currentHeight][res.currentWidth];
+                    counters[res.currentHeight][res.currentWidth] = 5;
+                    counters[res.nextHeight][res.nextWidth] = tempValue;
 
-                let tempValue = counters[player2Move.currentHeight][player2Move.currentWidth];
-                counters[player2Move.currentHeight][player2Move.currentWidth] = 5;
-                counters[player2Move.nextHeight][player2Move.nextWidth] = tempValue;
+                    if (res.nextHeight === 7) {
+                        counters[res.nextHeight][res.nextWidth] = 4;
+                    }
 
-                if (player2Move.nextHeight === 7) {
-                    counters[player2Move.nextHeight][player2Move.nextWidth] = 4;
-                }
-
-                setCounters(counters);
-                setSquares(renderSquares());
-                props.setTurn(true);
-                noOneCanMoveCheck();
+                    setCounters(counters);
+                    setSquares(renderSquares());
+                    props.setTurn(true);
+                    noOneCanMoveCheck();
+                });
             }
-        }, 500)
+            catch (error) {
+                console.log(error);
+                context.setErrorMessage();
+                context.setDisplayErrorMessage(true);
+            }
+        }, 100);
     }
 
-    function giveUp(){
-        if(props.turn === true){
+    function giveUp() {
+        if (props.turn === true) {
             props.setResultsModalTitle("Player 2 wins");
             props.setResultsModalMessage("Player 1 has given up on the game.");
             props.setShowResultModal(true);
@@ -421,7 +425,7 @@ export default function PcBoard(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JumpModalValue, props])
 
-    if(context.whoGoesFirst === false){
+    if (context.whoGoesFirst === false) {
         player2Go();
         context.setWhoGoesFirst(null);
     }
