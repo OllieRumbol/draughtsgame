@@ -29,6 +29,7 @@ export default function Board(props) {
         [1, 0, 1, 0, 1, 0, 1, 0],
     ];
 
+    // eslint-disable-next-line
     const [counters, setCounters] = useState(start);
     const [counterToMove, setCounterToMove] = useState(null);
     const [squareToMoveTo, setSquareToMoveTo] = useState(null);
