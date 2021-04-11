@@ -14,11 +14,9 @@ import { MyContext } from '../../store/MyProvider';
 export default function Home(props) {
     const [player1Counter, setPlayer1Counter] = useState(0);
     const [player2Counter, setPlayer2Counter] = useState(0);
-
     const [showResultModal, setShowResultModal] = useState(false);
     const [resultsModalTitle, setResultsModalTitle] = useState("");
     const [resultsModalMessage, setResultsModalMessage] = useState("");
-
     const context = useContext(MyContext);
 
     //Player 1 - true

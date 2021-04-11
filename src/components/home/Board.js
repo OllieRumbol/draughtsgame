@@ -5,10 +5,10 @@ import InvalidMoveModal from './InvalidMoveModal';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import '../../style/Board.css';
 import { findPlayerMoves } from '../../logic/playerTips';
 import { GetPlayerTips } from '../../logic/api';
 import { MyContext } from '../../store/MyProvider';
+import '../../style/Board.css';
 
 export default function Board(props) {
     //0 - Counter is never there
@@ -30,23 +30,17 @@ export default function Board(props) {
     ];
 
     const [counters, setCounters] = useState(start);
-
     const [counterToMove, setCounterToMove] = useState(null);
     const [squareToMoveTo, setSquareToMoveTo] = useState(null);
-
     const [showTips, setShowTips] = useState(true);
-    let tipButtonText = showTips ? "Show player tips" : "Hide player tips";
-
     const [squares, setSquares] = useState(renderSquares());
-
     const [showJumpModal, setShowJumpModal] = useState(false);
     const [JumpModalValue, setJumpModalValue] = useState(false);
-
     const [listOfMoves, setListOfMoves] = useState([]);
-
     const [showInvalidMoveModal, setShowInvalidMoveModal] = useState(false);
-
     const context = useContext(MyContext);
+
+    let tipButtonText = showTips ? "Show player tips" : "Hide player tips";
 
     function renderSquares() {
         return counters.map((row, index) => {
@@ -66,7 +60,6 @@ export default function Board(props) {
         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
         kingMeCheck();
-        setCounters(counters);
         setSquares(renderSquares());
         props.setTurn(!props.turn);
     }
@@ -85,7 +78,6 @@ export default function Board(props) {
         counters[res][res2] = 5;
 
         kingMeCheck();
-        setCounters(counters);
         setSquares(renderSquares());
         props.setTurn(!props.turn);
     }
@@ -114,7 +106,6 @@ export default function Board(props) {
             }
         }
 
-        setCounters(counters);
         setSquares(renderSquares());
     }
 
@@ -125,7 +116,6 @@ export default function Board(props) {
                     counters[element.height][element.width] = 6;
                 });
 
-                setCounters(counters);
                 setSquares(renderSquares());
             });
         }
@@ -295,7 +285,7 @@ export default function Board(props) {
             }
         }
 
-        return counter
+        return counter;
     }
 
     function giveUp() {

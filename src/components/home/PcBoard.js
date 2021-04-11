@@ -30,24 +30,17 @@ export default function PcBoard(props) {
     ];
 
     const [counters, setCounters] = useState(start);
-
     const [counterToMove, setCounterToMove] = useState(null);
     const [squareToMoveTo, setSquareToMoveTo] = useState(null);
-
     const [showTips, setShowTips] = useState(true);
-    let tipButtonText = showTips ? "Show player tips" : "Hide player tips";
-
     const [squares, setSquares] = useState(renderSquares());
-
     const [showJumpModal, setShowJumpModal] = useState(false);
     const [JumpModalValue, setJumpModalValue] = useState(null);
-
     const [listOfMoves, setListOfMoves] = useState([]);
-
     const context = useContext(MyContext);
-
     const [showInvalidMoveModal, setShowInvalidMoveModal] = useState(false);
 
+    let tipButtonText = showTips ? "Show player tips" : "Hide player tips";
     let mode = context.difficulty === 1 ? "Easy" : context.difficulty === 2 ? "Medium" : "Hard"
 
     function renderSquares() {
@@ -78,7 +71,6 @@ export default function PcBoard(props) {
         counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
         kingMeCheck();
-        setCounters(counters);
         setSquares(renderSquares());
         props.setTurn(false);
     }
@@ -114,7 +106,6 @@ export default function PcBoard(props) {
         counters[res][res2] = 5;
 
         kingMeCheck();
-        setCounters(counters);
         setSquares(renderSquares());
         props.setTurn(false);
     }
@@ -137,7 +128,6 @@ export default function PcBoard(props) {
             }
         }
 
-        setCounters(counters);
         setSquares(renderSquares());
     }
 
@@ -149,7 +139,6 @@ export default function PcBoard(props) {
                         counters[element.height][element.width] = 6;
                     });
 
-                    setCounters(counters);
                     setSquares(renderSquares());
                 });
             }
@@ -321,7 +310,6 @@ export default function PcBoard(props) {
                         counters[res.nextHeight][res.nextWidth] = 4;
                     }
 
-                    setCounters(counters);
                     setSquares(renderSquares());
                     props.setTurn(true);
                     noOneCanMoveCheck();

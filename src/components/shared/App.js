@@ -27,7 +27,7 @@ export default function App() {
               </div>
               <br></br>
               <div className="d-flex justify-content-center">
-                <h4>A draughts game built in react js</h4>
+                <h4>A draughts game built using React and Azure functions</h4>
               </div>
               <hr className="my-4"></hr>
               <ButtonToolbar className="d-flex justify-content-center">
