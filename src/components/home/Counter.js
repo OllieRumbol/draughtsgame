@@ -1,5 +1,5 @@
-import '../../style/Counter.css';
 import { useOutsideAlerter } from '../../hooks/useOutsideAlerter';
+import '../../style/Counter.css';
 
 export default function Counter(props) {
     const { visible, ref } = useOutsideAlerter();
@@ -12,7 +12,7 @@ export default function Counter(props) {
     const width = props.x
     const setCounterToMove = props.setCounterToMove;
 
-    let click= () => {
+    let click = () => {
         setCounterToMove({ state: state, height: height, width: width });
     }
 
@@ -23,7 +23,7 @@ export default function Counter(props) {
     }
     else if (props.state === 2) {
         return (
-            <div ref={ref} className={player2Css}onClick={click}></div>
+            <div ref={ref} className={player2Css} onClick={click}></div>
         )
     }
     else if (props.state === 3) {

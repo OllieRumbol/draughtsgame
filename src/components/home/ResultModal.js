@@ -1,7 +1,6 @@
 import React from "react";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function ResultModal(props) {
     const handleClose = () => props.update(false);
@@ -16,12 +15,8 @@ export default function ResultModal(props) {
                 </Modal.Header>
                 <Modal.Body>{props.message}</Modal.Body>
                 <Modal.Footer>
-                    <Button variant="danger" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="success" onClick={handleRestart}>
-                        Restart
-                    </Button>
+                    <Button variant="danger" onClick={handleClose}>Close</Button>
+                    <Button variant="success" onClick={handleRestart}>Restart</Button>
                 </Modal.Footer>
             </Modal>
         </div>

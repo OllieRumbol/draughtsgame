@@ -1,6 +1,5 @@
 import React from "react";
 import Card from 'react-bootstrap/Card';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function DisplayCard(props) {
 
