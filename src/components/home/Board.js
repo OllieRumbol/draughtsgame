@@ -110,15 +110,15 @@ export default function Board(props) {
         setSquares(renderSquares());
     }
 
-    function displayTips(player) {
+    async function displayTips(player) {
         try {
-            GetPlayerTips(counters, player).then(res => {
-                res.forEach(element => {
-                    counters[element.height][element.width] = 6;
-                });
+            const tips = await GetPlayerTips(counters, player);
 
-                setSquares(renderSquares());
+            tips.forEach(element => {
+                counters[element.height][element.width] = 6;
             });
+
+            setSquares(renderSquares());
         }
         catch (error) {
             console.log(error);
@@ -127,10 +127,10 @@ export default function Board(props) {
         }
     }
 
-    function showPlayerTips() {
+    async function showPlayerTips() {
         if (showTips) {
             let player = props.turn === true ? 1 : 2;
-            displayTips(player);
+            await displayTips(player);
             setShowTips(false);
         }
         else {
@@ -294,7 +294,7 @@ export default function Board(props) {
             props.setResultsModalTitle("Player 2 wins");
             props.setResultsModalMessage("Player 1 has given up on the game.");
         }
-        else{
+        else {
             props.setResultsModalTitle("Player 1 wins");
             props.setResultsModalMessage("Player 2 has given up on the game.");
         }

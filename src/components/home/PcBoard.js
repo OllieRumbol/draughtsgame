@@ -132,16 +132,16 @@ export default function PcBoard(props) {
         setSquares(renderSquares());
     }
 
-    function displayTips() {
+    async function displayTips() {
         if (props.turn === true) {
             try {
-                GetPlayerTips(counters, 1).then(res => {
-                    res.forEach(element => {
-                        counters[element.height][element.width] = 6;
-                    });
+                const tips = await GetPlayerTips(counters, 1);
 
-                    setSquares(renderSquares());
+                tips.forEach(element => {
+                    counters[element.height][element.width] = 6;
                 });
+
+                setSquares(renderSquares());
             }
             catch (error) {
                 console.log(error);
@@ -151,10 +151,10 @@ export default function PcBoard(props) {
         }
     }
 
-    function showPlayerTips() {
+    async function showPlayerTips() {
         if (props.turn) {
             if (showTips) {
-                displayTips();
+                await displayTips();
                 setShowTips(false);
             }
             else {
@@ -290,31 +290,31 @@ export default function PcBoard(props) {
         return counter
     }
 
-    function player2Go() {
-        setTimeout(() => {
+    async function player2Go() {
+        setTimeout(async () => {
             let version = context.difficulty;
             let depth = context.difficulty === 1 ? 0 : 5;
             try {
-                GetAutomatedPlayerNextMove(version, counters, depth).then(res => {
-                    if (res.takes !== []) {
-                        res.takes.forEach(element => {
-                            counters[element.height][element.width] = 5;
-                        });
-                        props.setPlayer1Counter(props.player1Counter + res.takes.length);
-                    }
+                const result = await GetAutomatedPlayerNextMove(version, counters, depth);
 
-                    let tempValue = counters[res.currentHeight][res.currentWidth];
-                    counters[res.currentHeight][res.currentWidth] = 5;
-                    counters[res.nextHeight][res.nextWidth] = tempValue;
+                if (result.takes !== []) {
+                    result.takes.forEach(element => {
+                        counters[element.height][element.width] = 5;
+                    });
+                    props.setPlayer1Counter(props.player1Counter + result.takes.length);
+                }
 
-                    if (res.nextHeight === 7) {
-                        counters[res.nextHeight][res.nextWidth] = 4;
-                    }
+                let tempValue = counters[result.currentHeight][result.currentWidth];
+                counters[result.currentHeight][result.currentWidth] = 5;
+                counters[result.nextHeight][result.nextWidth] = tempValue;
 
-                    setSquares(renderSquares());
-                    props.setTurn(true);
-                    noOneCanMoveCheck();
-                });
+                if (result.nextHeight === 7) {
+                    counters[result.nextHeight][result.nextWidth] = 4;
+                }
+
+                setSquares(renderSquares());
+                props.setTurn(true);
+                noOneCanMoveCheck();
             }
             catch (error) {
                 console.log(error);
@@ -333,91 +333,103 @@ export default function PcBoard(props) {
     }
 
     useEffect(() => {
-        let player2ToGoNext = true;
-        let validMove = false;
-        //Player1 
-        if (props.turn) {
-            if (counterToMove != null && squareToMoveTo != null) {
-                if (counterToMove.state === 1) {
-                    let canTake = checkTakeCounter(-2, 2);
-                    if (canTake.result) {
-                        saveBoard();
-                        takeCounter(canTake.height, canTake.width);
-                        validMove = true;
-                        if (checkToJumpUpAgain(2)) {
-                            player2ToGoNext = false;
-                            setShowJumpModal(true);
+        async function game(){
+            let player2ToGoNext = true;
+            let validMove = false;
+            //Player1 
+            if (props.turn) {
+                if (counterToMove != null && squareToMoveTo != null) {
+                    if (counterToMove.state === 1) {
+                        let canTake = checkTakeCounter(-2, 2);
+                        if (canTake.result) {
+                            saveBoard();
+                            takeCounter(canTake.height, canTake.width);
+                            validMove = true;
+                            if (checkToJumpUpAgain(2)) {
+                                player2ToGoNext = false;
+                                setShowJumpModal(true);
+                            }
                         }
-                    }
-                    else if (checkMoveCounter(-1)) {
-                        saveBoard();
-                        moveCounter();
-                        validMove = true;
-                    }
-                }
-                else if (counterToMove.state === 3) {
-                    if (counterToMove.height - 1 === squareToMoveTo.height || counterToMove.height + 1 === squareToMoveTo.height) {
-                        if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
+                        else if (checkMoveCounter(-1)) {
                             saveBoard();
                             moveCounter();
                             validMove = true;
                         }
                     }
-                    else if (counterToMove.height - 2 === squareToMoveTo.height || counterToMove.height + 2 === squareToMoveTo.height) {
-                        if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
-                            let res = (squareToMoveTo.height + counterToMove.height) / 2;
-                            let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
-                            //Player 1 king takes player 2
-                            if (counters[res][res2] === 2 || counters[res][res2] === 4) {
+                    else if (counterToMove.state === 3) {
+                        if (counterToMove.height - 1 === squareToMoveTo.height || counterToMove.height + 1 === squareToMoveTo.height) {
+                            if (counterToMove.width - 1 === squareToMoveTo.width || counterToMove.width + 1 === squareToMoveTo.width) {
                                 saveBoard();
-                                takeCounter(res, res2);
+                                moveCounter();
                                 validMove = true;
-                                if (checkToJumpUpAgain(2) || checkToJumpUpAgain(4) || checkToJumpDownAgain(2) || checkToJumpDownAgain(4)) {
-                                    player2ToGoNext = false;
-                                    setShowJumpModal(true);
+                            }
+                        }
+                        else if (counterToMove.height - 2 === squareToMoveTo.height || counterToMove.height + 2 === squareToMoveTo.height) {
+                            if (counterToMove.width - 2 === squareToMoveTo.width || counterToMove.width + 2 === squareToMoveTo.width) {
+                                let res = (squareToMoveTo.height + counterToMove.height) / 2;
+                                let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
+                                //Player 1 king takes player 2
+                                if (counters[res][res2] === 2 || counters[res][res2] === 4) {
+                                    saveBoard();
+                                    takeCounter(res, res2);
+                                    validMove = true;
+                                    if (checkToJumpUpAgain(2) || checkToJumpUpAgain(4) || checkToJumpDownAgain(2) || checkToJumpDownAgain(4)) {
+                                        player2ToGoNext = false;
+                                        setShowJumpModal(true);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-
-                clearTips();
-                setShowTips(true);
-                setCounterToMove(null);
-                setSquareToMoveTo(null);
-
-                let result = noOneCanMoveCheck();
-                if (result) {
-                    player2ToGoNext = false;
-                }
-
-                if (player2ToGoNext && validMove) {
-                    player2Go();
-                }
-                else if (validMove === false) {
-                    setShowInvalidMoveModal(true);
+    
+                    clearTips();
+                    setShowTips(true);
+                    setCounterToMove(null);
+                    setSquareToMoveTo(null);
+    
+                    let result = noOneCanMoveCheck();
+                    if (result) {
+                        player2ToGoNext = false;
+                    }
+    
+                    if (player2ToGoNext && validMove) {
+                        await player2Go();
+                    }
+                    else if (validMove === false) {
+                        setShowInvalidMoveModal(true);
+                    }
                 }
             }
         }
+
+        game()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [squareToMoveTo, counterToMove, counters])
 
     useEffect(() => {
-        if (JumpModalValue) {
-            props.setTurn(true);
-            setJumpModalValue(null);
+        async function multipleJumps(){
+            if (JumpModalValue) {
+                props.setTurn(true);
+                setJumpModalValue(null);
+            }
+            else if (JumpModalValue === false) {
+                await player2Go();
+                setJumpModalValue(null);
+            }
         }
-        else if (JumpModalValue === false) {
-            player2Go();
-            setJumpModalValue(null);
-        }
+
+        multipleJumps()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JumpModalValue, props])
 
-    if (context.whoGoesFirst === false) {
-        player2Go();
-        context.setWhoGoesFirst(null);
+    async function player2GoesFirst(){
+        if (context.whoGoesFirst === false) {
+            await player2Go();
+            context.setWhoGoesFirst(null);
+        }
     }
+
+    player2GoesFirst();
 
     return (
         <Container fluid>
