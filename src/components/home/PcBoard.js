@@ -9,28 +9,10 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { findPlayerMoves } from '../../logic/playerTips';
 import { MyContext } from '../../store/MyProvider';
 import { GetAutomatedPlayerNextMove, GetPlayerTips } from '../../logic/api';
+import { startingBoard } from '../../logic/boardLib';
 
 export default function PcBoard(props) {
-    //0 - Counter is never there
-    //1 - Player 1 Counter 
-    //2 - Player 2 Counter
-    //3 - Player 1 King Counter
-    //4 - Player 2 King Counter
-    //5 - Playable space
-    //6 - Show player tip
-    const start = [
-        [0, 2, 0, 2, 0, 2, 0, 2],
-        [2, 0, 2, 0, 2, 0, 2, 0],
-        [0, 2, 0, 2, 0, 2, 0, 2],
-        [5, 0, 5, 0, 5, 0, 5, 0],
-        [0, 5, 0, 5, 0, 5, 0, 5],
-        [1, 0, 1, 0, 1, 0, 1, 0],
-        [0, 1, 0, 1, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 1, 0],
-    ];
-
-    // eslint-disable-next-line
-    const [counters, setCounters] = useState(start);
+    const [counters] = useState(startingBoard);
     const [counterToMove, setCounterToMove] = useState(null);
     const [squareToMoveTo, setSquareToMoveTo] = useState(null);
     const [showTips, setShowTips] = useState(true);
@@ -112,7 +94,6 @@ export default function PcBoard(props) {
     }
 
     function kingMeCheck() {
-        //Player 1 check
         if (counterToMove.state === 1) {
             if (squareToMoveTo.height === 0) {
                 counters[squareToMoveTo.height][squareToMoveTo.width] = 3;
@@ -295,6 +276,7 @@ export default function PcBoard(props) {
             let version = context.difficulty;
             let depth = context.difficulty === 1 ? 0 : 5;
             try {
+                console.log(counters)
                 const result = await GetAutomatedPlayerNextMove(version, counters, depth);
 
                 if (result.takes !== []) {

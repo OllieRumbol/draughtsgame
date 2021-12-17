@@ -8,33 +8,15 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { findPlayerMoves } from '../../logic/playerTips';
 import { GetPlayerTips } from '../../logic/api';
 import { MyContext } from '../../store/MyProvider';
+import { startingBoard } from '../../logic/boardLib';
 import '../../style/Board.css';
 
 export default function Board(props) {
-    //0 - Counter is never there
-    //1 - Player 1 Counter 
-    //2 - Player 2 Counter
-    //3 - Player 1 King Counter
-    //4 - Player 2 King Counter
-    //5 - Playable space
-    //6 - Show player tip
-    const start = [
-        [0, 2, 0, 2, 0, 2, 0, 2],
-        [2, 0, 2, 0, 2, 0, 2, 0],
-        [0, 2, 0, 2, 0, 2, 0, 2],
-        [5, 0, 5, 0, 5, 0, 5, 0],
-        [0, 5, 0, 5, 0, 5, 0, 5],
-        [1, 0, 1, 0, 1, 0, 1, 0],
-        [0, 1, 0, 1, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 1, 0],
-    ];
-
-    // eslint-disable-next-line
-    const [counters, setCounters] = useState(start);
+    const [counters] = useState(startingBoard);
     const [counterToMove, setCounterToMove] = useState(null);
     const [squareToMoveTo, setSquareToMoveTo] = useState(null);
-    const [showTips, setShowTips] = useState(true);
     const [squares, setSquares] = useState(renderSquares());
+    const [showTips, setShowTips] = useState(true);
     const [showJumpModal, setShowJumpModal] = useState(false);
     const [JumpModalValue, setJumpModalValue] = useState(false);
     const [listOfMoves, setListOfMoves] = useState([]);
