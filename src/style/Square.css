@@ -41,6 +41,10 @@
   background-color: #555;
 }
 
+.white {
+  background-color: whitesmoke;
+}
+
 .tip {
   background-color: #ffdc00;
 }

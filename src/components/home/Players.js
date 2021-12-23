@@ -1,24 +1,20 @@
 import React from "react";
-import '../../style/Counter.css';
+import "../../style/Counter.css";
 
 export default function Players(props) {
   return (
-    <div>
+    <div className="d-flex justify-content-center">
       <div
-        className={
-          "ms-4 circle2 red center" + (props.turn === true ? " yellow" : "")
-        }
+        className={"circle red" + (props.turn === true ? " yellow" : "")}
       ></div>
-      <h3 className="p-4">Player 1</h3>
+      <h4 className="p-4">Player 1</h4>
 
       <br></br>
 
       <div
-        className={
-          "ms-4 circle2 blue center" + (props.turn === false ? " yellow" : "")
-        }
+        className={"circle blue" + (props.turn === false ? " yellow" : "")}
       ></div>
-      <h3 className="p-4">Player 2</h3>
+      <h4 className="p-4">Player 2</h4>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import '../../style/Square.css';
 
 export default function Square(props) {
     const state = props.state;
-    const style = state === 6 ? "square tip" : state !== 0 ? "square black" : "square";
+    const style = state === 6 ? "square tip" : state !== 0 ? "square black" : "square white";
     const height = props.y;
     const width = props.x;
     const setSquareToMoveTo = props.setSquareToMoveTo;

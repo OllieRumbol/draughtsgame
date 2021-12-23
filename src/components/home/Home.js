@@ -53,7 +53,6 @@ export default function Home(props) {
         title={resultsModalTitle}
         message={resultsModalMessage}
       ></ResultModal>
-      <Col xl="1"></Col>
       <Col xl="7">
         {context.pcOr2Player === true ? (
           <PcBoard
@@ -82,7 +81,7 @@ export default function Home(props) {
         )}
         <br></br>
       </Col>
-      <Col xl="3">
+      <Col sm="12 "md="5">
         <DisplayCard
           title="Players"
           innerComponent={<Players turn={turn}></Players>}
@@ -104,7 +103,6 @@ export default function Home(props) {
         ></DisplayCard>
         <br></br>
       </Col>
-      <Col xl="1"></Col>
     </Row>
   );
 }

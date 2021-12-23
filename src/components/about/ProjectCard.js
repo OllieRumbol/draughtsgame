@@ -1,7 +1,7 @@
 import React from "react";
-import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
 import Col from "react-bootstrap/Col";
+import DisplayCard from "../shared/DisplayCard";
 
 export default function ProjectCard(props) {
   const { features, title, colour, status } = props;
@@ -12,18 +12,16 @@ export default function ProjectCard(props) {
 
   return (
     <Col>
-      <Card>
-        <Card.Body>
-          <Card.Header>
-            <h3>{title}</h3>
-          </Card.Header>
-          <Card.Text>
-            <h5>Features</h5>
+      <DisplayCard
+        title={title}
+        innerComponent={
+          <div>
+            <h3>Features</h3>
             <ul>{list}</ul>
-          </Card.Text>
-          <Alert variant={colour}>{status}</Alert>
-        </Card.Body>
-      </Card>
+            <Alert variant={colour}>{status}</Alert>
+          </div>
+        }
+      ></DisplayCard>
     </Col>
   );
 }
