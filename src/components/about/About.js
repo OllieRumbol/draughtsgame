@@ -12,15 +12,16 @@ export default function About() {
         <Col lg={10}>
           <h1>About</h1>
           <p>
-            This game was made in loving memory of my grandad, Ernest Rumbol. My
-            grandad taught me this game many years ago. Over the years we have
-            played thousands of games together. As I got older and understood
-            the game more, the more games I won. However, grandad still loved
-            playing even when he wiped the board clean because he lost the game
-            after the first move. We played with many different rule sets, his
-            favourite was forcing users to take a piece if available, I thought
-            the game was more tactical if you didn't. I hope that people play
-            this game with as much fun as we did.
+            This game was made in loving memory of my grandad, Ernest Rumbol,
+            who sadly past away in December of 2020. My grandad taught me this
+            game many years ago. Over the years we have played thousands of
+            games together. As I got older and understood the game more, the
+            more games I won. However, grandad still loved playing even when he
+            wiped the board clean because he lost the game after the first move.
+            We played with many different rule sets, his favourite was forcing
+            users to take a piece if available, I thought the game was more
+            tactical if you didn't. I hope that people play this game with as
+            much fun as we did. May my grandad rest in peace.
           </p>
 
           <h2>Technical information</h2>
@@ -229,6 +230,7 @@ export default function About() {
         </Col>
         <Col lg={1}></Col>
       </Row>
+      <br></br>
     </Container>
   );
 }

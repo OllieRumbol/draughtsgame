@@ -395,13 +395,13 @@ export default function Board(props) {
             </div>
 
             <ButtonToolbar className="d-flex justify-content-center mb-2">
-                <ButtonGroup className="ml-2 me-2 mb-4">
+                <ButtonGroup className="ml-3 me-3 mb-4">
                     <Button onClick={showPlayerTips} size="lg">{tipButtonText}</Button>
                 </ButtonGroup>
-                <ButtonGroup className="ml-2 me-2 mb-4">
+                <ButtonGroup className="ml-3 me-3 mb-4">
                     <Button onClick={undo} size="lg">Undo</Button>
                 </ButtonGroup>
-                <ButtonGroup className="ml-2 me-2 mb-4">
+                <ButtonGroup className="ml-3 me-3 mb-4">
                     <Button onClick={giveUp} variant="danger" size="lg">Give up</Button>
                 </ButtonGroup>
             </ButtonToolbar>

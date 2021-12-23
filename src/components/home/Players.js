@@ -5,20 +5,16 @@ export default function Players(props) {
   return (
     <div className="d-flex justify-content-center">
       <div
-        className={
-          "circle2 red" + (props.turn === true ? " yellow" : "")
-        }
+        className={"circle red" + (props.turn === true ? " yellow" : "")}
       ></div>
-      <h3 className="p-4">Player 1</h3>
+      <h4 className="p-4">Player 1</h4>
 
       <br></br>
 
       <div
-        className={
-          "circle2 blue" + (props.turn === false ? " yellow" : "")
-        }
+        className={"circle blue" + (props.turn === false ? " yellow" : "")}
       ></div>
-      <h3 className="p-4">Player 2</h3>
+      <h4 className="p-4">Player 2</h4>
     </div>
   );
 }
