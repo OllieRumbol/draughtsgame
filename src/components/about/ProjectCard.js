@@ -12,11 +12,11 @@ export default function ProjectCard(props) {
 
   return (
     <Col>
-      <Card>
+      <Card bg="dark" text="white">
+        <Card.Header className="text-center">
+          <h3>{title}</h3>
+        </Card.Header>
         <Card.Body>
-          <Card.Header>
-            <h3>{title}</h3>
-          </Card.Header>
           <Card.Text>
             <h5>Features</h5>
             <ul>{list}</ul>
