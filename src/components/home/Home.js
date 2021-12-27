@@ -53,7 +53,7 @@ export default function Home(props) {
         title={resultsModalTitle}
         message={resultsModalMessage}
       ></ResultModal>
-      <Col xl="7">
+      <Col>
         {context.pcOr2Player === true ? (
           <PcBoard
             player1Counter={player1Counter}
@@ -81,27 +81,32 @@ export default function Home(props) {
         )}
         <br></br>
       </Col>
-      <Col sm="12 "md="5">
-        <DisplayCard
-          title="Players"
-          innerComponent={<Players turn={turn}></Players>}
-        ></DisplayCard>
-        <br></br>
-        <DisplayCard
-          title="Pieces"
-          innerComponent={<Pieces></Pieces>}
-        ></DisplayCard>
-        <br></br>
-        <DisplayCard
-          title="Pieces Taken"
-          innerComponent={
-            <PiecesTaken
-              player1Counter={player1Counter}
-              player2Counter={player2Counter}
-            ></PiecesTaken>
-          }
-        ></DisplayCard>
-        <br></br>
+      <Col>
+        <Row>
+          <Col></Col>
+          <Col>
+            <DisplayCard
+              title="Players"
+              innerComponent={<Players turn={turn}></Players>}
+            ></DisplayCard>
+            <br></br>
+            <DisplayCard
+              title="Pieces"
+              innerComponent={<Pieces></Pieces>}
+            ></DisplayCard>
+            <br></br>
+            <DisplayCard
+              title="Pieces Taken"
+              innerComponent={
+                <PiecesTaken
+                  player1Counter={player1Counter}
+                  player2Counter={player2Counter}
+                ></PiecesTaken>
+              }
+            ></DisplayCard>
+          </Col>
+          <Col></Col>
+        </Row>
       </Col>
     </Row>
   );

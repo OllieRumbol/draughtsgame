@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
@@ -14,7 +13,6 @@ export default function GameSettings(props) {
   };
 
   return (
-    <Container fluid>
       <Row>
         <Col xl="1"></Col>
         <Col xl="10">
@@ -115,7 +113,5 @@ export default function GameSettings(props) {
         </Col>
         <Col xl="1"></Col>
       </Row>
-      <br></br>
-    </Container>
   );
 }

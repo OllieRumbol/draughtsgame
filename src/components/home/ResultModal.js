@@ -1,26 +1,29 @@
 import React from "react";
-import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import DisplayModal from "../shared/DisplayModal";
 
 export default function ResultModal(props) {
-  const handleClose = () => props.update(false);
+  const { title, show, message, update } = props;
 
+  const handleClose = () => update(false);
   const handleRestart = () => window.location.reload();
 
   return (
-    <Modal show={props.show} onHide={handleClose} backdrop="static">
-      <Modal.Header>
-        <Modal.Title>{props.title}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>{props.message}</Modal.Body>
-      <Modal.Footer>
-        <Button variant="danger" onClick={handleClose}>
-          Close
-        </Button>
-        <Button variant="success" onClick={handleRestart}>
-          Restart
-        </Button>
-      </Modal.Footer>
-    </Modal>
+    <DisplayModal
+      title={title}
+      show={show}
+      update={handleClose}
+      body={message}
+      innerComponent={
+        <div>
+          <Button variant="danger" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="success" onClick={handleRestart}>
+            Restart
+          </Button>
+        </div>
+      }
+    />
   );
 }
