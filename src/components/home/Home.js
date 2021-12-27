@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import DisplayCard from "../shared/DisplayCard";
 import Board from "./Board";
 import PcBoard from "./PcBoard";
@@ -53,7 +52,7 @@ export default function Home(props) {
         title={resultsModalTitle}
         message={resultsModalMessage}
       ></ResultModal>
-      <Col>
+      <div className="col col-xxl-7">
         {context.pcOr2Player === true ? (
           <PcBoard
             player1Counter={player1Counter}
@@ -80,11 +79,11 @@ export default function Home(props) {
           />
         )}
         <br></br>
-      </Col>
-      <Col>
+      </div>
+      <div className="col col-xxl-5">
         <Row>
-          <Col></Col>
-          <Col>
+          <div className="col col-md-2 col-lg-2 col-xxl-1"></div>
+          <div className="col col-md-8 col-lg-8 col-xxl-10">
             <DisplayCard
               title="Players"
               innerComponent={<Players turn={turn}></Players>}
@@ -104,10 +103,10 @@ export default function Home(props) {
                 ></PiecesTaken>
               }
             ></DisplayCard>
-          </Col>
-          <Col></Col>
+          </div>
+          <div className="col col-md-2 col-lg-2 col-xxl-1"></div>
         </Row>
-      </Col>
+      </div>
     </Row>
   );
 }
