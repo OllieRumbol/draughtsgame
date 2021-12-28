@@ -3,7 +3,7 @@ import "../../style/Counter.css";
 
 export default function Players(props) {
   return (
-    <div className="d-flex justify-content-center">
+    <div className="d-flex justify-content-around">
       <div
         className={"circle red" + (props.turn === true ? " yellow" : "")}
       ></div>

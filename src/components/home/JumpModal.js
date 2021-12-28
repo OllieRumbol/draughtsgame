@@ -1,6 +1,6 @@
 import React from "react";
-import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import DisplayModal from "../shared/DisplayModal";
 
 export default function ResultModal(props) {
   const handleClose = () => props.update(false);
@@ -16,22 +16,21 @@ export default function ResultModal(props) {
   };
 
   return (
-    <Modal show={props.show} onHide={handleClose} backdrop="static">
-      <Modal.Header closeButton>
-        <Modal.Title>Would you like to take again?</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        In draughts players can jump multiple times to take multiple pieces from
-        their opponent.
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="primary" onClick={handleYes}>
-          Yes
-        </Button>
-        <Button variant="primary" onClick={handleNo}>
-          No
-        </Button>
-      </Modal.Footer>
-    </Modal>
+    <DisplayModal
+      title="Would you like to take again?"
+      show={props.show}
+      update={handleClose}
+      body="In draughts players can jump multiple times to take multiple pieces from their opponent."
+      innerComponent={
+        <div>
+          <Button variant="primary" onClick={handleYes}>
+            Yes
+          </Button>
+          <Button variant="primary" onClick={handleNo}>
+            No
+          </Button>
+        </div>
+      }
+    />
   );
 }

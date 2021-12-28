@@ -3,7 +3,7 @@ import "../../style/Counter.css";
 
 export default function PiecesTaken(props) {
   return (
-    <div className="d-flex justify-content-center">
+    <div className="d-flex justify-content-around">
       <div className="circle red"></div>
       <h4 className="p-4">{props.player1Counter}</h4>
 
