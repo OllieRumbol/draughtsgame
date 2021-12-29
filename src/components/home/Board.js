@@ -453,7 +453,9 @@ export default function Board(props) {
   return (
     <div>
       <div className="d-flex justify-content-center mb-3">
-        <h2>2 Player Mode</h2>
+        <h2>
+          <span class="badge bg-dark">2 Player Mode</span>
+        </h2>
       </div>
 
       <ButtonToolbar className="d-flex justify-content-center mb-2">

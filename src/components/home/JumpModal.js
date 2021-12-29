@@ -1,4 +1,5 @@
 import React from "react";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Button from "react-bootstrap/Button";
 import DisplayModal from "../shared/DisplayModal";
 
@@ -23,12 +24,16 @@ export default function ResultModal(props) {
       body="In draughts players can jump multiple times to take multiple pieces from their opponent."
       innerComponent={
         <div>
-          <Button variant="primary" onClick={handleYes}>
-            Yes
-          </Button>
-          <Button variant="primary" onClick={handleNo}>
-            No
-          </Button>
+          <ButtonGroup className="me-3">
+            <Button variant="primary" onClick={handleYes}>
+              Yes
+            </Button>
+          </ButtonGroup>
+          <ButtonGroup className="ml-3">
+            <Button variant="primary" onClick={handleNo}>
+              No
+            </Button>
+          </ButtonGroup>
         </div>
       }
     />

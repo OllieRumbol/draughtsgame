@@ -474,7 +474,7 @@ export default function PcBoard(props) {
   return (
     <div>
       <div className="d-flex justify-content-center mb-3">
-        <h2>PC Mode: {mode}</h2>
+        <h2><span class="badge bg-dark">PC Mode: {mode}</span></h2>
       </div>
 
       <ButtonToolbar className="d-flex justify-content-center mb-2">

@@ -82,7 +82,6 @@ export default function Home(props) {
       </div>
       <div className="col col-xxl-5">
         <Row>
-          <div className="col col-md-2 col-lg-2 col-xxl-1"></div>
           <div className="col col-md-8 col-lg-8 col-xxl-10">
             <DisplayCard
               title="Players"
@@ -104,7 +103,6 @@ export default function Home(props) {
               }
             ></DisplayCard>
           </div>
-          <div className="col col-md-2 col-lg-2 col-xxl-1"></div>
         </Row>
       </div>
     </Row>
