@@ -414,7 +414,7 @@ export default function Board(props) {
     <div>
       <div className="d-flex justify-content-center mb-3">
         <h2>
-          <span class="badge bg-dark">2 Player Mode</span>
+          <span className="badge bg-dark">2 Player Mode</span>
         </h2>
       </div>
 
