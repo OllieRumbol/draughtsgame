@@ -17,11 +17,11 @@ export default function GameSettings(props) {
       <Col xl="1"></Col>
       <Col xl="10">
         <h1>
-          <span class="badge bg-dark">Game setup</span>
+          <span className="badge bg-dark">Game setup</span>
         </h1>
         <br></br>
         <h2 className="pb-2">
-          <span class="badge bg-dark">Opponents</span>
+          <span className="badge bg-dark">Opponents</span>
         </h2>
         <label className="radioContainer">
           <div className="topper">2 Player</div>
@@ -51,7 +51,7 @@ export default function GameSettings(props) {
           <div>
             <br></br>
             <h2 className="pb-2">
-              <span class="badge bg-dark">Diffcuilty</span>
+              <span className="badge bg-dark">Diffcuilty</span>
             </h2>
             <label className="radioContainer">
               <div className="topper">Easy</div>
@@ -91,7 +91,7 @@ export default function GameSettings(props) {
         )}
         <br></br>
         <h2 className="pb-2">
-          <span class="badge bg-dark">Who goes first?</span>
+          <span className="badge bg-dark">Who goes first?</span>
         </h2>
         <label className="radioContainer">
           <div className="topper">Player 1</div>

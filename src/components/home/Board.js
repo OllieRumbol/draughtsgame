@@ -15,7 +15,6 @@ export default function Board(props) {
   const [counters] = useState(startingBoard);
   const [counterToMove, setCounterToMove] = useState(null);
   const [squareToMoveTo, setSquareToMoveTo] = useState(null);
-  const [squares, setSquares] = useState(renderSquares());
   const [showTips, setShowTips] = useState(true);
   const [showJumpModal, setShowJumpModal] = useState(false);
   const [JumpModalValue, setJumpModalValue] = useState(false);
@@ -25,50 +24,27 @@ export default function Board(props) {
 
   let tipButtonText = showTips ? "Show player tips" : "Hide player tips";
 
-  function renderSquares() {
-    return counters.map((row, index) => {
-      let y = index;
-      return (
-        <tr key={y}>
-          {row.map((piece, index) => (
-            <td key={y + index} className="p-0">
-              <Square
-                state={piece}
-                y={y}
-                x={index}
-                setSquareToMoveTo={setSquareToMoveTo}
-                setCounterToMove={setCounterToMove}
-              ></Square>
-            </td>
-          ))}
-        </tr>
-      );
-    });
-  }
-
   function moveCounter() {
     counters[counterToMove.height][counterToMove.width] = 5;
     counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
     kingMeCheck();
-    setSquares(renderSquares());
     props.setTurn(!props.turn);
   }
 
-  function takeCounter(res, res2) {
+  function takeCounter(height, width) {
     counters[counterToMove.height][counterToMove.width] = 5;
     counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
-    if (counters[res][res2] === 1 || counters[res][res2] === 3) {
+    if (counters[height][width] === 1 || counters[height][width] === 3) {
       props.setPlayer1Counter(props.player1Counter + 1);
-    } else if (counters[res][res2] === 2 || counters[res][res2] === 4) {
+    } else if (counters[height][width] === 2 || counters[height][width] === 4) {
       props.setPlayer2Counter(props.player2Counter + 1);
     }
 
-    counters[res][res2] = 5;
+    counters[height][width] = 5;
 
     kingMeCheck();
-    setSquares(renderSquares());
     props.setTurn(!props.turn);
   }
 
@@ -95,8 +71,6 @@ export default function Board(props) {
         }
       }
     }
-
-    setSquares(renderSquares());
   }
 
   async function displayTips(player) {
@@ -106,8 +80,6 @@ export default function Board(props) {
       tips.forEach((element) => {
         counters[element.height][element.width] = 6;
       });
-
-      setSquares(renderSquares());
     } catch (error) {
       console.log(error);
       context.setErrorMessage(error);
@@ -277,7 +249,7 @@ export default function Board(props) {
       let piecesTakenPlayer2 = 12 - calculatePiecesTaken(2);
       props.setPlayer2Counter(piecesTakenPlayer2);
 
-      setSquares(renderSquares());
+      //setSquares(renderSquares());
     }
   }
 
@@ -320,112 +292,100 @@ export default function Board(props) {
     props.setShowResultModal(true);
   }
 
+  function singlePieceMove(
+    turn,
+    player,
+    playerToTake,
+    takeDirection,
+    moveDirection
+  ) {
+    let isValidMove = false;
+    if (props.turn === turn && counterToMove.state === player) {
+      let canTake = checkTakeCounter(takeDirection, playerToTake);
+      if (canTake.result) {
+        saveBoard();
+        takeCounter(canTake.height, canTake.width);
+        isValidMove = true;
+        if (checkToJumpUpAgain(playerToTake)) {
+          setShowJumpModal(true);
+        }
+      } else if (checkMoveCounter(moveDirection)) {
+        saveBoard();
+        moveCounter();
+        isValidMove = true;
+      }
+    }
+
+    return isValidMove;
+  }
+
+  function kingTakeMove(turn, king, singleToTake, kingToTake) {
+    let isValidMove = false;
+    let takeHeight = (squareToMoveTo.height + counterToMove.height) / 2;
+    let takeWidth = (squareToMoveTo.width + counterToMove.width) / 2;
+
+    if (props.turn === turn) {
+      if (
+        counterToMove.state === king &&
+        (counters[takeHeight][takeWidth] === singleToTake ||
+          counters[takeHeight][takeWidth] === kingToTake)
+      ) {
+        saveBoard();
+        takeCounter(takeHeight, takeWidth);
+        isValidMove = true;
+        if (
+          checkToJumpUpAgain(singleToTake) ||
+          checkToJumpUpAgain(kingToTake) ||
+          checkToJumpDownAgain(singleToTake) ||
+          checkToJumpDownAgain(kingToTake)
+        ) {
+          setShowJumpModal(true);
+        }
+      }
+    }
+
+    return isValidMove;
+  }
+
   useEffect(() => {
     if (counterToMove != null && squareToMoveTo != null) {
       let validMove = false;
-      //Player1
-      if (props.turn === true) {
-        if (counterToMove.state === 1) {
-          let canTake = checkTakeCounter(-2, 2);
-          if (canTake.result) {
-            saveBoard();
-            takeCounter(canTake.height, canTake.width);
-            validMove = true;
-            if (checkToJumpUpAgain(2)) {
-              setShowJumpModal(true);
-            }
-          } else if (checkMoveCounter(-1)) {
-            saveBoard();
-            moveCounter();
-            validMove = true;
-          }
-        }
+      //Player 1 move
+      validMove = singlePieceMove(true, 1, 2, -2, -1);
+      if (validMove === false) {
+        //Player 2 move
+        validMove = singlePieceMove(false, 2, 1, 2, 1);
       }
-      //Player 2
-      if (props.turn === false) {
-        if (counterToMove.state === 2) {
-          let canTake = checkTakeCounter(2, 1);
-          if (canTake.result) {
-            saveBoard();
-            takeCounter(canTake.height, canTake.width);
-            validMove = true;
-            if (checkToJumpDownAgain(1)) {
-              setShowJumpModal(true);
-            }
-          } else if (checkMoveCounter(1)) {
-            saveBoard();
-            moveCounter();
-            validMove = true;
-          }
-        }
-      }
+
       //Player 1 or 2 king
-      if (counterToMove.state === 3 || counterToMove.state === 4) {
+      if (
+        (counterToMove.state === 3 && props.turn === true) ||
+        (counterToMove.state === 4 && props.turn === false)
+      ) {
+        //king move
         if (
-          counterToMove.height - 1 === squareToMoveTo.height ||
-          counterToMove.height + 1 === squareToMoveTo.height
+          (counterToMove.height - 1 === squareToMoveTo.height ||
+            counterToMove.height + 1 === squareToMoveTo.height) &&
+          (counterToMove.width - 1 === squareToMoveTo.width ||
+            counterToMove.width + 1 === squareToMoveTo.width)
         ) {
-          if (
-            counterToMove.width - 1 === squareToMoveTo.width ||
-            counterToMove.width + 1 === squareToMoveTo.width
-          ) {
-            if (
-              (counterToMove.state === 3 && props.turn === true) ||
-              (counterToMove.state === 4 && props.turn === false)
-            ) {
-              saveBoard();
-              moveCounter();
-              validMove = true;
-            }
-          }
+          saveBoard();
+          moveCounter();
+          validMove = true;
         } else if (
-          counterToMove.height - 2 === squareToMoveTo.height ||
-          counterToMove.height + 2 === squareToMoveTo.height
+          (counterToMove.height - 2 === squareToMoveTo.height ||
+            counterToMove.height + 2 === squareToMoveTo.height) &&
+          (counterToMove.width - 2 === squareToMoveTo.width ||
+            counterToMove.width + 2 === squareToMoveTo.width)
         ) {
-          if (
-            counterToMove.width - 2 === squareToMoveTo.width ||
-            counterToMove.width + 2 === squareToMoveTo.width
-          ) {
-            let res = (squareToMoveTo.height + counterToMove.height) / 2;
-            let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
-            //Player 1 king takes player 2
-            if (props.turn === true) {
-              if (
-                counterToMove.state === 3 &&
-                (counters[res][res2] === 2 || counters[res][res2] === 4)
-              ) {
-                saveBoard();
-                takeCounter(res, res2);
-                validMove = true;
-                if (
-                  checkToJumpUpAgain(2) ||
-                  checkToJumpUpAgain(4) ||
-                  checkToJumpDownAgain(2) ||
-                  checkToJumpDownAgain(4)
-                ) {
-                  setShowJumpModal(true);
-                }
-              }
-            }
-            //Player 2 king takes player 1
-            else if (props.turn === false) {
-              if (
-                counterToMove.state === 4 &&
-                (counters[res][res2] === 1 || counters[res][res2] === 3)
-              ) {
-                saveBoard();
-                takeCounter(res, res2);
-                validMove = true;
-                if (
-                  checkToJumpUpAgain(1) ||
-                  checkToJumpUpAgain(3) ||
-                  checkToJumpDownAgain(1) ||
-                  checkToJumpDownAgain(3)
-                ) {
-                  setShowJumpModal(true);
-                }
-              }
-            }
+          //Player 1 king take move
+          if (validMove === false) {
+            validMove = kingTakeMove(true, 3, 2, 4);
+          }
+
+          //Player 2 king take move
+          if (validMove === false) {
+            validMove = kingTakeMove(false, 4, 1, 3);
           }
         }
       }
@@ -454,7 +414,7 @@ export default function Board(props) {
     <div>
       <div className="d-flex justify-content-center mb-3">
         <h2>
-          <span class="badge bg-dark">2 Player Mode</span>
+          <span className="badge bg-dark">2 Player Mode</span>
         </h2>
       </div>
 
@@ -488,7 +448,26 @@ export default function Board(props) {
 
       <div className="d-flex justify-content-center">
         <table className="gameBorder">
-          <tbody className="border border-dark">{squares}</tbody>
+          <tbody className="border border-dark">
+            {counters.map((row, index) => {
+              let y = index;
+              return (
+                <tr key={y}>
+                  {row.map((piece, index) => (
+                    <td key={y + index} className="p-0">
+                      <Square
+                        state={piece}
+                        y={y}
+                        x={index}
+                        setSquareToMoveTo={setSquareToMoveTo}
+                        setCounterToMove={setCounterToMove}
+                      ></Square>
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
     </div>

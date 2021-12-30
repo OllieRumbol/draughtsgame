@@ -9,7 +9,7 @@ export default function About() {
       <Col lg={1}></Col>
       <Col lg={10}>
         <h1>
-          <span class="badge bg-dark">About</span>
+          <span className="badge bg-dark">About</span>
         </h1>
         <p>
           This game was made in loving memory of my grandad, Ernest Rumbol, who
@@ -24,7 +24,7 @@ export default function About() {
           May my grandad rest in peace.
         </p>
 
-        <h2><span class="badge bg-dark">Technical information</span></h2>
+        <h2><span className="badge bg-dark">Technical information</span></h2>
         <p>
           Below lets the tools used to build this web application. You can find
           the source code at the{" "}
@@ -62,7 +62,7 @@ export default function About() {
           </li>
         </ul>
 
-        <h2><span class="badge bg-dark">Project Plan</span></h2>
+        <h2><span className="badge bg-dark">Project Plan</span></h2>
         <Row xs={1} md={3} className="g-4">
           <ProjectCard
             title="Draughts Game Phase 1 Epic"

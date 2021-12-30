@@ -9,7 +9,7 @@ export default function HowToPlay() {
       <Col xl="1"></Col>
       <Col xl="10">
         <h1>
-          <span class="badge bg-dark">Welcome</span>
+          <span className="badge bg-dark">Welcome</span>
         </h1>
         <p>
           My name is Ollie and I'm a developer. Welcome to my simple draughts
@@ -20,14 +20,14 @@ export default function HowToPlay() {
           moves of a given player.
         </p>
         <h2>
-          <span class="badge bg-dark">Goals</span>
+          <span className="badge bg-dark">Goals</span>
         </h2>
         <p>
           The goal of the game of draughts is to take all of the opponent's
           pieces or block your opponent from moving.
         </p>
         <h2>
-          <span class="badge bg-dark">Game Summary</span>
+          <span className="badge bg-dark">Game Summary</span>
         </h2>
         <p>
           Draughts is a simple game with limited movement. There are two types
@@ -48,7 +48,7 @@ export default function HowToPlay() {
           space available after taking your opponents piece.
         </p>
         <h2>
-          <span class="badge bg-dark">Rules</span>
+          <span className="badge bg-dark">Rules</span>
         </h2>
         <ul>
           <li>Players can only move there own pieces</li>
@@ -64,7 +64,7 @@ export default function HowToPlay() {
           </li>
         </ul>
         <h2>
-          <span class="badge bg-dark">How to play</span>
+          <span className="badge bg-dark">How to play</span>
         </h2>
         <p>
           Useful stats cards will appear next to or below the draughts board.

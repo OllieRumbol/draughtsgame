@@ -15,7 +15,6 @@ export default function PcBoard(props) {
   const [counterToMove, setCounterToMove] = useState(null);
   const [squareToMoveTo, setSquareToMoveTo] = useState(null);
   const [showTips, setShowTips] = useState(true);
-  const [squares, setSquares] = useState(renderSquares());
   const [showJumpModal, setShowJumpModal] = useState(false);
   const [JumpModalValue, setJumpModalValue] = useState(null);
   const [listOfMoves, setListOfMoves] = useState([]);
@@ -29,27 +28,6 @@ export default function PcBoard(props) {
       : context.difficulty === 2
       ? "Medium"
       : "Hard";
-
-  function renderSquares() {
-    return counters.map((row, index) => {
-      let y = index;
-      return (
-        <tr key={y}>
-          {row.map((piece, index) => (
-            <td key={y + index} className="p-0">
-              <Square
-                state={piece}
-                y={y}
-                x={index}
-                setSquareToMoveTo={setSquareToMoveTo}
-                setCounterToMove={setCounterToMove}
-              ></Square>
-            </td>
-          ))}
-        </tr>
-      );
-    });
-  }
 
   function checkMoveCounter(value) {
     if (counterToMove.height + value === squareToMoveTo.height) {
@@ -69,7 +47,6 @@ export default function PcBoard(props) {
     counters[squareToMoveTo.height][squareToMoveTo.width] = counterToMove.state;
 
     kingMeCheck();
-    setSquares(renderSquares());
     props.setTurn(false);
   }
 
@@ -107,7 +84,6 @@ export default function PcBoard(props) {
     counters[res][res2] = 5;
 
     kingMeCheck();
-    setSquares(renderSquares());
     props.setTurn(false);
   }
 
@@ -127,8 +103,6 @@ export default function PcBoard(props) {
         }
       }
     }
-
-    setSquares(renderSquares());
   }
 
   async function displayTips() {
@@ -139,8 +113,6 @@ export default function PcBoard(props) {
         tips.forEach((element) => {
           counters[element.height][element.width] = 6;
         });
-
-        setSquares(renderSquares());
       } catch (error) {
         console.log(error);
         context.setErrorMessage(error);
@@ -281,8 +253,6 @@ export default function PcBoard(props) {
       props.setPlayer1Counter(piecesTakenPlayer1);
       let piecesTakenPlayer2 = 12 - calculatePiecesTaken(2);
       props.setPlayer2Counter(piecesTakenPlayer2);
-
-      setSquares(renderSquares());
     }
   }
 
@@ -341,7 +311,6 @@ export default function PcBoard(props) {
           counters[result.nextHeight][result.nextWidth] = 4;
         }
 
-        setSquares(renderSquares());
         props.setTurn(true);
         noOneCanMoveCheck();
       } catch (error) {
@@ -384,41 +353,35 @@ export default function PcBoard(props) {
             }
           } else if (counterToMove.state === 3) {
             if (
-              counterToMove.height - 1 === squareToMoveTo.height ||
-              counterToMove.height + 1 === squareToMoveTo.height
+              (counterToMove.height - 1 === squareToMoveTo.height ||
+                counterToMove.height + 1 === squareToMoveTo.height) &&
+              (counterToMove.width - 1 === squareToMoveTo.width ||
+                counterToMove.width + 1 === squareToMoveTo.width)
             ) {
-              if (
-                counterToMove.width - 1 === squareToMoveTo.width ||
-                counterToMove.width + 1 === squareToMoveTo.width
-              ) {
-                saveBoard();
-                moveCounter();
-                validMove = true;
-              }
+              saveBoard();
+              moveCounter();
+              validMove = true;
             } else if (
-              counterToMove.height - 2 === squareToMoveTo.height ||
-              counterToMove.height + 2 === squareToMoveTo.height
+              (counterToMove.height - 2 === squareToMoveTo.height ||
+                counterToMove.height + 2 === squareToMoveTo.height) &&
+              (counterToMove.width - 2 === squareToMoveTo.width ||
+                counterToMove.width + 2 === squareToMoveTo.width)
             ) {
-              if (
-                counterToMove.width - 2 === squareToMoveTo.width ||
-                counterToMove.width + 2 === squareToMoveTo.width
-              ) {
-                let res = (squareToMoveTo.height + counterToMove.height) / 2;
-                let res2 = (squareToMoveTo.width + counterToMove.width) / 2;
-                //Player 1 king takes player 2
-                if (counters[res][res2] === 2 || counters[res][res2] === 4) {
-                  saveBoard();
-                  takeCounter(res, res2);
-                  validMove = true;
-                  if (
-                    checkToJumpUpAgain(2) ||
-                    checkToJumpUpAgain(4) ||
-                    checkToJumpDownAgain(2) ||
-                    checkToJumpDownAgain(4)
-                  ) {
-                    player2ToGoNext = false;
-                    setShowJumpModal(true);
-                  }
+              let takeHeight = (squareToMoveTo.height + counterToMove.height) / 2;
+              let takeWidth = (squareToMoveTo.width + counterToMove.width) / 2;
+              //Player 1 king takes player 2
+              if (counters[takeHeight][takeWidth] === 2 || counters[takeHeight][takeWidth] === 4) {
+                saveBoard();
+                takeCounter(takeHeight, takeWidth);
+                validMove = true;
+                if (
+                  checkToJumpUpAgain(2) ||
+                  checkToJumpUpAgain(4) ||
+                  checkToJumpDownAgain(2) ||
+                  checkToJumpDownAgain(4)
+                ) {
+                  player2ToGoNext = false;
+                  setShowJumpModal(true);
                 }
               }
             }
@@ -474,7 +437,9 @@ export default function PcBoard(props) {
   return (
     <div>
       <div className="d-flex justify-content-center mb-3">
-        <h2><span class="badge bg-dark">PC Mode: {mode}</span></h2>
+        <h2>
+          <span className="badge bg-dark">PC Mode: {mode}</span>
+        </h2>
       </div>
 
       <ButtonToolbar className="d-flex justify-content-center mb-2">
@@ -507,7 +472,26 @@ export default function PcBoard(props) {
 
       <div className="d-flex justify-content-center">
         <table className="gameBorder">
-          <tbody className="border border-dark">{squares}</tbody>
+          <tbody className="border border-dark">
+            {counters.map((row, index) => {
+              let y = index;
+              return (
+                <tr key={y}>
+                  {row.map((piece, index) => (
+                    <td key={y + index} className="p-0">
+                      <Square
+                        state={piece}
+                        y={y}
+                        x={index}
+                        setSquareToMoveTo={setSquareToMoveTo}
+                        setCounterToMove={setCounterToMove}
+                      ></Square>
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
     </div>
