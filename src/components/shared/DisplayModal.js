@@ -3,10 +3,10 @@ import Modal from "react-bootstrap/Modal";
 import "../../style/DisplayModal.css";
 
 export default function DisplayModal(props) {
-  const { title, show, handleClose, body, innerComponent } = props;
+  const { title, show, body, innerComponent } = props;
 
   return (
-    <Modal show={show} onHide={handleClose} backdrop="static">
+    <Modal show={show} backdrop="static">
       <div className="darkBackground lightText">
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>

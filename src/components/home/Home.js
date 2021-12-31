@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import Row from "react-bootstrap/Row";
 import DisplayCard from "../shared/DisplayCard";
-import Board from "./Board";
-import PcBoard from "./PcBoard";
+import CompleteBoard from "./CompleteBoard";
 import Players from "../home/Players";
 import Pieces from "../home/Pieces";
 import PiecesTaken from "../home/PiecesTaken";
@@ -48,36 +47,22 @@ export default function Home(props) {
       )}
       <ResultModal
         show={showResultModal}
-        update={setShowResultModal}
+        setShow={setShowResultModal}
         title={resultsModalTitle}
         message={resultsModalMessage}
       ></ResultModal>
       <div className="col col-xxl-7">
-        {context.pcOr2Player === true ? (
-          <PcBoard
-            player1Counter={player1Counter}
-            setPlayer1Counter={setPlayer1Counter}
-            player2Counter={player2Counter}
-            setPlayer2Counter={setPlayer2Counter}
-            turn={turn}
-            setTurn={setTurn}
-            setResultsModalTitle={setResultsModalTitle}
-            setShowResultModal={setShowResultModal}
-            setResultsModalMessage={setResultsModalMessage}
-          />
-        ) : (
-          <Board
-            player1Counter={player1Counter}
-            setPlayer1Counter={setPlayer1Counter}
-            player2Counter={player2Counter}
-            setPlayer2Counter={setPlayer2Counter}
-            turn={turn}
-            setTurn={setTurn}
-            setResultsModalTitle={setResultsModalTitle}
-            setShowResultModal={setShowResultModal}
-            setResultsModalMessage={setResultsModalMessage}
-          />
-        )}
+        <CompleteBoard
+          player1Counter={player1Counter}
+          setPlayer1Counter={setPlayer1Counter}
+          player2Counter={player2Counter}
+          setPlayer2Counter={setPlayer2Counter}
+          turn={turn}
+          setTurn={setTurn}
+          setResultsModalTitle={setResultsModalTitle}
+          setShowResultModal={setShowResultModal}
+          setResultsModalMessage={setResultsModalMessage}
+        />
         <br></br>
       </div>
       <div className="col col-xxl-5">

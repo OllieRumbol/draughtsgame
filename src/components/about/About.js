@@ -222,7 +222,7 @@ export default function About() {
               "Replace JS alert with bootstrap modal for invalid more ✔ (27/2/21)",
               "Refactor finding moves logic, going through the board twice ✔ (6/3/21)",
               "Skip comparison for non move pieces ✔ (8/3/21)",
-              "Lots of shared logic between Board and PcBoard components",
+              "Lots of shared logic between Board and PcBoard components ✔ (31/12/21)",
             ]}
             status="Paused due to no further work"
           ></ProjectCard>
