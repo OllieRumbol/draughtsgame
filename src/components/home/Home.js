@@ -66,8 +66,8 @@ export default function Home(props) {
         <br></br>
       </div>
       <div className="col col-xxl-5">
-        <Row>
-          <div className="col col-md-8 col-lg-8 col-xxl-10">
+        <Row className="d-flex justify-content-center">
+          <div className="col col-md-10 col-lg-10 col-xl-8 col-xxl-10">
             <DisplayCard
               title="Players"
               innerComponent={<Players turn={turn}></Players>}
