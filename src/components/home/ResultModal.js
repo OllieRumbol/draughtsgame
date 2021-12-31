@@ -4,16 +4,15 @@ import Button from "react-bootstrap/Button";
 import DisplayModal from "../shared/DisplayModal";
 
 export default function ResultModal(props) {
-  const { title, show, message, update } = props;
+  const { title, show, setShow, message} = props;
 
-  const handleClose = () => update(false);
+  const handleClose = () => setShow(false);
   const handleRestart = () => window.location.reload();
 
   return (
     <DisplayModal
       title={title}
       show={show}
-      update={handleClose}
       body={message}
       innerComponent={
         <div>

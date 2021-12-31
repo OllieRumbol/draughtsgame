@@ -9,7 +9,6 @@ export default function InvalidMoveModal(props) {
     <DisplayModal
       title="That was an invalid move"
       show={props.show}
-      update={handleClose}
       body="Please pick another move to continue the game."
       innerComponent={
         <Button variant="primary" onClick={handleClose}>

@@ -4,23 +4,12 @@ import Button from "react-bootstrap/Button";
 import DisplayModal from "../shared/DisplayModal";
 
 export default function ResultModal(props) {
-  const handleClose = () => props.update(false);
-
-  const handleYes = () => {
-    props.setJumpModalValue(true);
-    handleClose();
-  };
-
-  const handleNo = () => {
-    props.setJumpModalValue(false);
-    handleClose();
-  };
+  const {show, handleYes, handleNo} = props;
 
   return (
     <DisplayModal
       title="Would you like to take again?"
-      show={props.show}
-      update={handleClose}
+      show={show}
       body="In draughts players can jump multiple times to take multiple pieces from their opponent."
       innerComponent={
         <div>
