@@ -69,8 +69,7 @@ export default function Board(props) {
         isValidMove = true;
         if (player === 1 && checkToJumpUpAgain(playerToTake)) {
           setShowJumpModal(true);
-        }
-        else if(player === 2 && checkToJumpDownAgain(playerToTake)){
+        } else if (player === 2 && checkToJumpDownAgain(playerToTake)) {
           setShowJumpModal(true);
         }
       } else if (checkMoveCounter(moveDirection)) {
@@ -354,8 +353,7 @@ export default function Board(props) {
         props.setResultsModalTitle("Player 2 wins");
         props.setResultsModalMessage("Player 1 has given up on the game.");
       }
-    }
-    else{
+    } else {
       if (props.turn === true) {
         props.setResultsModalTitle("Player 2 wins");
         props.setResultsModalMessage("Player 1 has given up on the game.");
@@ -371,9 +369,18 @@ export default function Board(props) {
   //PC Mode
   //Automated player
   async function player2Go() {
+    let timeout = 750;
+
     setTimeout(async () => {
       let version = context.difficulty;
-      let depth = context.difficulty === 1 ? 0 : 5;
+      let depth = 0;
+
+      if (context.difficulty === 2) {
+        depth = 4;
+      } else if (context.difficulty === 3) {
+        timeout = 500;
+        depth = 5;
+      }
 
       try {
         const result = await GetAutomatedPlayerNextMove(
@@ -393,7 +400,7 @@ export default function Board(props) {
         counters[result.currentHeight][result.currentWidth] = 5;
         counters[result.nextHeight][result.nextWidth] = tempValue;
 
-        if (result.nextHeight === 7) {
+        if (result.nextHeight === 7 && counters[result.nextHeight][result.nextWidth] != 4) {
           counters[result.nextHeight][result.nextWidth] = 4;
         }
 
@@ -404,7 +411,7 @@ export default function Board(props) {
         context.setErrorMessage();
         context.setDisplayErrorMessage(true);
       }
-    }, 100);
+    }, timeout);
   }
 
   function doubleJumpYes() {
@@ -574,17 +581,10 @@ export default function Board(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [squareToMoveTo, counterToMove, counters]);
 
-  //PC Mode
-  if (context.pcOr2Player === true) {
-    player2GoesFirst();
-  }
-
-  //PC Mode
-  async function player2GoesFirst() {
-    if (context.whoGoesFirst === false) {
-      await player2Go();
-      context.setWhoGoesFirst(null);
-    }
+  //PC goes first
+  if (context.pcOr2Player === true && context.whoGoesFirst === false) {
+    player2Go();
+    context.setWhoGoesFirst(null);
   }
 
   return (
