@@ -400,7 +400,7 @@ export default function Board(props) {
         counters[result.currentHeight][result.currentWidth] = 5;
         counters[result.nextHeight][result.nextWidth] = tempValue;
 
-        if (result.nextHeight === 7 && counters[result.nextHeight][result.nextWidth] != 4) {
+        if (result.nextHeight === 7 && counters[result.nextHeight][result.nextWidth] !== 4) {
           counters[result.nextHeight][result.nextWidth] = 4;
         }
 
