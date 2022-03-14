@@ -105,7 +105,7 @@ export default function GameSettings(props) {
           <span className="checkMark"></span>
         </label>
         <label className="radioContainer">
-          <div className="topper">Player 2</div>
+          <div className="topper">{context.pcOr2Player ? "PC":" Player 2"}</div>
           <input
             type="radio"
             name="radio3"

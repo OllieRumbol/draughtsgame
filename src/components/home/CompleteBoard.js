@@ -31,9 +31,9 @@ export default function Board(props) {
       ? "PC Mode: Medium"
       : "PC Mode: Hard";
 
-  //Moving Counters
-  function checkMoveCounter(value) {
-    if (counterToMove.height + value === squareToMoveTo.height) {
+  //Check if a counter can move up or down
+  function checkMoveCounter(direction) {
+    if (counterToMove.height + direction === squareToMoveTo.height) {
       if (
         counterToMove.width - 1 === squareToMoveTo.width ||
         counterToMove.width + 1 === squareToMoveTo.width
@@ -53,6 +53,7 @@ export default function Board(props) {
     props.setTurn(!props.turn);
   }
 
+  // Single piece move (non king). Check to see if move is valid but taking a piece or moving diagonally
   function singlePieceMove(
     turn,
     player,
@@ -83,8 +84,8 @@ export default function Board(props) {
   }
 
   //Taking Counters
-  function checkTakeCounter(value, playerToTake) {
-    if (counterToMove.height + value === squareToMoveTo.height) {
+  function checkTakeCounter(takeDirection, playerToTake) {
+    if (counterToMove.height + takeDirection === squareToMoveTo.height) {
       if (
         counterToMove.width - 2 === squareToMoveTo.width ||
         counterToMove.width + 2 === squareToMoveTo.width
@@ -214,7 +215,7 @@ export default function Board(props) {
     }
   }
 
-  // Player Tips
+  //Toggle the showing of player tips
   async function showPlayerTips() {
     if (showTips) {
       let player = props.turn === true ? 1 : 2;
@@ -226,6 +227,7 @@ export default function Board(props) {
     }
   }
 
+  //Display all current boards
   async function displayTips(player) {
     try {
       const tips = await GetPlayerTips(counters, player);
@@ -240,6 +242,7 @@ export default function Board(props) {
     }
   }
 
+  //Remove all player tips from the current board
   function clearTips() {
     for (let i = 0; i < counters.length; i++) {
       for (let j = 0; j < counters[i].length; j++) {
@@ -254,18 +257,25 @@ export default function Board(props) {
   function kingMeCheck() {
     //Player 1 check
     if (counterToMove.state === 1) {
-      if (squareToMoveTo.height === 0) {
+      if (
+        squareToMoveTo.height === 0 &&
+        counters[squareToMoveTo.height][squareToMoveTo.width] !== 3
+      ) {
         counters[squareToMoveTo.height][squareToMoveTo.width] = 3;
       }
     }
     //Player 2 check
     else if (counterToMove.state === 2) {
-      if (squareToMoveTo.height === 7) {
+      if (
+        squareToMoveTo.height === 7 &&
+        counters[squareToMoveTo.height][squareToMoveTo.width] !== 4
+      ) {
         counters[squareToMoveTo.height][squareToMoveTo.width] = 4;
       }
     }
   }
 
+  //End the game if both players or a single player cannot move
   function noOneCanMoveCheck() {
     let player1Moves = findPlayerMoves(counters, 1);
     let player2Moves = findPlayerMoves(counters, 2);
@@ -276,19 +286,24 @@ export default function Board(props) {
         "No player can move. Therefore the game ends in a tie. I hope you had fun playing."
       );
       props.setShowResultModal(true);
+      return true;
     } else if (player1Moves.length === 0) {
       props.setResultsModalTitle("Player 2 wins");
       props.setResultsModalMessage(
         "Player 1 can no longer move. Player 2 wins. I hope you had fun playing."
       );
       props.setShowResultModal(true);
+      return true;
     } else if (player2Moves.length === 0) {
       props.setResultsModalTitle("Player 1 wins");
       props.setResultsModalMessage(
         "Player 2 can no longer move. Player 1 wins. I hope you had fun playing."
       );
       props.setShowResultModal(true);
+      return true;
     }
+
+    return false;
   }
 
   //Undo/ saving board
@@ -310,16 +325,19 @@ export default function Board(props) {
       }
 
       props.setTurn(temp.turn);
+      props.setPlayer1Counter(temp.p1);
+      props.setPlayer2Counter(temp.p2);
 
       listOfMoves.pop();
 
-      let piecesTakenPlayer1 = 12 - calculatePiecesTaken(1);
-      props.setPlayer1Counter(piecesTakenPlayer1);
-      let piecesTakenPlayer2 = 12 - calculatePiecesTaken(2);
-      props.setPlayer2Counter(piecesTakenPlayer2);
+      // let piecesTakenPlayer1 = 12 - calculatePiecesTaken(1);
+      // props.setPlayer1Counter(piecesTakenPlayer1);
+      // let piecesTakenPlayer2 = 12 - calculatePiecesTaken(2);
+      // props.setPlayer2Counter(piecesTakenPlayer2);
     }
   }
 
+  //Save the current board to be able top undo it late
   function saveBoard() {
     let copyBoard = [];
     for (let i = 0; i < counters.length; i++) {
@@ -330,27 +348,31 @@ export default function Board(props) {
       {
         turn: props.turn,
         board: copyBoard,
+        p1: props.player1Counter,
+        p2: props.player2Counter,
       },
     ]);
   }
 
-  function calculatePiecesTaken(player) {
-    let counter = 0;
-    for (let i = 0; i < counters.length; i++) {
-      for (let j = 0; j < counters[i].length; j++) {
-        if (counters[i][j] === player || counters[i][j] === player + 2) {
-          counter++;
-        }
-      }
-    }
+  // //For a given player calculate the number of pieces takem
+  // function calculatePiecesTaken(player) {
+  //   let counter = 0;
+  //   for (let i = 0; i < counters.length; i++) {
+  //     for (let j = 0; j < counters[i].length; j++) {
+  //       if (counters[i][j] === player || counters[i][j] === player + 2) {
+  //         counter++;
+  //       }
+  //     }
+  //   }
 
-    return counter;
-  }
+  //   return counter;
+  // }
 
+  //Current player gives up the game
   function giveUp() {
     if (context.pcOr2Player === true) {
       if (props.turn === true) {
-        props.setResultsModalTitle("Player 2 wins");
+        props.setResultsModalTitle("PC wins the game");
         props.setResultsModalMessage("Player 1 has given up on the game.");
       }
     } else {
@@ -366,8 +388,7 @@ export default function Board(props) {
     props.setShowResultModal(true);
   }
 
-  //PC Mode
-  //Automated player
+  //PC Mode automated player
   async function player2Go() {
     let timeout = 750;
 
@@ -400,7 +421,10 @@ export default function Board(props) {
         counters[result.currentHeight][result.currentWidth] = 5;
         counters[result.nextHeight][result.nextWidth] = tempValue;
 
-        if (result.nextHeight === 7 && counters[result.nextHeight][result.nextWidth] !== 4) {
+        if (
+          result.nextHeight === 7 &&
+          counters[result.nextHeight][result.nextWidth] !== 4
+        ) {
           counters[result.nextHeight][result.nextWidth] = 4;
         }
 
@@ -414,6 +438,7 @@ export default function Board(props) {
     }, timeout);
   }
 
+  //Player wants to double jump
   function doubleJumpYes() {
     if (context.pcOr2Player === true) {
       props.setTurn(true);
@@ -424,6 +449,7 @@ export default function Board(props) {
     setShowJumpModal(false);
   }
 
+  //Player doesnt want to double jump
   async function doubleJumpNo() {
     if (context.pcOr2Player === true) {
       await player2Go();
@@ -432,24 +458,92 @@ export default function Board(props) {
     setShowJumpModal(false);
   }
 
-  //2 Player Mode
+  //2 Player Mode main game logic
   useEffect(() => {
-    if (context.pcOr2Player === false) {
-      if (counterToMove != null && squareToMoveTo != null) {
-        let validMove = false;
-        //Player 1 move
-        validMove = singlePieceMove(true, 1, 2, -2, -1);
-        if (validMove === false) {
-          //Player 2 move
-          validMove = singlePieceMove(false, 2, 1, 2, 1);
-        }
+    if (
+      context.pcOr2Player === false &&
+      counterToMove != null &&
+      squareToMoveTo != null
+    ) {
+      let validMove = false;
+      //Player 1 move
+      validMove = singlePieceMove(true, 1, 2, -2, -1);
+      if (validMove === false) {
+        //Player 2 move
+        validMove = singlePieceMove(false, 2, 1, 2, 1);
+      }
 
-        //Player 1 or 2 king
+      //Player 1 or 2 king
+      if (
+        (counterToMove.state === 3 && props.turn === true) ||
+        (counterToMove.state === 4 && props.turn === false)
+      ) {
+        //king move
         if (
-          (counterToMove.state === 3 && props.turn === true) ||
-          (counterToMove.state === 4 && props.turn === false)
+          (counterToMove.height - 1 === squareToMoveTo.height ||
+            counterToMove.height + 1 === squareToMoveTo.height) &&
+          (counterToMove.width - 1 === squareToMoveTo.width ||
+            counterToMove.width + 1 === squareToMoveTo.width)
         ) {
-          //king move
+          saveBoard();
+          moveCounter();
+          validMove = true;
+        } else if (
+          (counterToMove.height - 2 === squareToMoveTo.height ||
+            counterToMove.height + 2 === squareToMoveTo.height) &&
+          (counterToMove.width - 2 === squareToMoveTo.width ||
+            counterToMove.width + 2 === squareToMoveTo.width)
+        ) {
+          //Player 1 king take move
+          if (validMove === false) {
+            validMove = kingTakeMove(true, 3, 2, 4);
+          }
+
+          //Player 2 king take move
+          if (validMove === false) {
+            validMove = kingTakeMove(false, 4, 1, 3);
+          }
+        }
+      }
+
+      if (validMove === false) {
+        setShowInvalidMoveModal(true);
+      }
+
+      clearTips();
+      setShowTips(true);
+      setCounterToMove(null);
+      setSquareToMoveTo(null);
+      noOneCanMoveCheck();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [squareToMoveTo, counterToMove, counters]);
+
+  //PC Mode main game logic
+  useEffect(() => {
+    async function game() {
+      let player2ToGoNext = true;
+      let validMove = false;
+      //Player1
+      if (props.turn) {
+        if(counterToMove != null && squareToMoveTo != null){
+        if (counterToMove.state === 1) {
+          let canTake = checkTakeCounter(-2, 2);
+          if (canTake.result) {
+            saveBoard();
+            takeCounter(canTake.height, canTake.width);
+            validMove = true;
+            if (checkToJumpUpAgain(2)) {
+              player2ToGoNext = false;
+              setShowJumpModal(true);
+            }
+          } else if (checkMoveCounter(-1)) {
+            saveBoard();
+            moveCounter();
+            validMove = true;
+          }
+        } else if (counterToMove.state === 3) {
           if (
             (counterToMove.height - 1 === squareToMoveTo.height ||
               counterToMove.height + 1 === squareToMoveTo.height) &&
@@ -465,101 +559,34 @@ export default function Board(props) {
             (counterToMove.width - 2 === squareToMoveTo.width ||
               counterToMove.width + 2 === squareToMoveTo.width)
           ) {
-            //Player 1 king take move
-            if (validMove === false) {
-              validMove = kingTakeMove(true, 3, 2, 4);
-            }
-
-            //Player 2 king take move
-            if (validMove === false) {
-              validMove = kingTakeMove(false, 4, 1, 3);
-            }
-          }
-        }
-
-        if (validMove === false) {
-          setShowInvalidMoveModal(true);
-        }
-
-        clearTips();
-        setShowTips(true);
-        setCounterToMove(null);
-        setSquareToMoveTo(null);
-        noOneCanMoveCheck();
-      }
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [squareToMoveTo, counterToMove, counters]);
-
-  //PC Mode
-  useEffect(() => {
-    async function game() {
-      let player2ToGoNext = true;
-      let validMove = false;
-      //Player1
-      if (props.turn) {
-        if (counterToMove != null && squareToMoveTo != null) {
-          if (counterToMove.state === 1) {
-            let canTake = checkTakeCounter(-2, 2);
-            if (canTake.result) {
+            let takeHeight = (squareToMoveTo.height + counterToMove.height) / 2;
+            let takeWidth = (squareToMoveTo.width + counterToMove.width) / 2;
+            //Player 1 king takes player 2
+            if (
+              counters[takeHeight][takeWidth] === 2 ||
+              counters[takeHeight][takeWidth] === 4
+            ) {
               saveBoard();
-              takeCounter(canTake.height, canTake.width);
+              takeCounter(takeHeight, takeWidth);
               validMove = true;
-              if (checkToJumpUpAgain(2)) {
+              if (
+                checkToJumpUpAgain(2) ||
+                checkToJumpUpAgain(4) ||
+                checkToJumpDownAgain(2) ||
+                checkToJumpDownAgain(4)
+              ) {
                 player2ToGoNext = false;
                 setShowJumpModal(true);
               }
-            } else if (checkMoveCounter(-1)) {
-              saveBoard();
-              moveCounter();
-              validMove = true;
-            }
-          } else if (counterToMove.state === 3) {
-            if (
-              (counterToMove.height - 1 === squareToMoveTo.height ||
-                counterToMove.height + 1 === squareToMoveTo.height) &&
-              (counterToMove.width - 1 === squareToMoveTo.width ||
-                counterToMove.width + 1 === squareToMoveTo.width)
-            ) {
-              saveBoard();
-              moveCounter();
-              validMove = true;
-            } else if (
-              (counterToMove.height - 2 === squareToMoveTo.height ||
-                counterToMove.height + 2 === squareToMoveTo.height) &&
-              (counterToMove.width - 2 === squareToMoveTo.width ||
-                counterToMove.width + 2 === squareToMoveTo.width)
-            ) {
-              let takeHeight =
-                (squareToMoveTo.height + counterToMove.height) / 2;
-              let takeWidth = (squareToMoveTo.width + counterToMove.width) / 2;
-              //Player 1 king takes player 2
-              if (
-                counters[takeHeight][takeWidth] === 2 ||
-                counters[takeHeight][takeWidth] === 4
-              ) {
-                saveBoard();
-                takeCounter(takeHeight, takeWidth);
-                validMove = true;
-                if (
-                  checkToJumpUpAgain(2) ||
-                  checkToJumpUpAgain(4) ||
-                  checkToJumpDownAgain(2) ||
-                  checkToJumpDownAgain(4)
-                ) {
-                  player2ToGoNext = false;
-                  setShowJumpModal(true);
-                }
-              }
             }
           }
+        }
 
           clearTips();
           setShowTips(true);
           setCounterToMove(null);
           setSquareToMoveTo(null);
-
+          
           let result = noOneCanMoveCheck();
           if (result) {
             player2ToGoNext = false;
@@ -581,7 +608,7 @@ export default function Board(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [squareToMoveTo, counterToMove, counters]);
 
-  //PC goes first
+  //PC makes the first move
   if (context.pcOr2Player === true && context.whoGoesFirst === false) {
     player2Go();
     context.setWhoGoesFirst(null);
