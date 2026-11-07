@@ -17,7 +17,7 @@ async function post(url, data) {
 
 async function GetAutomatedPlayerNextMove(version, board, depth) {
     //let url = 'http://localhost:7071/api/GetNextMove'
-    let url = 'https://draughtsgamefunction20210321121511.azurewebsites.net/api/GetNextMove';
+    let url = 'https://func-draughts-game-chhwarhkf4hphjf0.uksouth-01.azurewebsites.net/api/GetNextMove';
     let data = { Version: version, Board: board, Depth: depth, Player: 2 }
     const result = await post(url, data)
 
@@ -31,7 +31,7 @@ async function GetAutomatedPlayerNextMove(version, board, depth) {
 
 async function GetPlayerTips(board, tipFor) {
     //let url = 'http://localhost:7071/api/GetPotentialMoves';
-    let url = 'https://draughtsgamefunction20210321121511.azurewebsites.net/api/GetPotentialMoves';
+    let url = 'https://func-draughts-game-chhwarhkf4hphjf0.uksouth-01.azurewebsites.net/api/GetPotentialMoves';
     let data = { Board: board, TipFor: tipFor };
     const result = await post(url, data);
 
