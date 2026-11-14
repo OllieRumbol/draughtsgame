@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *what are we building, and why?* It is agreed before any design or code, and it is the source of truth for requirements.
 
 Status: Approved
-Last updated: 2026-11-14
+Last updated: 2026-11-14 (section 6.1.2, item 7 added with the plan)
 
 ---
 
@@ -309,8 +309,9 @@ GitHub Pages serves the site as static files at `https://ollierumbol.github.io/d
 2. WHEN the player selects a piece, THE SYSTEM SHALL mark the selected piece and every target of that piece (section 2.2). It SHALL work out the targets without calling the API.
 3. WHEN the player chooses a marked target, THE SYSTEM SHALL make that move or jump.
 4. WHEN the player selects another of their own pieces, THE SYSTEM SHALL select that piece instead, except during a chain (section 6.1.3, item 3).
-5. WHEN the player chooses any other square, THE SYSTEM SHALL clear the selection. It SHALL NOT show an error or a dialog.
+5. WHEN the player chooses any other square, THE SYSTEM SHALL clear the selection, except during a chain, where it has no effect. It SHALL NOT show an error or a dialog.
 6. A piece with no targets can be selected. It is marked, and no target is marked.
+7. WHEN the player chooses the selected piece again, THE SYSTEM SHALL put it down and clear the selection, except during a chain. During a chain, choosing the piece again has no effect, and only "End turn" or a further jump moves the game on (section 6.1.3). The owner chose this on 2026-11-14.
 
 #### 6.1.3 Capture chains
 
