@@ -102,6 +102,7 @@ These decisions were made with the owner before this document was written. They 
 | 2026-11-10 | The words are "man" and "men", and "the computer", not "PC". A short welcome line goes on the game setup screen. |
 | 2026-11-13 | The selected piece's targets come from the web app's own rules, with no call to the API. |
 | 2026-11-13 | Undo goes back to the start of the player's last turn. |
+| 2026-11-14 | In a computer game, Undo is available only on the person's turn, or after the computer's move has failed. |
 | 2026-11-13 | A game in progress survives a page refresh. |
 | 2026-11-13 | Every page meets WCAG 2.2 AA, and the game can be played with a keyboard alone. |
 | 2026-11-13 | The page has a light mode and a dark mode. It starts in the device's mode, and a switch on the page changes it. The owner first chose no switch, then asked for one after seeing the mockup on 2026-11-13. |
@@ -356,9 +357,9 @@ GitHub Pages serves the site as static files at `https://ollierumbol.github.io/d
    * In a computer game, it removes the computer's last reply and the person's last turn. It is then the person's turn again.
 2. Undo can be repeated back to the start of the game.
 3. During a chain, Undo SHALL return to the start of the current turn.
-4. WHEN Undo is pressed while the computer is thinking or showing its move, THE SYSTEM SHALL cancel the computer's move, then undo as item 1 says.
+4. In a computer game, Undo SHALL NOT be available while the computer is thinking or showing its move. So a person can undo only on their own turn. WHEN the computer's move has failed (section 6.1.9), Undo SHALL be available again. It removes the person's last turn, because the computer has not replied. The owner chose this on 2026-11-14.
 5. The board, the turn and the count of captured pieces SHALL all be restored, and the board SHALL be redrawn at once.
-6. WHEN there is nothing to undo, the Undo control SHALL do nothing and SHALL say so to assistive technology.
+6. WHEN there is nothing to undo, or Undo is not available (item 4), the Undo control SHALL be shown as not available, and assistive technology SHALL be told so. In a two-player game, Undo is available on every turn once there is something to undo.
 7. WHEN the game has ended because a player cannot move (section 2.1, item 7), the result SHALL also offer Undo. Undo then works as item 1 says, and the game continues. After a player gives up, Undo is not offered. The owner chose this on 2026-11-13.
 
 #### 6.1.8 Saving the game in the browser
@@ -443,11 +444,11 @@ Examples 1 to 7 are copied from the Draughts Game Function specification, sectio
 | # | Situation | Action | Expected result |
 | --- | --- | --- | --- |
 | 19 | Computer game. The person moves, the computer replies. | Undo | Both turns are removed. The board is redrawn at once. It is the person's turn. |
-| 20 | Computer game. The person moves. The computer is thinking. | Undo | The computer's move is cancelled and never shown. The person's move is removed. |
+| 20 | Computer game. The person moves. The computer is thinking. | Undo | Undo is not available. The computer's move is shown as normal, and then Undo is available. |
 | 21 | Two-player game. Player 1 moves, then player 2 moves. | Undo | Player 2's turn is removed. It is player 2's turn again. |
 | 22 | Player 1 is in a chain, after the first of two jumps. | Undo | The board returns to the start of player 1's turn. |
 | 23 | A computer game in progress. | Refresh the page | The same board, turn, level, captured counts and undo history are shown. |
-| 24 | The API is stopped. Computer game, the person moves. | — | The board stays as it was after the person's move. The message and "Try again" are shown. Undo, Give up and New game work. |
+| 24 | The API is stopped. Computer game, the person moves. | — | The board stays as it was after the person's move. The message and "Try again" are shown. Undo, Give up and New game work. Undo removes the person's move. |
 | 25 | As example 24, then the API is started again. | Try again | The computer's move is shown. The game continues. |
 | 26 | Computer game. The person captures the computer's last piece. | — | "You win" is shown. No API call is made. |
 
@@ -537,7 +538,7 @@ The content is in section 6.1.11. Each board picture on How to play has a text a
 2. A king's chain ends on its start square (examples 5 and 17).
 3. A man becomes a king during a chain, and the chain ends (example 12).
 4. The computer has no legal move after the person's turn. The game ends, with no API call (examples 13 and 26).
-5. The person gives up, presses Undo or chooses New game while the computer's move is waiting or being shown. The computer's move is cancelled. A response that arrives later is ignored.
+5. The person gives up or chooses New game while the computer's move is waiting or being shown. The computer's move is cancelled. A response that arrives later is ignored.
 6. Several clicks arrive quickly, or during the computer's move. Only the clicks that section 6.1.2 allows have an effect.
 7. The API is slow on a cold start. The "thinking" state stays until the response arrives or the time limit passes (section 6.1.9, item 5).
 8. The API is stopped or the network drops (examples 24 and 25).
