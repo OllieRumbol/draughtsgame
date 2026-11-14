@@ -24,7 +24,7 @@ body{margin:0;background:#EDE7DC;font-family:system-ui,sans-serif;padding:16px}
 .demo button{font:inherit;padding:6px 12px;border-radius:6px;border:1px solid #bbb;background:#fff;cursor:pointer}
 .demo button[aria-pressed=true]{border-color:#333;font-weight:600}
 .wrap{display:flex;justify-content:center}
-.pg{--page:#F6EFE3;--surface:#FBF7F0;--border:#E3D5BE;--text:#3B2A1A;--muted:#7A6650;--button:#EFE4D2;--primary:#5A3A22;--onprimary:#FBF7F0;--brass:#9C7424;--stack-light-edge:#8A7458;--stack-dark-edge:#0A0604;
+.pg{--page:#F6EFE3;--surface:#FBF7F0;--border:#E3D5BE;--text:#3B2A1A;--muted:#7A6650;--button:#EFE4D2;--primary:#5A3A22;--onprimary:#FBF7F0;--brass:#9C7424;--stack-light-edge:#8A7458;--stack-dark-edge:#8A7458;
  background:var(--page);color:var(--text);font-family:'Source Sans 3',system-ui,sans-serif;font-size:14px;line-height:1.45;border-radius:10px;padding:14px 16px 18px;box-sizing:border-box;transition:background .25s,color .25s;max-width:860px}
 .pg.dark{--page:#1C1814;--surface:#26201A;--border:#3A3027;--text:#EFE6D8;--muted:#B8A890;--button:#302820;--primary:#C9A25A;--onprimary:#1C1814;--brass:#C9A25A;--stack-light-edge:#BFA884;--stack-dark-edge:#8A7A68}
 .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
@@ -102,9 +102,15 @@ function pieceStyle(v,state){const dk=v===2||v===4,bg=dk?"#1E140E":"#F4EBDD",bd=
 function targetsNow(){if(!S.sel)return [];return steps(S.board,S.sel[0],S.sel[1],!!S.chain);}
 function tipSquares(){if(!S.tips||S.phase!=="play")return [];const set=new Set();allMoves(S.board,1).forEach(m=>{const e=m.path[m.path.length-1];if(S.board[e[0]][e[1]]===5)set.add(e+"");});return [...set];}
 function canUndo(){return S.hist.length>0&&(S.phase==="play"||(S.phase==="over"&&!S.gaveUp));}
-function stack(n,dk,horiz,who){let h=`<div class="stk" style="${horiz?"":"flex-direction:column"}"><div style="position:relative;${horiz?`height:16px;width:${30+Math.max(n-1,0)*7}px`:`width:30px;height:${16+Math.max(n-1,0)*6}px`}">`;
- for(let i=0;i<n;i++)h+=`<div class="disc" style="position:absolute;${horiz?`left:${i*7}px;bottom:0`:`left:0;bottom:${i*6}px`};width:30px;height:13px;background:${dk?"#1E140E":"#F4EBDD"};border:1.5px solid ${dk?"var(--stack-dark-edge)":"var(--stack-light-edge)"}"></div>`;
- return h+`</div><span>${who} ${n}</span></div>`;}
+// Captured men, seen from the side. Desktop: one upright stack. Phone: short towers of up to four,
+// side by side, so a long row never merges into one dark shape.
+function tower(count,dk,width,step,height){let h=`<div style="position:relative;width:${width}px;height:${height+Math.max(count-1,0)*step}px">`;
+ for(let i=0;i<count;i++)h+=`<div class="disc" style="position:absolute;left:0;bottom:${i*step}px;width:${width}px;height:${height}px;background:${dk?"#1E140E":"#F4EBDD"};border:1.5px solid ${dk?"var(--stack-dark-edge)":"var(--stack-light-edge)"}"></div>`;
+ return h+"</div>";}
+function stack(n,dk,horiz,who){
+ if(!horiz)return `<div class="stk" style="flex-direction:column">${tower(n,dk,30,6,13)}<span>${who} ${n}</span></div>`;
+ let towers="",left=n;while(left>0){const t=Math.min(4,left);left-=t;towers+=tower(t,dk,24,5,9);}
+ return `<div class="stk"><div style="display:flex;gap:6px;align-items:flex-end;min-height:9px">${towers}</div><span>${who} ${n}</span></div>`;}
 function layoutHTML(){
  const nav=`<div class="hd"><span class="wm">Draughts</span><div class="nav"><span class="cur">Play</span><span>How to play</span><span>About</span><button class="tg" id="theme" aria-pressed="${dark}">${dark?"Light mode":"Dark mode"}</button></div></div>`;
  const board=`<div class="frame"><div class="inlay"><div class="brd"><div class="grid" id="grid" role="grid" aria-label="Draughts board"></div><div class="pcs" id="pcs"></div></div></div><div class="mark">${crownSvg(12)}For Ernest</div></div>`;

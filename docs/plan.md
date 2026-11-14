@@ -317,7 +317,7 @@ The owner made these choices between 2026-11-10 and 2026-11-14, from the mockups
 | --- | --- |
 | References | A real wooden draughts board: grain, brass, worn edges, pieces you could almost pick up. A photo of the owner's family board, if the owner supplies one, sets the exact wood colours. |
 | Character | Warm, traditional, calm, made with care |
-| Signature | **The family board leads.** Wood grain on every square, and a walnut frame with a thin brass inlay. Three details support it and stay small: "For Ernest" with a crown set into the bottom edge of the frame; turned pieces with lathe rings; and captured men stacked beside the board. |
+| Signature | **The family board leads.** Wood grain on every square, and a walnut frame with a thin brass inlay. Three details support it and stay small: "For Ernest" with a crown set into the bottom edge of the frame; turned pieces with lathe rings; and captured men stacked beside the board. On desktop, each player's captured men form one upright stack beside the board. On a phone, they form short towers of up to four, side by side, above and below the board. The owner chose the towers on 2026-11-14, because one long sideways row of dark men merged into one shape. |
 | Type | Fraunces (variable, weight 500) for the wordmark and headings. Source Sans 3 (variable, weights 400 and 600) for everything else. Scale: 14, 16, 20, 24 and 32 px. Body text 16 px, line height 1.5. |
 | Colour | See the table below. |
 | Motion | See the motion table below. |
@@ -344,7 +344,7 @@ The owner made these choices between 2026-11-10 and 2026-11-14, from the mockups
 | `--man-dark` | `#1E140E`, edge `#0A0604` | same | Player 2 pieces | 3.10 on walnut |
 | `--cream` | `#FFF6E2` | same | Target dots, last-move line | 5.43 on walnut |
 | `--stack-light-edge` | `#8A7458` | `#BFA884` | Edge of the captured ivory men stacked beside the board | 3.89 on the light page |
-| `--stack-dark-edge` | `#0A0604` | `#8A7A68` | Edge of the captured dark men stacked beside the board | 4.26 on the dark page. Without it, dark men vanish on the dark page. |
+| `--stack-dark-edge` | `#8A7458` | `#8A7A68` | Edge of the captured dark men stacked beside the board, and the line between one man and the next | 3.89 on the light page, 4.26 on the dark page. A near-black edge made a row of dark men merge into one dark shape on a phone. |
 
 **How each board mark looks.** Spec section 6.4.2, item 5 requires that each mark looks different from the others.
 
