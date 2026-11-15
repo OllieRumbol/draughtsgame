@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *what are we building, and why?* It is agreed before any design or code, and it is the source of truth for requirements.
 
 Status: Approved
-Last updated: 2026-11-14 (section 6.1.2, item 7 added with the plan)
+Last updated: 2026-11-15 (the end-of-game rule, now also in the API; after /review-plan: sections 6.1.4 item 6, 6.1.6 item 4 and 6.1.7 item 1; after the whole-site design: section 6.1.11 items 3 and 5)
 
 ---
 
@@ -19,7 +19,7 @@ This work rebuilds the web app on supported tools, adds automated build, test an
 
 ### 2.1 House rules
 
-The owner built the game in memory of their grandad, who died in 2020. The game uses the rules they played together. These rules are fixed for this work. They are the same rules that the API follows (source: the Draughts Game Function specification, section 2.1, approved 2026-11-06).
+The owner built the game in memory of their grandad, who died in 2020. The game uses the rules they played together. These rules are fixed for this work. They are the same rules that the API follows (source: the Draughts Game Function specification, section 2.1, approved 2026-11-06, with the end-of-game rule changed on 2026-11-15).
 
 1. Captures are optional. A player may make a normal move when a capture is available.
 2. A capture chain may stop after any jump.
@@ -27,11 +27,11 @@ The owner built the game in memory of their grandad, who died in 2020. The game 
 4. A man can capture only men. It cannot capture a king. A king can capture both men and kings.
 5. A piece cannot be captured twice in the same chain.
 6. A man that reaches the far row becomes a king, and the turn ends.
-7. **The end of the game.** After every turn, both players are checked:
-   * If neither player can move, the game is a tie.
-   * If only one player can move, that player wins.
+7. **The end of the game.** After every turn, the player who moves next is checked. If that player has no legal move, they lose, and the other player wins. It does not matter whether the other player could move.
 
-   A player with no pieces has no moves, so losing every piece is covered by this rule. A player can also give up. There is no other draw rule.
+   A player with no pieces has no moves, so losing every piece is covered by this rule. A player can also give up. There are no ties.
+
+   The owner changed this rule on 2026-11-14, during planning. It was "neither player can move: a tie; only one player can move: that player wins". The API changed to the same rule on 2026-11-15 (Draughts Game Function pull request #44).
 
 ### 2.2 Terms
 
@@ -103,6 +103,7 @@ These decisions were made with the owner before this document was written. They 
 | 2026-11-13 | The selected piece's targets come from the web app's own rules, with no call to the API. |
 | 2026-11-13 | Undo goes back to the start of the player's last turn. |
 | 2026-11-14 | In a computer game, Undo is available only on the person's turn, or after the computer's move has failed. |
+| 2026-11-14 | The end of the game uses the standard rule: the player to move who cannot move loses, and there are no ties (section 2.1, item 7). |
 | 2026-11-13 | A game in progress survives a page refresh. |
 | 2026-11-13 | Every page meets WCAG 2.2 AA, and the game can be played with a keyboard alone. |
 | 2026-11-13 | The page has a light mode and a dark mode. It starts in the device's mode, and a switch on the page changes it. The owner first chose no switch, then asked for one after seeing the mockup on 2026-11-13. |
@@ -144,7 +145,7 @@ Line numbers refer to `origin/main` at commit `da953ce`.
 | Area | Purpose | State |
 | --- | --- | --- |
 | Build tools | Build, test and start the app | Create React App 4.0.1, React 17.0.1, React Router 5.2.0, react-bootstrap 1.4.0, Bootstrap 5.0.0-beta3, JavaScript. Every package is several major versions behind (`npm outdated`, 2026-11-10). |
-| `src/components/home/CompleteBoard.js` | The board and almost all game logic | 660 lines. Move checks, captures, kings, chains, undo, give up and the computer's turn, in two `useEffect` blocks: one for each mode. |
+| `src/components/home/CompleteBoard.js` | The board and almost all game logic | 653 lines. Move checks, captures, kings, chains, undo, give up and the computer's turn, in two `useEffect` blocks: one for each mode. |
 | `src/logic/helpers/` | A copy of the move rules | Used only for the end-of-game check. It does not have the API's later rule fixes. |
 | `src/logic/automatedPlayerV1.js` to `V3.js` | Old computer players | Not used by the app. Only tests use them. |
 | `src/logic/api.js` | API calls | The API address is written in the code. The request sends `Version`, `Depth` and `Player`. |
@@ -182,7 +183,7 @@ Line numbers refer to `origin/main` at commit `da953ce`.
 11. **The rules exist in three places.**
     The hand-written checks in `CompleteBoard.js`, the copy in `src/logic/helpers/`, and the API. They can disagree.
 12. **How to play gives wrong and missing rules.**
-    `HowToPlay.js:60` says "Kings can only move up and down the board". The page does not say that captures are optional, that a chain may stop after any jump, that a man cannot capture a king, or that the game can be a tie.
+    `HowToPlay.js:60` says "Kings can only move up and down the board". The page does not say that captures are optional, that a chain may stop after any jump, or that a man cannot capture a king.
 13. **An invalid move opens a dialog.**
     `CompleteBoard.js:481` and `:571` open an "invalid move" dialog for any click that is not a legal move.
 14. **A game is lost on navigation.**
@@ -329,6 +330,7 @@ GitHub Pages serves the site as static files at `https://ollierumbol.github.io/d
 3. The tips SHALL be removed when the player hides them, when the turn ends, or when the board changes.
 4. WHEN the request fails, THE SYSTEM SHALL say that tips are not available, and the game SHALL continue.
 5. Tips and targets SHALL look different, so the player can tell them apart.
+6. During a chain (section 6.1.3), the "Show tips" control SHALL NOT be available, and SHALL be shown as not available, as section 6.1.7, item 6 says for Undo. The next jump squares are already marked as targets. The API's tips would also mark squares for pieces that cannot move in that turn. The owner chose this on 2026-11-15.
 
 #### 6.1.5 The computer's turn
 
@@ -350,10 +352,11 @@ GitHub Pages serves the site as static files at `https://ollierumbol.github.io/d
 4. **Give up.**
    * In a two-player game, the player whose turn it is may give up. The other player wins.
    * In a computer game, the person may give up at any time, including while the computer is thinking. A computer move that has not been shown yet is cancelled. The computer wins.
+   * WHEN the person gives up while the computer's move is being shown, THE SYSTEM SHALL stop showing it, and show the board as it was before the computer's move. The owner chose this on 2026-11-15.
 
 #### 6.1.7 Undo
 
-1. One Undo SHALL return the game to the start of the last turn of the person who pressed it:
+1. One Undo SHALL return the game to the start of the last turn that a person played:
    * In a two-player game, it removes the last turn.
    * In a computer game, it removes the computer's last reply and the person's last turn. It is then the person's turn again.
 2. Undo can be repeated back to the start of the game.
@@ -399,12 +402,17 @@ A request fails when there is no response, the response is not the JSON shape in
    2. The rules in section 2.1, in short steps. Each rule has a small board picture: a move, a capture, a chain, a king, and the end of the game.
    3. "Our house rules": how these rules differ from standard English draughts. It links to About.
    4. "Using the game": how to select a piece, move, continue or end a chain, show tips, undo and give up, with the mouse, by touch and with the keyboard.
+
+   The page also has links to its three parts at the top, and a link to start a game at the end. Each rule picture, other than the end of the game, has a "Show me" control that plays the move with the board's own motion. A taken man is marked with a dashed ring. The owner chose these on 2026-11-15.
 4. The How to play text is drafted from section 2.1. The owner approves the wording.
 5. **About** has these parts, in this order:
    1. The heading "Ernest Rumbol", with no years.
-   2. A photo that the owner supplies. Until then, a visible placeholder.
-   3. The tribute. It starts from the text in `About.js` on `origin/main`, with "past away" corrected to "passed away". Any other edit is suggested to the owner one line at a time, and only accepted edits are used.
-   4. "How it's built": a short paragraph with links to the web app's repository and the API's repository.
+   2. A photo that the owner supplies, with a short caption in the owner's words. Until then, a visible placeholder for each.
+   3. The tribute. It starts from the text in `About.js` on `origin/main`, with "past away" corrected to "passed away", split into three paragraphs with no change to the words. Any other edit is suggested to the owner one line at a time, and only accepted edits are used.
+   4. A photo of the family draughts board, captioned "The board we played on", if the owner supplies one. Until then, a visible placeholder.
+   5. "How it's built": a short paragraph with links to the web app's repository and the API's repository.
+
+   The owner added the caption, the paragraphs and the family board photo on 2026-11-15.
 6. The About page SHALL NOT show the project plan cards or the old list of tools.
 7. Every text the player reads is in UK English.
 
@@ -429,7 +437,7 @@ Examples 1 to 7 are copied from the Draughts Game Function specification, sectio
 | 11 | Starting board. Player 1 selects the man at (5,2), then the man at (5,4). | The man at (5,4) is selected. Targets (4,3) and (4,5). | Section 6.1.2, item 4 |
 | 12 | Player 1 man at (2,3), player 2 man at (1,2). Player 1 jumps to (0,1). | The man becomes a king and the turn ends. | Section 2.1, item 6 |
 | 13 | Player 2 man at (3,2). Player 1 men at (4,1), (5,0), (5,2) and (5,4). Computer game, player 1's turn. Player 1 moves (5,2) to (4,3). | Player 2 has no legal move, so player 1 wins. No API call is made. | Section 2.1, item 7; section 4.1, item 7 |
-| 14 | No piece of either player can move | Tie | Section 2.1, item 7 |
+| 14 | Player 2 men at (0,1), (0,3), (0,5) and (0,7). Player 1 men at (1,0), (1,2), (1,4), (1,6), (2,1), (2,3), (2,5) and (2,7). Player 1 has just moved, so it is player 2's turn. | Player 2 has no legal move, so player 1 wins, even though player 1 could not move either | Section 2.1, item 7. Under the older rule this was a tie. |
 
 #### 6.2.2 Showing the computer's chain
 
@@ -470,7 +478,6 @@ Examples 1 to 7 are copied from the Draughts Game Function specification, sectio
 | Player 1 or player 2 wins, two-player game | "Player 1 wins" or "Player 2 wins", and the reason: no pieces, no moves, or the other player gave up |
 | The person wins, computer game | "You win", and the reason |
 | The computer wins | "The computer wins", and the reason |
-| Tie | "It's a tie. Neither player can move." |
 
 The exact wording of each message is drafted with the design and approved by the owner.
 

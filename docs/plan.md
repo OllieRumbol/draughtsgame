@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *how will we build it?* It turns the approved requirements in spec.md into a design, and it is agreed before any code is written.
 
 Status: Approved
-Last updated: 2026-11-14
+Last updated: 2026-11-15
 
 ---
 
@@ -46,6 +46,7 @@ Nothing in this site is secret (spec section 6.5, item 5). Every setting is in t
 | --- | --- | --- | --- |
 | `VITE_API_BASE_URL` | `https://func-draughts-game-chhwarhkf4hphjf0.uksouth-01.azurewebsites.net/api` | `.env.production` | Read once in `src/services/api.ts`. Spec section 5.1. |
 | `VITE_API_BASE_URL` | `/api` | `.env.development` | The Vite dev server forwards `/api` to the live API (section 3.5, decision 9). |
+| `VITE_API_BASE_URL` | `https://api.test/api` | `.env.test` | Vitest runs in `test` mode, which reads neither file above. MSW answers requests to this address, so no test request leaves the computer. |
 | Vite `base` | `/draughtsgame/` | `vite.config.ts` | The site is served under this path (spec section 2.5). |
 | Dev proxy target | The production base URL, without `/api` | `vite.config.ts` | Used by `npm run dev` only. |
 | Request time limit | 15,000 ms | `src/services/api.ts` | Spec section 6.1.9, item 5. A constant, not a setting, because it changes only with the spec. |
@@ -55,6 +56,8 @@ Nothing in this site is secret (spec section 6.5, item 5). Every setting is in t
 | Node.js | 26 (the current LTS, checked on 2026-11-14) | `.nvmrc` and the workflow | Spec section 3, goal 1. Every chosen package also supports Node 24, which the owner's computer has today. |
 
 Vite exposes only variables that start with `VITE_` to the browser ([Vite env docs](https://vite.dev/guide/env-and-mode)). None of them is secret.
+
+`api.ts` throws when it is loaded and `VITE_API_BASE_URL` is empty. So a missing setting fails the tests and the first page load, not a game in progress.
 
 ---
 
@@ -151,9 +154,11 @@ export function nextSteps(board: Board, from: Position, chain: ChainSoFar | null
 // Applies a whole move: removes the captured pieces and promotes a man on the far row.
 export function applyMove(board: Board, move: Move): Board;
 
-// Spec section 2.1, item 7. Checked after every turn.
-export type Outcome = { kind: "playing" } | { kind: "win"; winner: Player } | { kind: "tie" };
-export function outcome(board: Board): Outcome;
+// Spec section 2.1, item 7, for the player who moves next. The reason is shown with the result (spec section 6.3).
+export type Outcome =
+  | { kind: "playing" }
+  | { kind: "win"; winner: Player; reason: "noPieces" | "noMoves" };
+export function outcome(board: Board, toMove: Player): Outcome;
 
 // Spec section 6.1.5, items 3 and 4. Null when no legal chain matches, which counts as a failure.
 export function findPath(board: Board, player: Player, from: Position, to: Position, takes: Position[]): Move | null;
@@ -177,6 +182,9 @@ export type Phase =
   | { kind: "computerFailed"; requestId: number }
   | { kind: "over"; result: Result };
 
+// Spec section 6.3. "gaveUp" also tells canUndo that Undo is not offered (spec section 6.1.7, item 7).
+export type Result = { winner: Player; reason: "noPieces" | "noMoves" | "gaveUp" };
+
 export type Snapshot = { board: Board; toMove: Player; capturedBy: Record<Player, number> };
 
 export type GameState = {
@@ -184,7 +192,8 @@ export type GameState = {
   board: Board;
   toMove: Player;
   capturedBy: Record<Player, number>;
-  history: Snapshot[]; // the start of each turn, for Undo
+  turnStart: Snapshot; // the start of the current turn, for Undo during a chain
+  history: Snapshot[]; // the start of each finished turn, for Undo
   lastComputerMove: { from: Position; to: Position } | null;
   phase: Phase;
 };
@@ -209,14 +218,17 @@ Rules that the reducer enforces:
 
 * **Select.** `select` on the selected piece clears the selection. `select` on another own piece switches to it. Any other square clears the selection. During a chain, `select` and a click on a square that is not a target do nothing (spec sections 6.1.2 and 6.1.3).
 * **Moves and chains.** `chooseTarget` applies one step. When further jumps exist, and the man has not just become a king, the phase keeps `chain` (spec section 6.1.3). Otherwise the turn ends.
-* **End of a turn.** At the end of every turn, the reducer pushes the turn's starting `Snapshot` to `history`, then checks `outcome` (spec section 6.1.6, item 1). Then:
+* **End of a turn.** At the end of every turn, the reducer pushes `turnStart` to `history`, then checks `outcome` (spec section 6.1.6, item 1). The next turn's `turnStart` is the board after this turn. Then:
   * if the game is over, the phase becomes `over`;
   * if it is the computer's turn, the phase becomes `computerThinking`;
   * otherwise, the phase becomes `turn` for the next player.
 * **Undo** (spec section 6.1.7):
   * In a computer game, it pops snapshots until the snapshot is for the person's turn. So it removes the computer's reply and the person's turn together.
-  * During a chain, it restores the start of the current turn.
-  * `canUndo` is false while the phase is `computerThinking` or `computerMoving`, or after the person gives up.
+  * During a chain, it restores `turnStart`.
+  * `canUndo` is false while the phase is `computerThinking` or `computerMoving`, or after a player gives up.
+  * In a computer game, `canUndo` is also false when `history` holds no snapshot for the person's turn. This happens in a game that the computer started, before the person's first turn ends. Undo never restores a snapshot for the computer's turn, so it never starts a new request.
+* **Computer moving.** In `computerMoving`, `board` changes at each `computerStepShown`, so the state matches what the screen shows.
+* **Give up during the computer's turn.** In `computerThinking` or `computerMoving`, `giveUp` restores `turnStart`, which is the board before the computer's move. Then the phase becomes `over`, and the computer wins (spec section 6.1.6, item 4). The hook's cleanup cancels the request or the animation.
 * **Stale responses.** `requestId` goes up by one for every request. A `computerMoveReceived` or `computerMoveFailed` with an old `requestId` is ignored (spec section 6.6, item 5).
 * **Purity.** The reducer is pure. It never calls the API or storage. Hooks do that (section 3.3.4).
 
@@ -236,15 +248,16 @@ export type ApiResult<T> = { ok: true; value: T } | { ok: false; failure: ApiFai
 
 export type ApiMove = { from: Position; to: Position; takes: Position[] };
 
-export function getNextMove(board: Board, level: Level, signal: AbortSignal): Promise<ApiResult<ApiMove>>;
-export function getTips(board: Board, player: Player, signal: AbortSignal): Promise<ApiResult<Position[]>>;
+// timeLimitMs defaults to 15,000 (section 2). Tests pass a short limit (section 7.1).
+export function getNextMove(board: Board, level: Level, signal: AbortSignal, timeLimitMs?: number): Promise<ApiResult<ApiMove>>;
+export function getTips(board: Board, player: Player, signal: AbortSignal, timeLimitMs?: number): Promise<ApiResult<Position[]>>;
 ```
 
 How the service behaves:
 
 * **Requests.** It sends `{ "Difficulty": level, "Board": board }` and `{ "Board": board, "TipFor": player }` (spec sections 5.1 and 5.2).
 * **Body check.** It checks the body by hand, with a small type guard for each response. It returns a typed result and never throws. A library such as Zod is not needed for two small response shapes.
-* **Time limit.** It combines the caller's signal with `AbortSignal.timeout(15000)` through `AbortSignal.any` ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/any_static)). This works in every browser that spec section 6.5, item 2 lists.
+* **Time limit.** It combines the caller's signal with `AbortSignal.timeout(timeLimitMs)` through `AbortSignal.any` ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/any_static)). This works in every browser that spec section 6.5, item 2 lists.
 * **Who calls it.** `useComputerTurn` calls `getNextMove` while the phase is `computerThinking`. Then it runs `findPath`, and dispatches `computerMoveReceived` or `computerMoveFailed`. Its effect cleanup aborts the request when the phase changes, for example on Give up or New game.
 
 #### 3.3.5 Routes (`src/routes.tsx`)
@@ -268,21 +281,22 @@ type BoardProps = {
 };
 ```
 
-The board uses the ARIA grid pattern: `role="grid"`, with rows and `gridcell`s, and one roving `tabindex`. The arrow keys move the focus, and Enter or Space act on the focused cell. Escape clears the selection ([ARIA APG grid pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)). Each cell's accessible name follows spec section 6.4.3, item 2. Announcements go to one polite live region.
+The board uses the ARIA grid pattern: `role="grid"`, with rows and `gridcell`s, and one roving `tabindex`. All 64 squares are cells. The arrow keys move the focus one square up, down, left or right, light squares included, and stop at the edge of the board. A light square is named, for example, "Row 8, column 2, light square", and Enter or Space on it does nothing. The owner chose every square over dark squares only on 2026-11-15, because it is the standard grid behaviour. Enter or Space act on the focused cell. Escape clears the selection ([ARIA APG grid pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)). Each cell's accessible name follows spec section 6.4.3, item 2. Announcements go to one polite live region.
 
 ### 3.4 Data model
 
-**Saved game (`localStorage`, key `draughts.game.v1`).** The `GameState` from section 3.3.3, saved as JSON after every action that ends a turn, and at game over.
+**Saved game (`localStorage`, key `draughts.game.v1`).** The `GameState` from section 3.3.3, saved as JSON after every change to it, except a change of selection, a step inside a chain, and `computerStepShown`. So the save points are: Start game, the end of every turn (which includes game over and the start of the computer's turn), Undo, Give up, a failed computer move, and Try again.
 
 * The phases `computerThinking` and `computerMoving` are saved as `computerThinking`. So a refresh asks the API again (spec section 6.1.8, item 3).
 * A selection is not saved. After a refresh, no piece is selected.
-* A chain in progress is not saved. Saving happens only at the end of a turn, so a refresh mid-chain returns to the start of that turn.
+* A chain in progress is not saved, so a refresh mid-chain returns to the start of that turn.
+* After Undo, the saved game is the restored one. So a refresh does not bring back the undone turns.
 
 `saved-game.ts` checks the parsed JSON before it is used:
 
 * 8 rows of 8 cells, with values 0 to 5;
 * the settings values;
-* every snapshot in the history.
+* `turnStart` and every snapshot in the history.
 
 Anything that fails a check is discarded (spec section 6.1.8, item 5).
 
@@ -301,13 +315,14 @@ Anything that fails a check is discarded (spec section 6.1.8, item 5).
 | 5 | Styling | CSS Modules, with tokens as CSS variables in `tokens.css` | Built into Vite, with no extra package. Bootstrap's look is on the avoid list (section 3.6). | react-bootstrap; Tailwind; CSS-in-JS |
 | 6 | Animation | CSS transitions and the Web Animations API | The motion is small and fixed (section 3.6), so no library is needed. | Framer Motion; React Spring |
 | 7 | Fonts | Served by the site through `@fontsource-variable/fraunces` and `@fontsource-variable/source-sans-3` | No request to Google, which keeps spec section 6.5, item 6 (no tracking). Both fonts use the SIL Open Font License. | Google Fonts links |
-| 8 | Routing | React Router 8, hash router | Section 3.3.5. One file of routes. | Paths with a GitHub Pages 404 workaround; hand-written hash routing |
+| 8 | Routing | React Router 8, hash router, from the `react-router` package | Section 3.3.5. One file of routes. `react-router-dom` stops at version 7 (`npm view`, 2026-11-15). | Paths with a GitHub Pages 404 workaround; hand-written hash routing |
 | 9 | Local API calls | The Vite dev server proxies `/api` to the live API | The API allows only `ollierumbol.github.io` in a browser (spec section 5.3). A dev-server proxy calls it from Node.js, where CORS does not apply ([Vite `server.proxy`](https://vite.dev/config/server-options#server-proxy)). On 2026-11-14, a POST with `Origin: http://localhost:5173`, sent from outside a browser, got the normal tips response, so the API does not reject such requests. No change to the API is needed. | Add `localhost` to the API's CORS; run the API locally |
 | 10 | Deployment | GitHub Actions, with `actions/upload-pages-artifact` and `actions/deploy-pages` | It needs no stored token, only the workflow's `pages: write` and `id-token: write` permissions ([GitHub Docs: custom workflows for Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)). This meets spec section 6.5, item 5. | The `gh-pages` package with the 2021 `TOKEN` secret |
 | 11 | Tests | Vitest and React Testing Library for units and components; MSW for the API; Playwright and `@axe-core/playwright` for end-to-end and accessibility | `~/.claude/rules/react.md`. The accessibility checks in spec section 6.5, item 1 need a real browser for colour contrast, which jsdom cannot compute. | jsdom-only accessibility checks; Cypress |
 | 12 | Old code | Remove the old `src/` in the tooling phase. The old app stays live from `gh-pages` until the release. | The new tools cannot build JSX in `.js` files. The owner chose on 2026-11-14 to keep the old game live, rather than show a placeholder (section 8.3). | Keeping both apps side by side; a placeholder page on the live site |
 | 13 | A captured piece during the person's chain | Fades away at its jump, as the computer's do. `rules.ts` still treats its square as taken until the turn ends. | Matches the API (section 3.2), so both give the same moves. The square can only matter in rare king loops. | Keeping captured pieces on the board until the turn ends |
-| 14 | Package updates | Dependabot version updates, weekly, for npm and GitHub Actions | Keeps spec section 6.5, items 5 and 7 true after the release, at no cost | Updating by hand |
+| 14 | Package updates | Dependabot version updates, weekly, for npm and GitHub Actions. It ignores `typescript` updates outside the range that `typescript-eslint` supports (decision 1), so it does not open a pull request that cannot install. | Keeps spec section 6.5, items 5 and 7 true after the release, at no cost | Updating by hand |
+| 15 | Licence | MIT, for the code only. The README says that the About tribute and the photos are not covered, and stay the owner's. | The repository is public, and `layout.md` lists `LICENSE` as a root file. The owner chose this on 2026-11-15. | No licence (default copyright); MIT for everything, which would let anyone reuse the tribute and the photos |
 
 ### 3.6 Design direction
 
@@ -318,11 +333,11 @@ The owner made these choices between 2026-11-10 and 2026-11-14, from the mockups
 | References | A real wooden draughts board: grain, brass, worn edges, pieces you could almost pick up. A photo of the owner's family board, if the owner supplies one, sets the exact wood colours. |
 | Character | Warm, traditional, calm, made with care |
 | Signature | **The family board leads.** Wood grain on every square, and a walnut frame with a thin brass inlay. Three details support it and stay small: "For Ernest" with a crown set into the bottom edge of the frame; turned pieces with lathe rings; and captured men stacked beside the board. On desktop, each player's captured men form one upright stack beside the board. On a phone, they form short towers of up to four, side by side, above and below the board. The owner chose the towers on 2026-11-14, because one long sideways row of dark men merged into one shape. |
-| Type | Fraunces (variable, weight 500) for the wordmark and headings. Source Sans 3 (variable, weights 400 and 600) for everything else. Scale: 14, 16, 20, 24 and 32 px. Body text 16 px, line height 1.5. |
+| Type | Fraunces (variable, weight 500) for the wordmark and headings. Source Sans 3 (variable, weights 400 and 600) for everything else. Scale: 14, 16, 20, 24 and 32 px. Body text 16 px, line height 1.5. The design uses other sizes (11.5 to 26 px, with 14 px body text). This scale wins. |
 | Colour | See the table below. |
 | Motion | See the motion table below. |
 | Avoid | Childish colours (bright primaries, mustard, hot pink, sky blue); flashy effects (glows, confetti, sparkles, bouncing banners); the default Bootstrap look (dark badges, big blue buttons, every block in a card); glossy plastic pieces. |
-| Approved design | `docs/design/game-screen.html`, an interactive mockup of the game screen. The owner approved it on 2026-11-14. It shows the board, the pieces, every mark, the motion, light and dark mode, and the desktop and phone layouts. The comment at the top of the file lists where it differs from the real site. Where it and this plan differ, this plan wins. |
+| Approved design | `docs/design/site.html`, an interactive mockup of the whole site: the header, game setup, the game in both modes, How to play, About and "page not found". The owner approved the game screen on 2026-11-14, and the whole site on 2026-11-15. It shows the board, the pieces, every mark, the motion, light and dark mode, and the desktop and phone layouts. The comment at the top of the file lists where it differs from the real site. Where it and this plan differ, this plan wins. |
 | Content | Spec section 6.1.11. The How to play text is drafted from spec section 2.1 and approved by the owner. The About tribute starts from `About.js` on `main`, with edits the owner accepts one by one. The owner supplies the photo. |
 
 **Colour tokens.** The board and pieces use the same colours in both modes. Contrast was measured with the WCAG 2.2 formula on 2026-11-14. The rule for graphics needs at least 3 to 1, and the rule for text needs at least 4.5 to 1.
@@ -335,23 +350,28 @@ The owner made these choices between 2026-11-10 and 2026-11-14, from the mockups
 | `--text` | `#3B2A1A` | `#EFE6D8` | Body text | 11.99, 14.27 |
 | `--text-muted` | `#7A6650` | `#B8A890` | Labels, captions | 4.78, 7.60 |
 | `--button` | `#EFE4D2` | `#302820` | Secondary buttons | — |
-| `--button-primary` | `#5A3A22` | `#C9A25A` | One main action per view | Text on it: 9.53 (light) |
-| `--brass` | `#9C7424` | `#C9A25A` | King band, current page, small details | 3.72 on the light page, 7.39 on the dark page |
+| `--button-primary` | `#5A3A22` | `#C9A25A` | One main action per view | — |
+| `--on-primary` | `#FBF7F0` | `#1C1814` | Text on `--button-primary` | 9.53, 7.39 |
+| `--brass` | `#9C7424` | `#C9A25A` | Current page and small page details. Not used on the board. | 3.72 on the light page, 7.39 on the dark page |
 | `--maple` | `#E8D3A9` | same | Light squares | — |
 | `--walnut` | `#8A5A36` | same | Dark squares | — |
 | `--frame` | `#5A3A22` | same | Board frame | — |
+| `--board-brass` | `#9C7424` | same | King band, the frame's inlay, the crowning ripple | 3.60 on the light man, 4.25 on the dark man. The inlay is decoration. |
+| `--board-mark` | `#CDA965` | same | "For Ernest" and the crown in the frame | 4.58 on the frame. The design's first brass, `#C9A25A`, was 4.27, below 4.5 for text. The owner chose the lighter brass on 2026-11-15. |
 | `--man-light` | `#F4EBDD`, edge `#BFA884` | same | Player 1 pieces | 4.94 on walnut |
 | `--man-dark` | `#1E140E`, edge `#0A0604` | same | Player 2 pieces | 3.10 on walnut |
 | `--cream` | `#FFF6E2` | same | Target dots, last-move line | 5.43 on walnut |
 | `--stack-light-edge` | `#8A7458` | `#BFA884` | Edge of the captured ivory men stacked beside the board | 3.89 on the light page |
 | `--stack-dark-edge` | `#8A7458` | `#8A7A68` | Edge of the captured dark men stacked beside the board, and the line between one man and the next | 3.89 on the light page, 4.26 on the dark page. A near-black edge made a row of dark men merge into one dark shape on a phone. |
 
+The wood grain and the shadows use the `rgba` values in the design file. They are decoration, so they have no contrast need.
+
 **How each board mark looks.** Spec section 6.4.2, item 5 requires that each mark looks different from the others.
 
 | Mark | Look |
 | --- | --- |
-| King | Two men stacked, the top one offset, with a `--brass` band on the top man's edge. It differs from a man by shape and by the band, not by colour alone (spec section 6.4.2, item 6). |
-| Selected piece | Lifted: it rises a few pixels, grows to 110% and casts a soft shadow. The player's other pieces fade to 70% (3.32 to 1 on walnut). The fade is the same during a chain. A stronger fade would drop the pieces below 3 to 1, and the board must stay readable. |
+| King | Two men stacked, the top one offset, with a `--board-brass` band on the top man's edge. It differs from a man by shape and by the band, not by colour alone (spec section 6.4.2, item 6). |
+| Selected piece | Lifted: it rises a few pixels, grows to 110% and casts a soft shadow. The player's other pieces fade to 70%. The fade is the same during a chain. Light men at 70% are 3.31 to 1 on walnut. Dark men at 70% are 2.34 to 1, below 3 to 1: any fade of a dark man fails, because at full strength it is 3.10 to 1 (measured on 2026-11-15). The owner saw a shrink with no fade, and chose on 2026-11-15 to keep the fade for now. This is an open gap (risk 11). |
 | Target | A cream dot, 30% of the square, which fades in |
 | Computer's last move | A 2 px cream line inside the start and end squares |
 | Tip | A cream ring, 60% of the square, with no fill. A target is a solid dot, so the two look different. |
@@ -368,6 +388,7 @@ The owner made these choices between 2026-11-10 and 2026-11-14, from the mockups
 | The person's move or jump | The same slide | 200 ms |
 | Captured piece | Fades and shrinks to 50%, starting halfway through the jump | 60% of the jump time |
 | Promotion (crowning) | The piece rises and grows (180 ms). The second disc and the brass band appear, and one soft brass ripple spreads out from the piece (420 ms). The piece settles back down with a small dip (260 ms). The owner chose this on 2026-11-14, over a man dropped on top and a band drawn around the edge. The same animation is used for the computer's men. | About 600 ms in all |
+| "Show me" on How to play | The rule pictures use the same slide, capture fade and crowning as the computer's move, then return to the still picture after about 1 s. | The computer's timings |
 | Reduced motion | When the device asks for reduced motion, slides, lifts and the crowning are instant. Fades stay, shortened to 100 ms. The computer's jumps are still shown one at a time, with the pause, so captures can still be counted. | — |
 
 The design is checked against these choices before the owner signs off (spec section 6.4.1, item 1). The owner decides matters of taste.
@@ -378,10 +399,10 @@ The design is checked against these choices before the owner signs off (spec sec
 
 | Situation | Behaviour |
 | --- | --- |
-| GetNextMove: no network, or the request is rejected | `{ kind: "network" }`. The phase becomes `computerFailed`, with the message and "Try again" (spec section 6.1.9). |
+| GetNextMove: no network, or `fetch` rejects | `{ kind: "network" }`. The phase becomes `computerFailed`, with the message and "Try again" (spec section 6.1.9). A response that the browser blocks for CORS, such as an error page with no CORS header, also shows as this. |
 | GetNextMove: no answer in 15 s | `{ kind: "timeout" }`. Same as above. |
-| GetNextMove: HTTP 400 (for example "Player 2 has no legal moves."), any other 4xx, or 5xx | `{ kind: "http" }`. Same as above. The `errorMessage` is not shown (spec section 6.1.9, item 4). |
-| GetNextMove: HTTP 403 or another non-JSON page, for example when the API app is stopped | `{ kind: "badBody" }`. Same as above. |
+| GetNextMove: any status other than 2xx, for example 400 ("Player 2 has no legal moves."), 403 when the API app is stopped, or 500 | `{ kind: "http" }`. Same as above. The body is not read, and the `errorMessage` is not shown (spec section 6.1.9, item 4). |
+| GetNextMove: a 2xx response whose body is not JSON, or not the expected shape | `{ kind: "badBody" }`. Same as above. |
 | GetNextMove: HTTP 200 with `successful: false` | `{ kind: "unsuccessful" }`. Same as above. |
 | GetNextMove: a legal-looking body, but `findPath` returns null | Same as above (spec section 6.1.9). |
 | GetNextMove: cancelled by Give up or New game | The abort is expected. Nothing is shown. A late response is ignored, by `requestId` (spec section 6.6, item 5). |
@@ -391,6 +412,8 @@ The design is checked against these choices before the owner signs off (spec sec
 | `localStorage` throws, or is full | Caught. The game goes on without saving (spec section 6.6, item 10). |
 | Saved data fails the check | Discarded, and game setup is shown (spec section 6.1.8, item 5). |
 | An unexpected exception while drawing | An error boundary around each page shows "Something went wrong" with "New game", which clears the saved game. The header and the other pages keep working. React 19 still needs a class component for an error boundary, and `~/.claude/rules/react.md` forbids class components, so the boundary comes from `react-error-boundary` (6.1.6, which supports React 19). |
+
+The service checks in this order: `fetch` rejected (`network`, or `timeout` when the time limit aborted it), then the status (`http`), then the body (`badBody`), then `successful` (`unsuccessful`). Test 17 follows the same order.
 
 No request is retried by itself. Spec section 6.1.9 asks for a "Try again" control, not automatic retries.
 
@@ -419,7 +442,7 @@ How to tell whether it works:
 | Content Security Policy | A `<meta http-equiv="Content-Security-Policy">` tag, because GitHub Pages cannot set headers: `default-src 'self'; connect-src 'self' https://func-draughts-game-chhwarhkf4hphjf0.uksouth-01.azurewebsites.net; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; base-uri 'self'; form-action 'none'`. `'unsafe-inline'` for styles is needed for the inline `style` attributes that place pieces. A small Vite plugin (`transformIndexHtml`) writes the tag at build time, with the host taken from `VITE_API_BASE_URL`, so the address is set in one place. |
 | Untrusted input | API responses (section 3.3.4) and saved data (section 3.4) are checked before use. No HTML is rendered from data. |
 | Personal data | None. Storage holds only the game and the theme (spec section 6.5, item 6). |
-| Vulnerabilities | `npm audit` runs in CI with no `audit-level`, so any vulnerability fails the job ([npm audit docs, exit code](https://docs.npmjs.com/cli/commands/npm-audit)) (spec section 6.5, item 5). An owner-approved exception is recorded in `docs/audit-exceptions.md`, with the package, the reason and a review date. CI reads it through an `npm audit` wrapper script. |
+| Vulnerabilities | `npm audit` runs in CI with no `audit-level`, so any vulnerability fails the job ([npm audit docs, exit code](https://docs.npmjs.com/cli/commands/npm-audit)) (spec section 6.5, item 5). An owner-approved exception is recorded in `docs/audit-exceptions.md`, as one row of a table with the columns advisory ID (`GHSA-…`), package, reason and review date. CI reads it through an `npm audit` wrapper script. The script fails on any advisory that is not in the table, and on a row whose review date has passed. |
 | Branch protection | A ruleset on `main`, as `~/.claude/rules/github.md` sets out, made after the new workflow has run once. The owner makes it, because it is a repository setting. |
 
 ---
@@ -432,8 +455,9 @@ How to tell whether it works:
 * **Reducer:** Vitest unit tests that send `Action`s to `gameReducer` and check the next `GameState`. These cover undo, chains, phases, and stale responses.
 * **Components:** React Testing Library with `user-event`. Elements are found by role and accessible name. The API is mocked at the HTTP boundary with MSW.
 * **End to end:** Playwright, against a production build served by `vite preview`, with the API mocked by Playwright's `page.route`. No test calls the live API, so CI never depends on it, or costs it anything.
-* **Accessibility:** `@axe-core/playwright` on each page and game state in spec section 6.5, item 1, in light and dark mode, at 320 px and 1280 px wide. The keyboard and screen reader games are owner steps.
-* **Time and randomness:** the tests use Vitest's fake timers for animation timings and the 15 s limit. The web app uses no randomness.
+* **Browsers:** the Playwright projects are `chromium`, `firefox` and `webkit` at desktop size, and `chromium` and `webkit` at a phone size. They stand in for spec section 6.5, item 2. The owner's games at the release (T21) cover the real phone browsers.
+* **Accessibility:** `@axe-core/playwright` on each page and game state in spec section 6.5, item 1, in light and dark mode, at 320 px and 1280 px wide. It runs with the tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` and `wcag22aa`, so the WCAG 2.2 target size rule is included. The keyboard and screen reader games are owner steps.
+* **Time and randomness:** the tests use Vitest's fake timers for animation timings. They do not use them for the 15 s limit: on Node 24.19, `AbortSignal.timeout` made no call to the global `setTimeout`, so fake timers cannot move it on (probe, 2026-11-15). Test 17 passes a short `timeLimitMs` instead (section 3.3.4). T8 proves this works with MSW before it writes the other cases. The web app uses no randomness.
 * **Old tests:** removed with the old code. They test the old JavaScript files.
 
 ### 7.2 Tests
@@ -447,13 +471,13 @@ How to tell whether it works:
 | 5 | Chains: example 9 (stays selected, next jump shown), example 10 (End turn) | 6.1.3; 6.2.1 #9–10 | Forced continuation; a lost "End turn" |
 | 6 | Promotion ends a chain: example 12 | 2.1 item 6; 6.2.1 #12 | A new king jumping again |
 | 7 | A captured square blocks landing until the turn ends (decision 13) | 3.2 | A chain that the API would not allow |
-| 8 | `outcome`: examples 13 and 14, a player with no pieces, and a player blocked by their own move | 2.1 item 7; 6.2.1 #13–14 | Spec 4.1, item 7: the API asked for a move after the game ended |
+| 8 | `outcome`: examples 13 and 14, a player with no pieces, and a position where neither player can move, each with its winner and reason | 2.1 item 7; 6.2.1 #13–14; 6.3 | Spec 4.1, item 7: the API asked for a move after the game ended; the old tie rule left in by mistake |
 | 9 | `findPath`: examples 15 to 18, including `takes` in board order and an illegal response | 6.1.5 items 3–4; 6.2.2 | Spec 4.1, item 4: the chain shown in one step; illegal moves accepted |
 | 10 | Reducer: select, select again (put down), switch, choose a non-target | 6.1.2 | Spec 4.1, item 13: the invalid-move dialog |
-| 11 | Reducer: undo in a computer game (example 19), in a two-player game (example 21), and mid-chain (example 22) | 6.1.7; 6.2.3 #19, #21, #22 | Spec 4.1, item 1: undo in place |
-| 12 | Reducer: `canUndo` is false while thinking or moving (example 20), and true after a failure (example 24) | 6.1.7 items 4, 6 | Spec 4.1, item 2: undo racing the computer |
-| 13 | Reducer: undo after a win or tie continues the game; not after Give up | 6.1.7 item 7 | Wrong final state |
-| 14 | Reducer: give up in each mode, including while the computer is thinking | 6.1.6 item 4 | Spec 4.1, item 9: give up did nothing |
+| 11 | Reducer: undo in a computer game (example 19), in a two-player game (example 21), mid-chain (example 22), and in a game the computer started | 6.1.7; 6.2.3 #19, #21, #22 | Spec 4.1, item 1: undo in place; an Undo that starts a new request |
+| 12 | Reducer: `canUndo` is false while thinking or moving (example 20), true after a failure (example 24), and false in a game the computer started until the person's first turn ends | 6.1.7 items 4, 6 | Spec 4.1, item 2: undo racing the computer |
+| 13 | Reducer: undo after a win continues the game; not after Give up | 6.1.7 item 7 | Wrong final state |
+| 14 | Reducer: give up in each mode, including while the computer is thinking, and while its move is being shown (the board from before the computer's move is kept) | 6.1.6 item 4 | Spec 4.1, item 9: give up did nothing; half a computer move left on the board |
 | 15 | Reducer: a stale `requestId` is ignored | 6.6 item 5 | A late move played on a new game |
 | 16 | Reducer: the reducer never changes its input. The test deep-freezes the input state. | 3, goal 4 | Spec 4.1, item 3: state changed in place |
 | 17 | `api.ts` with MSW: success, 400, 500, 403 HTML, `successful: false`, a bad body, network error, timeout and abort, each giving the right `ApiResult` | 5.1, 5.2, 6.1.9 | Spec 4.1, item 10: hidden errors |
@@ -461,22 +485,24 @@ How to tell whether it works:
 | 19 | `saved-game.ts`: a good save, a damaged JSON, a wrong board size, a bad cell value, an old key | 6.1.8 item 5; 6.6 item 9 | A broken save breaking the game |
 | 20 | `storage.ts`: storage that throws on read and write | 6.6 item 10 | Private windows breaking the game |
 | 21 | Component: setup defaults, level shown only for the computer, and Start game | 6.1.1 | Wrong defaults |
-| 22 | Component: Show tips loads, marks squares, hides on a turn change, and shows a note on failure | 6.1.4 | Tips left on the board |
+| 22 | Component: Show tips loads, marks squares, hides on a turn change, shows a note on failure, and is not available during a chain | 6.1.4 | Tips left on the board |
 | 23 | Component: the computer's move is shown one jump at a time (fake timers), with captures removed at their own jumps, then the last-move mark | 6.1.5 items 4, 9 | Spec 4.1, item 4 |
 | 24 | Component: failure shows the message and "Try again"; Try again succeeds (examples 24 and 25) | 6.1.9; 6.2.3 #24–25 | Spec 4.1, item 10 |
-| 25 | Component: the board grid's keyboard use (arrows, Enter, Space, Escape) and square names | 6.4.3 | Keyboard play missing |
-| 26 | Component: announcements in the live region for a move, a capture, the computer's move and the result | 6.4.3 item 3 | Silent screen reader |
+| 25 | Component: the board grid's keyboard use (arrows over every square, stopping at the edges; Enter, Space, Escape) and square names, including a light square | 6.4.3 | Keyboard play missing |
+| 26 | Component: announcements in the live region for a move, a capture, the computer's move, a failure and the result | 6.4.3 item 3 | Silent screen reader |
 | 27 | Component: the theme switch, its name and state, and that it is remembered | 6.4.1 item 2 | Theme not kept |
 | 28 | Component: routes `#/`, `#/howtoplay`, `#/about` and an unknown address | 6.1.10 | Broken old links |
 | 29 | Component: the About page has no project cards and no old tools list, and has the placeholder until the photo exists | 6.1.11 items 5–6 | Old content left in |
 | 30 | E2E: a two-player game from setup to a win, with no network | 6.1.1–6.1.6 | The main flow broken |
-| 31 | E2E: a computer game with the mocked API, refresh mid-game (example 23), and New game | 6.1.8 | Spec 4.1, item 14: game lost on refresh or navigation |
+| 31 | E2E: a computer game with the mocked API: refresh mid-game (example 23), refresh after Undo, refresh before the computer's first move in a game it starts, and New game | 6.1.8 | Spec 4.1, item 14: game lost on refresh or navigation; undone turns coming back |
 | 32 | E2E: the game is not lost when moving to How to play and back | 6.1.8 item 7 | Spec 4.1, item 14 |
 | 33 | E2E: the person takes the computer's last piece; no API call is made (example 26) | 6.1.6 item 2 | Spec 4.1, item 7 |
 | 34 | E2E with axe: every page and game state, light and dark, at 320 px and 1280 px | 6.5 item 1 | Contrast and ARIA faults |
-| 35 | E2E: no sideways scroll at 320 px, and at 200% zoom at 1280 px | 6.4.1 item 3; 6.6 item 14 | Layout overflow |
+| 35 | E2E: no sideways scroll at 320 px, at 2560 px, and at 200% zoom at 1280 px | 6.4.1 item 3; 6.6 item 14 | Layout overflow |
 | 36 | E2E: clicking a piece and a square leaves no text selection and no caret (`user-select` and `caret-color` are checked) | 6.4.2 item 7 | Spec 4.1, item 6 |
 | 37 | CI: `npm audit` fails the build on a known vulnerability. The first run is checked by hand against a package with a known advisory. | 6.5 item 5 | Vulnerable packages released |
+| 38 | Component: selecting a piece marks every target square, including the landing square of a jump | 6.1.2 item 2 | Spec 4.1, item 5: the target square not marked |
+| 39 | Component: in a game the computer starts, the request for its move is sent only after the board is on screen, not during the first render | 6.1.5 | Spec 4.1, item 8: the computer's first move starting during drawing |
 
 ---
 
@@ -500,7 +526,7 @@ It runs on `pull_request`, on `push` to `main`, and on `workflow_dispatch`. It h
 | --- | --- | --- |
 | `check` | `npm ci`, `npm audit` (with the exceptions file), `tsc -b`, `eslint`, `prettier --check`, `vitest run`, `vite build` | Every run |
 | `e2e` | Install the Playwright browsers, `vite build`, run `e2e/` against `vite preview` | Every run, after `check` |
-| `deploy` | `actions/configure-pages`, `actions/upload-pages-artifact` with `dist/`, `actions/deploy-pages` to the `github-pages` environment | `push` to `main` and `workflow_dispatch` only, after `check` and `e2e` pass, and only when the repository variable `DEPLOY_ENABLED` is `true` (section 8.3) |
+| `deploy` | `actions/configure-pages`, `actions/upload-pages-artifact` with `dist/`, `actions/deploy-pages` to the `github-pages` environment | `push` to `main` and `workflow_dispatch` only, after `check` and `e2e` pass, only when `github.ref` is `refs/heads/main`, and only when the repository variable `DEPLOY_ENABLED` is `true` (section 8.3). The `github.ref` check stops a manual run on another branch from deploying it. |
 
 A failed `check` or `e2e` stops `deploy` (spec section 3, goal 2). Concurrency: one deploy at a time. A newer pull request run cancels an older one on the same branch.
 
@@ -522,7 +548,7 @@ The owner chose on 2026-11-14 to keep the old game live until the release, rathe
 
 Steps 2.2 and 2.3 are minutes apart. The GitHub documentation ([configuring a publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site), read on 2026-11-14) does not say whether the old site stays up between the source change and the first deploy from Actions. So the gap is kept to a few minutes, and the release checks the live site straight after step 2.3. This is accepted for a hobby site.
 
-**Rollback.** Run the workflow by hand (`workflow_dispatch`) on an earlier commit of `main`, or revert the pull request. Until `gh-pages` is deleted, the owner can also point Pages back to that branch.
+**Rollback.** Revert the pull request: the merge to `main` deploys the reverted site. Or re-run an earlier successful run on `main` from the Actions page, which builds and deploys that run's commit. `workflow_dispatch` takes a branch, not a commit, so it cannot deploy an earlier commit by itself. Until `gh-pages` is deleted, the owner can also point Pages back to that branch.
 
 ---
 
@@ -533,10 +559,11 @@ Steps 2.2 and 2.3 are minutes apart. The GitHub documentation ([configuring a pu
 | 1 | The deploy from Actions is first used at the release, so a fault in it shows up late | Medium | Every pull request builds the same `dist/` that `deploy` uploads, and the end-to-end tests run against it. At the release, rollback is to point Pages back to `gh-pages`, which still holds the old app (section 8.3). |
 | 2 | The web app's rules and the API's rules drift apart | Medium | Tests 2 and 3 use the API's own examples. A port of `MoveGenerator.cs`, not a rewrite from memory. A difference shows as an illegal computer move, which the web app treats as a failure (section 4). |
 | 3 | A captured square that stays blocked during a chain confuses a player, because it looks empty | Low: only in king loops | Decision 13 and test 7. If it is ever reported, show captured pieces as faint until the turn ends. |
-| 4 | `typescript-eslint` holds TypeScript at 6.0 | Medium | Decision 1. Dependabot raises the update when support arrives. |
+| 4 | `typescript-eslint` holds TypeScript at 6.0 | Medium | Decision 1. Dependabot ignores the `typescript` updates that cannot install (decision 14), and still updates `typescript-eslint`. When its supported range allows a newer TypeScript, the ignore is changed in the same pull request as the update. |
 | 5 | Playwright tests fail now and then in CI | Medium | The tests use the mocked API, wait for elements to be visible (not fixed sleeps), and retry once in CI. A failure is recorded, not ignored (`~/.claude/CLAUDE.md`, "Working on a task", step 5). |
 | 6 | `npm audit` reports a build-only advisory with no fix, and blocks every pull request | Medium | The exceptions file in section 6, approved by the owner, with a review date |
 | 7 | The wood grain, the stacked kings and the marks look busy at 320 px | Medium | The design is checked at 320 px before sign-off. The grain and the rings can be turned down in `tokens.css` alone. |
 | 8 | The dark pieces' contrast (3.10 to 1) is close to the limit | Low | Measured. Test 34 checks it in every state. A darker edge is the fallback. |
 | 9 | The owner's photo or tribute edits come late | Medium | The About page ships with a visible placeholder. The definition of done (spec section 9) lists the owner's sign-off. |
 | 10 | The API is stopped by its cost limit during the work | Low | The tests never call the live API. Only the owner's final games need it. |
+| 11 | Player 2's faded dark men (2.34 to 1) fail WCAG 1.4.11, which spec section 6.5, item 1 requires. axe does not check the contrast of graphics, so no test catches it. | Certain, while the fade stays | The owner decides in T11, when the real board is built, and before the sign-off in T20. The tested fallback is to shrink the other pieces to 86% with no fade (preview of 2026-11-15). Keeping the fade for dark men needs a spec change that the owner approves. |
