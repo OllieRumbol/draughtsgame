@@ -1,0 +1,448 @@
+<!doctype html>
+<!--
+  Approved design for the whole site: header, game setup, game, How to play, About and "page not found".
+  The owner approved the game screen on 2026-11-14, and the whole site on 2026-11-15.
+  plan.md section 3.6 describes the look in words. This file shows it working.
+
+  Open it in a browser, either directly or from a local static server. The links in the header work.
+
+  This is a mockup, not the app. It differs from the real site in these ways:
+  1. The computer is a simple local stand-in. The real game asks the API at the chosen level.
+  2. The fonts load from Google Fonts. The real site serves them itself.
+  3. "Show tips" is worked out locally. The real game asks the API.
+  4. Give up does nothing while the computer's move is being shown (spec.md section 6.1.6, item 4).
+  5. "Show tips" works during a chain (spec.md section 6.1.4, item 6).
+  6. Nothing is saved in the browser.
+  Text marked "draft" is Claude's draft. The owner approves it in T14, T17 and T18.
+  The About tribute is the owner's text from About.js, with "past away" corrected (spec.md section 6.1.11, item 5).
+  Where this file and plan.md differ, plan.md wins.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draughts site design</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EDE7DC;font-family:system-ui,sans-serif;padding:16px}
+.demo{display:flex;gap:8px;justify-content:center;margin:0 0 10px;flex-wrap:wrap}
+.demo button{font:inherit;padding:6px 12px;border-radius:6px;border:1px solid #bbb;background:#fff;cursor:pointer}
+.demo button[aria-pressed=true]{border-color:#333;font-weight:600}
+.wrap{display:flex;justify-content:center}
+.pg{--page:#F6EFE3;--surface:#FBF7F0;--border:#E3D5BE;--text:#3B2A1A;--muted:#7A6650;--button:#EFE4D2;--primary:#5A3A22;--onprimary:#FBF7F0;--brass:#9C7424;--stack-light-edge:#8A7458;--stack-dark-edge:#8A7458;
+ background:var(--page);color:var(--text);font-family:'Source Sans 3',system-ui,sans-serif;font-size:14px;line-height:1.45;border-radius:10px;padding:14px 16px 24px;box-sizing:border-box;transition:background .25s,color .25s;max-width:860px}
+.pg.dark{--page:#1C1814;--surface:#26201A;--border:#3A3027;--text:#EFE6D8;--muted:#B8A890;--button:#302820;--primary:#C9A25A;--onprimary:#1C1814;--brass:#C9A25A;--stack-light-edge:#BFA884;--stack-dark-edge:#8A7A68}
+.pg :focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.wm{font-family:Fraunces,Georgia,serif;font-size:26px;font-weight:500;color:inherit;text-decoration:none}
+.nav{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.nav a{color:var(--muted);text-decoration:none;padding:4px 0;border-bottom:2px solid transparent}
+.nav a:hover{color:var(--text)}
+.nav a[aria-current=page]{color:var(--text);border-bottom-color:var(--brass)}
+.tg{display:inline-flex;align-items:center;gap:8px;background:var(--button);color:var(--text);border:none;border-radius:6px;padding:5px 9px;font:inherit;cursor:pointer}
+.tg .sw{width:26px;height:14px;border-radius:7px;background:var(--border);position:relative;transition:background .2s}
+.tg .sw::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--text);transition:transform .2s}
+.tg[aria-checked=true] .sw{background:var(--brass)}.tg[aria-checked=true] .sw::after{transform:translateX(12px)}
+.lay{display:grid;gap:14px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.lbl{font-size:12px;color:var(--muted);margin:0 0 2px}
+.ttl{font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:500;margin:0}
+.sub{margin:4px 0 0;color:var(--muted);font-size:13px;min-height:19px}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.b{background:var(--button);color:var(--text);border:none;border-radius:6px;padding:9px 10px;font:inherit;cursor:pointer;text-decoration:none;text-align:center}
+.b.pri{background:var(--primary);color:var(--onprimary)}
+.b[aria-disabled=true]{opacity:.45;cursor:default}
+.b[aria-pressed=true]{outline:2px solid var(--brass);outline-offset:-2px}
+.frame{position:relative;padding:11px 11px 26px;border-radius:7px;background:repeating-linear-gradient(80deg,rgba(0,0,0,.12) 0 2px,transparent 2px 6px),#5A3A22}
+.inlay{border:2px solid #9C7424;padding:2px;background:#5A3A22}
+.mark{position:absolute;right:13px;bottom:5px;display:flex;align-items:center;gap:4px;color:#CDA965;font-family:Fraunces,Georgia,serif;font-size:11.5px;letter-spacing:.4px}
+.brd{position:relative;aspect-ratio:1;width:100%}
+.grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr)}
+.sq{position:relative;border:0;padding:0;margin:0;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;caret-color:transparent;-webkit-tap-highlight-color:transparent}
+.sq.l{background:repeating-linear-gradient(100deg,rgba(120,80,30,.06) 0 2px,transparent 2px 7px),#E8D3A9;cursor:default}
+.sq.d{background:repeating-linear-gradient(80deg,rgba(0,0,0,.12) 0 2px,transparent 2px 6px),repeating-linear-gradient(85deg,rgba(255,220,170,.06) 0 1px,transparent 1px 9px),#8A5A36}
+.sq:focus{outline:none}.sq:focus-visible{box-shadow:inset 0 0 0 2px #1E140E,inset 0 0 0 4px #FFF6E2;z-index:4}
+.sq .lm{position:absolute;inset:3px;border:2px solid #FFF6E2;border-radius:2px;pointer-events:none}
+.sq .dot{width:30%;height:30%;border-radius:50%;background:#FFF6E2;opacity:0;transform:scale(.4);transition:opacity .18s,transform .18s;pointer-events:none}
+.sq .dot.on{opacity:.95;transform:scale(1)}
+.sq .tip{position:absolute;width:60%;height:60%;border-radius:50%;border:2px solid #FFF6E2;box-sizing:border-box;pointer-events:none}
+.pcs{position:absolute;inset:0;pointer-events:none}
+.pw{position:absolute;width:12.5%;height:12.5%;display:flex;align-items:center;justify-content:center}
+.pc{width:78%;height:78%;border-radius:50%;box-sizing:border-box;transition:transform var(--lift) cubic-bezier(.2,.9,.3,1.25),filter var(--lift) ease-out,opacity .22s ease-out}
+.stk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.disc{border-radius:50%;box-sizing:border-box}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Text pages */
+.h1{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:32px;line-height:1.2;margin:0 0 12px}
+.h2{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25;margin:32px 0 10px}
+.h3{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:20px;line-height:1.3;margin:0 0 4px}
+.phone .h1{font-size:26px}.phone .h2{font-size:22px}
+.prose{max-width:640px;font-size:16px;line-height:1.55}
+.prose p{margin:0 0 12px}
+.lead{font-size:18px;color:var(--text)}
+.link{color:var(--text);text-decoration:underline;text-decoration-color:var(--brass);text-decoration-thickness:2px;text-underline-offset:3px}
+.rule{display:grid;grid-template-columns:168px minmax(0,1fr);gap:22px;align-items:start;padding:18px 0;border-top:1px solid var(--border)}
+.phone .rule{grid-template-columns:112px minmax(0,1fr);gap:14px}
+.rule p{margin:0}
+.mini{padding:5px!important;border-radius:5px}
+.mini .inlay{padding:1px;border-width:1.5px}
+table.cmp{width:100%;border-collapse:collapse;table-layout:fixed;font-size:15px}
+.cmp th,.cmp td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--border);vertical-align:top}
+.cmp thead th{font-size:13px;color:var(--muted);font-weight:600}
+.cmp tbody th{font-weight:600}
+.cmp td.ours{font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.phone .two{grid-template-columns:1fr}
+.two ul{margin:6px 0 0;padding-left:18px}.two li{margin:0 0 8px}
+kbd{font:inherit;font-size:13px;background:var(--button);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:0 5px}
+.about{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px;align-items:start}
+.phone .about{grid-template-columns:1fr;gap:18px}
+.ph{aspect-ratio:4/5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;background:repeating-linear-gradient(135deg,rgba(255,246,226,.05) 0 10px,transparent 10px 20px),#3B2A1A;color:#E8D3A9;font-size:14px;padding:16px;box-sizing:border-box}
+.ph strong{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:18px;color:#FFF6E2}
+/* Setup */
+fieldset{border:0;margin:0 0 16px;padding:0;min-width:0}
+legend{font-size:13px;color:var(--muted);padding:0;margin:0 0 6px}
+.seg{display:flex;gap:3px;background:var(--button);border-radius:8px;padding:3px}
+.seg label{flex:1;position:relative;min-width:0}
+.seg input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
+.seg span{display:block;text-align:center;padding:9px 6px;border-radius:6px;color:var(--muted);font-size:15px}
+.seg input:checked+span{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(40,20,5,.2)}
+.seg input:focus-visible+span{outline:2px solid var(--text);outline-offset:-2px}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.start{width:100%;font-size:16px;padding:12px}
+.cap{font-size:13px;color:var(--muted);margin:8px 0 0;text-align:center}
+.todo{border:1px dashed var(--muted);border-radius:4px;padding:6px 8px;text-align:left}
+.b.sm{display:block;width:100%;font-size:14px;padding:6px 10px;margin-top:8px}
+.b:disabled{opacity:.5;cursor:default}
+.toc{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 14px;font-size:15px}
+.aside{margin:16px 0 0;padding:2px 0 2px 14px;border-left:3px solid var(--brass);border-radius:0}
+.aside p{margin:0}
+figure{margin:0}
+.board-photo{max-width:360px;margin:8px 0 4px}
+.phone .photo{width:72%;margin:0 auto}
+/* Demo only: outlines Claude's draft text */
+.drafts .draft{outline:2px dashed #C2410C;outline-offset:3px;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="demo"><button id="vD">Desktop</button><button id="vP">Phone</button><span style="width:10px"></span><button id="vR">Game in progress</button><button id="vX">Page not found</button><button id="vT">Show draft text</button></div>
+<div class="wrap"><div class="pg" id="pg"></div></div>
+<div class="sr" aria-live="polite" id="live"></div>
+<script>
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const T={lift:RM?0:180,me:RM?0:200,cpu:RM?0:380,pause:180,think:700};
+const crownSvg=s=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5l4.2 3.6L12 5l4.8 7.1L21 8.5l-1.9 9.5H4.9z" fill="currentColor"/><rect x="5" y="19" width="14" height="2.2" rx="1" fill="currentColor"/></svg>`;
+const DEMO=[[0,2,0,2,0,5,0,2],[2,0,5,0,2,0,5,0],[0,5,0,5,0,5,0,4],[5,0,2,0,5,0,1,0],[0,1,0,5,0,1,0,5],[1,0,5,0,3,0,1,0],[0,5,0,1,0,5,0,1],[1,0,5,0,1,0,5,0]];
+const START=[[0,2,0,2,0,2,0,2],[2,0,2,0,2,0,2,0],[0,2,0,2,0,2,0,2],[5,0,5,0,5,0,5,0],[0,5,0,5,0,5,0,5],[1,0,1,0,1,0,1,0],[0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0]];
+const LEVELS=["Easy","Normal","Hard"];
+// Spec 6.1.1 item 2: two players, Easy, player 1 first.
+const setup={opp:"two",level:"Easy",first:1};
+let S=null,page="play",dark=false,phone=false,drafts=false,busy=false,els={},nid=1,focusAt=[5,0],cancelled=false,aid=0;
+const cp=b=>b.map(r=>r.slice());
+
+// ---------- Rules (as in the approved game screen) ----------
+const own=(v,p)=>p===1?(v===1||v===3):(v===2||v===4),isK=v=>v===3||v===4;
+const dirs=v=>v===1?[[-1,-1],[-1,1]]:v===2?[[1,-1],[1,1]]:[[-1,-1],[-1,1],[1,-1],[1,1]];
+const inB=(r,c)=>r>=0&&c>=0&&r<8&&c<8;
+const canCap=(v,t,p)=>own(t,3-p)&&(isK(v)||!isK(t));
+function jumps(b,r,c,v,p){const o=[];for(const[dr,dc]of dirs(v)){const orr=r+dr,oc=c+dc,lr=r+2*dr,lc=c+2*dc;if(!inB(lr,lc))continue;if(canCap(v,b[orr][oc],p)&&b[lr][lc]===5)o.push({to:[lr,lc],cap:[orr,oc]});}return o;}
+function steps(b,r,c,chain){const v=b[r][c],p=own(v,1)?1:2;const o=chain?[]:dirs(v).map(([dr,dc])=>[r+dr,c+dc]).filter(([a,d])=>inB(a,d)&&b[a][d]===5).map(t=>({to:t,cap:null}));return o.concat(jumps(b,r,c,v,p));}
+function allMoves(b,p){const out=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++){const v=b[r][c];if(!own(v,p))continue;
+ for(const s of steps(b,r,c,false))if(!s.cap)out.push({from:[r,c],path:[s.to],caps:[]});
+ const far=p===1?0:7;
+ const dfs=(bb,rr,cc,path,caps)=>{for(const j of jumps(bb,rr,cc,v,p)){const b2=cp(bb);b2[rr][cc]=5;b2[j.cap[0]][j.cap[1]]=9;b2[j.to[0]][j.to[1]]=v;const np=[...path,j.to],nc=[...caps,j.cap];out.push({from:[r,c],path:np,caps:nc});if(isK(v)||j.to[0]!==far)dfs(b2,j.to[0],j.to[1],np,nc);}};
+ dfs(b,r,c,[],[]);}return out;}
+const hasMove=(b,p)=>allMoves(b,p).length>0;
+
+// ---------- Words ----------
+const cpu=()=>S.mode==="cpu";
+const nm=([r,c])=>`row ${r+1}, column ${c+1}`;
+const who=p=>cpu()?(p===1?"You":"The computer"):`Player ${p}`;
+const pieceName=v=>{const p=own(v,1)?1:2,k=isK(v)?"king":"man";return cpu()?(p===1?`your ${k}`:`the computer's ${k}`):`player ${p}'s ${k}`;};
+function say(t){document.getElementById("live").textContent=t;}
+
+// ---------- Drawing helpers ----------
+function pieceStyle(v,state){const dk=v===2||v===4,bg=dk?"#1E140E":"#F4EBDD",bd=dk?"#0A0604":"#BFA884",ring=dk?"rgba(255,230,200,.12)":"rgba(140,110,70,.32)";
+ let st=`background:radial-gradient(circle,${bg} 0 22%,${ring} 23% 26%,${bg} 27% 46%,${ring} 47% 50%,${bg} 51% 100%);border:2px solid ${bd};`;
+ let tr="";if(isK(v)){st+=`border:3px solid #9C7424;box-shadow:4px -5px 0 -1px ${bd},4px -5px 0 1px ${bg};`;tr="translate(-2px,2px) ";}
+ if(state==="lift"){tr+="translateY(-7%) scale(1.1)";st+="filter:drop-shadow(0 7px 4px rgba(40,20,5,.45));";}else tr+="translateY(0) scale(1)";
+ if(state==="fade")st+="opacity:.7;";
+ return st+`transform:${tr};`;}
+// Arrows on the small board pictures. A blocked arrow is dashed and ends in a bar (How to play, H3).
+function arrows(list){if(!list||!list.length)return "";const id="ah"+(++aid),bid="bh"+aid;
+ let s=`<defs><marker id="${id}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" fill="#FFF6E2"/></marker><marker id="${bid}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M5 0V10" stroke="#FFF6E2" stroke-width="2.5"/></marker></defs>`;
+ for(const[[r1,c1],[r2,c2],blocked]of list){const x1=c1+.5,y1=r1+.5,dx=c2-c1,dy=r2-r1,L=Math.hypot(dx,dy),a=.42/L,e=(L-(blocked?.55:.32))/L;
+  const ax=x1+dx*a,ay=y1+dy*a,bx=x1+dx*e,by=y1+dy*e,dash=blocked?' stroke-dasharray=".14 .1"':"";
+  s+=`<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#1E140E" stroke-opacity=".5" stroke-width=".15" stroke-linecap="round"/><line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#FFF6E2" stroke-width=".07"${dash} marker-end="url(#${blocked?bid:id})"/>`;}
+ return s;}
+// A dashed cream ring marks a man that is taken (How to play, H2). Fading would fail contrast for dark men.
+function takenRings(list){return (list||[]).map(([r,c])=>`<circle cx="${c+.5}" cy="${r+.5}" r=".46" fill="none" stroke="#1E140E" stroke-opacity=".5" stroke-width=".1"/><circle cx="${c+.5}" cy="${r+.5}" r=".46" fill="none" stroke="#FFF6E2" stroke-width=".05" stroke-dasharray=".12 .08"/>`).join("");}
+// A small board picture for How to play. Each one has a text alternative (spec 6.4.4).
+function mini(n,o){let sq="",pcs="";const f=100/n;
+ for(let r=0;r<n;r++)for(let c=0;c<n;c++){const d=(r+c)%2===1,dot=(o.dots||[]).some(x=>x[0]===r&&x[1]===c);sq+=`<div class="sq ${d?"d":"l"}" style="cursor:default">${dot?'<div class="dot on"></div>':""}</div>`;}
+ for(const[r,c,v]of o.p||[])pcs+=`<div class="pw" data-rc="${r},${c}" style="width:${f}%;height:${f}%;left:${c*f}%;top:${r*f}%"><div class="pc" style="${pieceStyle(v,"")}"></div></div>`;
+ return `<div class="frame mini" role="img" aria-label="${o.alt}"><div class="inlay"><div class="brd"><div class="grid" style="grid-template-columns:repeat(${n},1fr);grid-template-rows:repeat(${n},1fr)">${sq}</div><div class="pcs">${pcs}</div><svg viewBox="0 0 ${n} ${n}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;transition:opacity .2s" aria-hidden="true">${takenRings(o.taken)}${arrows(o.arrows)}</svg></div></div></div>`;}
+function staticBoard(b,alt){let sq="",pcs="";
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++){const d=(r+c)%2===1;sq+=`<div class="sq ${d?"d":"l"}" style="cursor:default"></div>`;const v=b[r][c];
+  if(v>=1&&v<=4)pcs+=`<div class="pw" style="left:${c*12.5}%;top:${r*12.5}%"><div class="pc" style="${pieceStyle(v,"")}"></div></div>`;}
+ return `<div class="frame" role="img" aria-label="${alt}"><div class="inlay"><div class="brd"><div class="grid">${sq}</div><div class="pcs">${pcs}</div></div></div><div class="mark" aria-hidden="true">${crownSvg(12)}For Ernest</div></div>`;}
+function tower(count,dk,width,step,height){let h=`<div style="position:relative;width:${width}px;height:${height+Math.max(count-1,0)*step}px">`;
+ for(let i=0;i<count;i++)h+=`<div class="disc" style="position:absolute;left:0;bottom:${i*step}px;width:${width}px;height:${height}px;background:${dk?"#1E140E":"#F4EBDD"};border:1.5px solid ${dk?"var(--stack-dark-edge)":"var(--stack-light-edge)"}"></div>`;
+ return h+"</div>";}
+function stack(n,dk,horiz,label){
+ if(!horiz)return `<div class="stk" style="flex-direction:column">${tower(n,dk,30,6,13)}<span>${label} ${n}</span></div>`;
+ let towers="",left=n;while(left>0){const t=Math.min(4,left);left-=t;towers+=tower(t,dk,24,5,9);}
+ return `<div class="stk"><div style="display:flex;gap:6px;align-items:flex-end;min-height:9px">${towers}</div><span>${label} ${n}</span></div>`;}
+
+// ---------- Header (every page, spec 6.4.1 items 2 and 4) ----------
+function header(){const l=(href,id,t)=>`<a href="#${href}"${page===id?' aria-current="page"':""}>${t}</a>`;
+ return `<header class="hd"><a class="wm" href="#/">Draughts</a><nav class="nav" aria-label="Main">${l("/","play","Play")}${l("/howtoplay","howto","How to play")}${l("/about","about","About")}<button class="tg" id="theme" role="switch" aria-checked="${dark}">Dark mode<span class="sw" aria-hidden="true"></span></button></nav></header>`;}
+
+// ---------- Play: setup (spec 6.1.1, 6.4.2 item 1) ----------
+function setupHTML(){const isCpu=setup.opp==="cpu";
+ const seg=(name,opts,val)=>`<div class="seg">${opts.map(([v,t])=>`<label><input type="radio" name="${name}" value="${v}"${String(val)===String(v)?" checked":""}><span>${t}</span></label>`).join("")}</div>`;
+ const card=`<div class="card" style="padding:18px 18px 20px"><h1 class="h1" style="font-size:${phone?26:28}px">New game</h1>
+  <p class="draft" style="font-size:16px;margin:0 0 18px">Draughts with our family's house rules, for two players or against the computer. <a class="link" href="#/about">Why this game exists</a></p>
+  <fieldset><legend>Opponent</legend>${seg("opp",[["two","Two players"],["cpu","The computer"]],setup.opp)}</fieldset>
+  ${isCpu?`<fieldset><legend>Level</legend>${seg("level",LEVELS.map(l=>[l,l]),setup.level)}</fieldset>`:""}
+  <fieldset><legend>Who moves first</legend>${seg("first",isCpu?[[1,"You"],[2,"The computer"]]:[[1,"Player 1"],[2,"Player 2"]],setup.first)}<p class="hint draft">${isCpu?"You have the light men.":"Player 1 has the light men."}</p></fieldset>
+  <button class="b pri start" id="start">Start game</button></div>`;
+ const board=staticBoard(START,"The starting board: twelve dark men at the top, twelve light men at the bottom.");
+ if(phone)return `<div class="lay">${card}${board}</div>`;
+ return `<div class="lay" style="grid-template-columns:minmax(0,1fr) minmax(0,.72fr);gap:22px">${board}${card}</div>`;}
+function wireSetup(){document.querySelectorAll(".seg input").forEach(i=>i.onchange=()=>{
+  const v=i.value;if(i.name==="opp")setup.opp=v;else if(i.name==="level")setup.level=v;else setup.first=+v;
+  build();document.querySelector(`.seg input[name="${i.name}"][value="${v}"]`).focus();});
+ document.getElementById("start").onclick=startGame;}
+
+// ---------- Play: game (the approved game screen, for both modes) ----------
+function fresh(demo){const b=cp(demo?DEMO:START),ids=b.map(r=>r.map(v=>(v>=1&&v<=4)?nid++:0));
+ const mode=demo||setup.opp==="cpu"?"cpu":"two",turn=demo?1:setup.first;
+ S={board:b,ids,mode,level:demo?"Hard":setup.level,turn,sel:null,chain:null,hist:[],last:demo?{from:[2,3],to:[3,2]}:null,phase:"play",tips:false,took:{1:demo?5:0,2:demo?2:0},result:null,gaveUp:false,msg:""};
+ S.msg=demo?"The computer moved row 3, column 4 to row 4, column 3.":mode==="cpu"?(turn===1?"You move first.":""):`Player ${turn} moves first.`;
+ Object.values(els).forEach(e=>e.remove());els={};}
+function startGame(){fresh(false);focusAt=[5,0];if(cpu()&&S.turn===2){cpuTurn();return;}build();say(`Game started. ${S.msg}`);}
+function snapshot(){return {board:cp(S.board),ids:cp(S.ids),took:{...S.took},last:S.last,msg:S.msg,turn:S.turn};}
+function targetsNow(){if(!S.sel)return [];return steps(S.board,S.sel[0],S.sel[1],!!S.chain);}
+function tipSquares(){if(!S.tips||S.phase!=="play")return [];const set=new Set();allMoves(S.board,S.turn).forEach(m=>{const e=m.path[m.path.length-1];if(S.board[e[0]][e[1]]===5)set.add(e+"");});return [...set];}
+function canUndo(){return S.hist.length>0&&(S.phase==="play"||(S.phase==="over"&&!S.gaveUp));}
+function gameHTML(){
+ const board=`<div class="frame"><div class="inlay"><div class="brd"><div class="grid" id="grid" role="grid" aria-label="Draughts board"></div><div class="pcs" id="pcs"></div></div></div><div class="mark" aria-hidden="true">${crownSvg(12)}For Ernest</div></div>`;
+ const mode=cpu()?`Against the computer · ${S.level}`:"Two players";
+ const status=`<div class="card"><p class="lbl">${mode}</p><p class="ttl" id="ttl"></p><p class="sub" id="sub"></p></div>`;
+ const ctr=`<div class="btns" id="ctr"></div>`,h1=`<h1 class="sr">Play</h1>`;
+ const top=cpu()?(phone?"The computer took":"Computer took"):"Player 2 took",bottom=cpu()?"You took":"Player 1 took";
+ if(phone)return h1+`<div class="lay">${status}${stack(S.took[2],false,true,top)}${board}${stack(S.took[1],true,true,bottom)}${ctr}</div>`;
+ return h1+`<div class="lay" style="grid-template-columns:auto minmax(0,1fr) minmax(0,.62fr)"><div style="display:flex;flex-direction:column;justify-content:space-between;align-self:stretch;padding:26px 0">${stack(S.took[2],false,false,top)}${stack(S.took[1],true,false,bottom)}</div>${board}<div class="lay" style="gap:12px">${status}${ctr}</div></div>`;}
+const sqEl=(r,c)=>document.querySelector(`.sq[data-r="${r}"][data-c="${c}"]`);
+// Decision 3 (2026-11-15): all 64 squares are cells; the arrow keys move one square and stop at the edge.
+function wireGame(){const g=document.getElementById("grid");let h="";
+ for(let r=0;r<8;r++){h+=`<div role="row" style="display:contents">`;for(let c=0;c<8;c++){const d=(r+c)%2===1;h+=`<button class="sq ${d?"d":"l"}" role="gridcell" data-r="${r}" data-c="${c}" tabindex="-1"></button>`;}h+="</div>";}
+ g.innerHTML=h;
+ g.querySelectorAll(".sq").forEach(b=>{const r=+b.dataset.r,c=+b.dataset.c;b.onfocus=()=>{focusAt=[r,c];};if(b.classList.contains("d"))b.onclick=()=>click(r,c);});
+ g.onkeydown=e=>{if(e.key==="Escape"&&!S.chain&&S.sel){S.sel=null;paint();say("Put down.");return;}
+  if((e.key==="Enter"||e.key===" ")&&(focusAt[0]+focusAt[1])%2===1){e.preventDefault();click(focusAt[0],focusAt[1]);return;}
+  const m={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];if(!m)return;e.preventDefault();
+  const r=focusAt[0]+m[0],c=focusAt[1]+m[1];if(!inB(r,c))return;focusAt=[r,c];paint();sqEl(r,c).focus();};
+ paint();}
+function paint(){if(!document.getElementById("grid"))return;const tg=targetsNow().map(s=>s.to+""),tips=tipSquares();
+ document.querySelectorAll(".sq[role=gridcell]").forEach(b=>{const r=+b.dataset.r,c=+b.dataset.c,k=r+","+c,v=S.board[r][c];
+  b.tabIndex=(focusAt[0]===r&&focusAt[1]===c)?0:-1;
+  if(b.classList.contains("l")){b.setAttribute("aria-label",`${nm([r,c])}, light square`);return;}
+  const lm=S.last&&(S.last.from+""===k||S.last.to+""===k);
+  b.innerHTML=(lm?'<div class="lm"></div>':"")+(tips.includes(k)?'<div class="tip"></div>':"")+((v===5||v===9)?`<div class="dot${tg.includes(k)?" on":""}"></div>`:"");
+  const what=(v>=1&&v<=4)?pieceName(v):"empty";
+  b.setAttribute("aria-label",`${nm([r,c])}, ${what}${tg.includes(k)?", target":""}${S.sel&&S.sel+""===k?", selected":""}`);});
+ const pcs=document.getElementById("pcs"),seen=new Set();
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++){const id=S.ids[r][c],v=S.board[r][c];if(!id||!(v>=1&&v<=4))continue;seen.add(id);
+  let e=els[id];if(!e){e=document.createElement("div");e.className="pw";e.innerHTML='<div class="pc"></div>';pcs.appendChild(e);els[id]=e;}
+  e.style.left=c*12.5+"%";e.style.top=r*12.5+"%";const isSel=S.sel&&S.sel[0]===r&&S.sel[1]===c;e.style.zIndex=isSel?3:1;
+  const state=isSel?"lift":(S.sel&&own(v,S.turn)?"fade":"");e.firstChild.setAttribute("style",pieceStyle(v,state));}
+ Object.keys(els).forEach(id=>{if(!seen.has(+id)&&!els[id].dataset.dying){els[id].remove();delete els[id];}});
+ const turnText=cpu()?"Your turn":`Player ${S.turn}'s turn`;
+ const ttl=S.phase==="over"?S.result:S.phase==="thinking"?"The computer is thinking…":S.phase==="moving"?"The computer is moving":S.chain?"Jump again or end your turn":turnText;
+ document.getElementById("ttl").textContent=ttl;document.getElementById("sub").textContent=S.msg||"";
+ const ctr=document.getElementById("ctr"),ud=!canUndo(),lock=S.phase!=="play";
+ let h="";
+ if(S.phase==="over")h=`<button class="b" id="bU" aria-disabled="${ud}">Undo</button><button class="b pri" id="bN">New game</button>`;
+ else{h=S.chain?`<button class="b pri" id="bE" style="grid-column:1/3">End turn</button>`:"";
+  h+=`<button class="b" id="bT" aria-pressed="${S.tips}" aria-disabled="${lock}">Show tips</button><button class="b" id="bU" aria-disabled="${ud}">Undo</button><button class="b" id="bG">Give up</button><button class="b${S.chain?"":" pri"}" id="bN">New game</button>`;}
+ ctr.innerHTML=h;
+ const on=(id,f)=>{const e=document.getElementById(id);if(e)e.onclick=f;};
+ on("bT",()=>{if(S.phase!=="play")return;S.tips=!S.tips;paint();});
+ on("bU",()=>{if(!canUndo())return;const s=S.hist.pop();Object.assign(S,{board:s.board,ids:s.ids,took:s.took,last:s.last,msg:s.msg,turn:s.turn,sel:null,chain:null,phase:"play",result:null,tips:false});build();say(`Undone. ${cpu()?"Your turn":`Player ${S.turn}'s turn`}.`);});
+ on("bG",()=>{if(S.phase==="moving")return;cancelled=true;const loser=cpu()?1:S.turn;S.phase="over";S.gaveUp=true;S.result=`${who(3-loser)} ${cpu()&&loser===2?"win":"wins"}`;S.msg=`${who(loser)} gave up.`;S.sel=null;S.chain=null;paint();say(`${S.msg} ${S.result}.`);});
+ // Spec 6.1.8 item 4: New game shows game setup.
+ on("bN",()=>{cancelled=true;busy=false;S=null;build();say("Choose the settings for a new game.");});
+ on("bE",()=>{endTurn();});}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function slide(id,from,to,dur,grow){const e=els[id];if(!e)return;e.style.zIndex=5;
+ if(dur>0){const a=e.animate([{left:from[1]*12.5+"%",top:from[0]*12.5+"%"},{left:to[1]*12.5+"%",top:to[0]*12.5+"%"}],{duration:dur,easing:"cubic-bezier(.4,0,.2,1)"});
+  if(grow)e.animate([{transform:"scale(1)"},{transform:"scale(1.16)",offset:.5},{transform:"scale(1)"}],{duration:dur,composite:"add"});
+  await a.finished;}
+ e.style.left=to[1]*12.5+"%";e.style.top=to[0]*12.5+"%";}
+async function crownAnim(id){const e=els[id];if(!e||RM)return;const pc=e.firstChild;e.style.zIndex=6;
+ const base="translate(-2px,2px)",lifted=`${base} translateY(-6px) scale(1.12)`,shadow="drop-shadow(0 8px 4px rgba(40,20,5,.4))";
+ const up=pc.animate([{transform:`${base} translateY(0) scale(1)`},{transform:lifted,filter:shadow}],{duration:180,easing:"ease-out",fill:"forwards"});
+ await up.finished;
+ const ring=document.createElement("div");ring.style.cssText="position:absolute;width:78%;height:78%;border-radius:50%;pointer-events:none";e.appendChild(ring);
+ const ripple=ring.animate([{boxShadow:"0 0 0 0 rgba(156,116,36,.6)"},{boxShadow:"0 0 0 14px rgba(156,116,36,0)"}],{duration:420,easing:"ease-out"});
+ await wait(160);
+ const down=pc.animate([{transform:lifted,filter:shadow},{transform:`${base} translateY(1px) scale(.98)`,offset:.8},{transform:`${base} translateY(0) scale(1)`,filter:"drop-shadow(0 0 0 rgba(40,20,5,0))"}],{duration:260,easing:"ease-in-out"});
+ up.cancel();await down.finished;await ripple.finished;ring.remove();e.style.zIndex=1;}
+function fadeOut(id,delay,dur){const e=els[id];if(!e)return;e.dataset.dying="1";
+ setTimeout(()=>{const a=e.animate([{opacity:1,transform:"scale(1)"},{opacity:0,transform:"scale(.5)"}],{duration:Math.max(dur,1),fill:"forwards"});a.finished.then(()=>{e.remove();if(els[id]===e)delete els[id];});},delay);}
+async function click(r,c){if(busy||S.phase!=="play")return;focusAt=[r,c];const v=S.board[r][c];
+ const tg=targetsNow().find(s=>s.to[0]===r&&s.to[1]===c);
+ if(S.chain){if(tg)await step(tg);return;}
+ if(S.sel&&S.sel[0]===r&&S.sel[1]===c){S.sel=null;paint();say("Put down.");return;}
+ if(own(v,S.turn)){S.sel=[r,c];paint();const n=targetsNow().length;say(`Selected ${nm([r,c])}. ${n?n+" target"+(n>1?"s":"")+".":"No moves."}`);return;}
+ if(tg){await step(tg);return;}
+ S.sel=null;paint();}
+async function step(s){busy=true;const p=S.turn,[fr,fc]=S.sel,[tr,tc]=s.to,id=S.ids[fr][fc],v=S.board[fr][fc];
+ if(!S.chain)S.hist.push(snapshot());
+ S.tips=false;S.last=null;
+ const capV=s.cap?S.board[s.cap[0]][s.cap[1]]:0;
+ if(s.cap)fadeOut(S.ids[s.cap[0]][s.cap[1]],T.me*.55,T.me*.6);
+ await slide(id,[fr,fc],[tr,tc],T.me,!!s.cap);
+ S.board[fr][fc]=5;S.ids[fr][fc]=0;S.board[tr][tc]=v;S.ids[tr][tc]=id;
+ let promoted=false;if(s.cap){S.board[s.cap[0]][s.cap[1]]=9;S.ids[s.cap[0]][s.cap[1]]=0;S.took[p]++;}
+ if((v===1&&tr===0)||(v===2&&tr===7)){S.board[tr][tc]=v+2;promoted=true;}
+ const more=!!s.cap&&!promoted&&jumps(S.board,tr,tc,S.board[tr][tc],p).length>0;
+ const actor=cpu()?"You":`Player ${p}`,whose=cpu()?"Your":"The";
+ S.msg=`${actor} ${s.cap?"jumped":"moved"} to ${nm([tr,tc])}${s.cap?`, taking a ${isK(capV)?"king":"man"}`:""}${promoted?`. ${whose} man becomes a king.`:"."}`;
+ if(more){S.chain=true;S.sel=[tr,tc];build();say(S.msg+" You can jump again, or end your turn.");busy=false;return;}
+ S.sel=null;busy=false;
+ if(promoted){build();say(S.msg);await crownAnim(id);}
+ endTurn();}
+function clearGhosts(){for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(S.board[r][c]===9)S.board[r][c]=5;}
+// Spec 2.1 item 7: the player who moves next and has no legal move loses. There are no ties.
+function outcome(toMove){if(hasMove(S.board,toMove))return null;
+ if(cpu())return toMove===2?["You win","The computer can't move."]:["The computer wins","You can't move."];
+ return [`Player ${3-toMove} wins`,`Player ${toMove} can't move.`];}
+async function endTurn(){clearGhosts();S.chain=null;S.sel=null;const next=cpu()?2:3-S.turn,o=outcome(next);
+ if(o){S.phase="over";S.gaveUp=false;S.result=o[0];S.msg=o[1];build();say(o[0]+". "+o[1]);return;}
+ if(cpu()){cpuTurn();return;}
+ S.turn=next;S.phase="play";build();say(`${S.msg} Player ${next}'s turn.`);}
+async function cpuTurn(){S.phase="thinking";S.turn=2;cancelled=false;build();say(`${S.msg} The computer is thinking.`);
+ await wait(T.think);if(cancelled||!S||S.phase!=="thinking")return;
+ const ms=allMoves(S.board,2);const best=Math.max(...ms.map(m=>m.caps.length));const pick=ms.filter(m=>m.caps.length===best);const m=pick[Math.floor(Math.random()*pick.length)];
+ S.phase="moving";busy=true;paint();let cur=m.from;const id=S.ids[cur[0]][cur[1]],v=S.board[cur[0]][cur[1]];
+ for(let i=0;i<m.path.length;i++){const to=m.path[i],cap=m.caps[i];if(cap)fadeOut(S.ids[cap[0]][cap[1]],T.cpu*.55,T.cpu*.6);
+  await slide(id,cur,to,T.cpu,!!cap);S.board[cur[0]][cur[1]]=5;S.ids[cur[0]][cur[1]]=0;S.board[to[0]][to[1]]=v;S.ids[to[0]][to[1]]=id;
+  if(cap){S.board[cap[0]][cap[1]]=9;S.ids[cap[0]][cap[1]]=0;S.took[2]++;}cur=to;if(i<m.path.length-1)await wait(T.pause);}
+ clearGhosts();const crowned=v===2&&cur[0]===7;if(crowned){S.board[cur[0]][cur[1]]=4;paint();await crownAnim(id);}
+ S.last={from:m.from,to:cur};S.turn=1;S.msg=`The computer ${m.caps.length?"jumped":"moved"} ${nm(m.from)} to ${nm(cur)}${m.caps.length?`, taking ${m.caps.length===1?"your man":m.caps.length+" pieces"}`:""}${crowned?". Its man becomes a king":""}.`;
+ busy=false;const after=outcome(1);if(after){S.phase="over";S.gaveUp=false;S.result=after[0];S.msg+=" "+after[1];build();say(S.msg);return;}
+ S.phase="play";build();say(S.msg+" Your turn.");}
+
+// ---------- How to play (spec 6.1.11 item 3). All text is a draft for the owner. ----------
+// Owner-approved changes (2026-11-15): Show me, taken rings, a clearer Winning picture, contents, the tribute link, Start a game.
+const RULES={
+ move:{n:4,o:{p:[[3,2,1]],dots:[[2,1],[2,3]],arrows:[[[3,2],[2,1]],[[3,2],[2,3]]],alt:"A light man with a dot on each empty dark square diagonally ahead of it."},demo:[{from:[3,2],to:[2,1]}]},
+ take:{n:4,o:{p:[[3,0,1],[2,1,2]],taken:[[2,1]],dots:[[1,2]],arrows:[[[3,0],[1,2]]],alt:"A light man jumps over a dark man to the empty square beyond it. The dark man has a dashed ring, because it is taken."},demo:[{from:[3,0],to:[1,2],cap:[2,1]}]},
+ chain:{n:5,o:{p:[[4,1,1],[3,2,2],[1,2,2]],taken:[[3,2],[1,2]],dots:[[2,3],[0,1]],arrows:[[[4,1],[2,3]],[[2,3],[0,1]]],alt:"A light man jumps one dark man, then jumps a second dark man in the same turn. Both dark men have a dashed ring, because they are taken."},demo:[{from:[4,1],to:[2,3],cap:[3,2]},{from:[2,3],to:[0,1],cap:[1,2]}]},
+ king:{n:5,o:{p:[[1,0,1],[3,2,3]],dots:[[0,1],[2,1],[2,3],[4,1],[4,3]],arrows:[[[1,0],[0,1]]],alt:"A light man one step from the far side. Below it, a light king, shown as two stacked men with a brass band, with a dot on each of the four diagonal squares around it."},demo:[{from:[1,0],to:[0,1],crown:true}]},
+ end:{n:4,o:{p:[[3,0,1],[2,1,2],[1,2,2]],arrows:[[[3,0],[1,2],1]],alt:"Light to move. A light man at the edge of the board. The square ahead holds a dark man, and the square beyond that is taken too, so the dashed arrow is blocked and the light man cannot move."}}};
+async function playDemo(key,btn){const R=RULES[key],hold=document.getElementById("hold-"+key);if(!hold)return;
+ hold.innerHTML=mini(R.n,R.o);btn.disabled=true;
+ const box=hold.querySelector(".brd"),f=100/R.n,pw=rc=>box.querySelector(`.pw[data-rc="${rc}"]`);
+ box.querySelector("svg").style.opacity=0;box.querySelectorAll(".dot").forEach(d=>d.classList.remove("on"));
+ await wait(250);
+ for(const st of R.demo){const el=pw(st.from+"");if(!el||!document.body.contains(el))return;el.style.zIndex=3;const dur=T.cpu||1;
+  if(st.cap){const ce=pw(st.cap+"");ce.animate([{opacity:1,transform:"scale(1)"},{opacity:0,transform:"scale(.5)"}],{duration:Math.max(T.cpu*.6,1),delay:T.cpu*.55,fill:"forwards"});}
+  const a=el.animate([{left:st.from[1]*f+"%",top:st.from[0]*f+"%"},{left:st.to[1]*f+"%",top:st.to[0]*f+"%"}],{duration:dur,easing:"cubic-bezier(.4,0,.2,1)",fill:"forwards"});
+  if(st.cap&&T.cpu)el.animate([{transform:"scale(1)"},{transform:"scale(1.16)",offset:.5},{transform:"scale(1)"}],{duration:dur,composite:"add"});
+  await a.finished;el.dataset.rc=st.to+"";
+  if(st.crown){const pc=el.firstChild;
+   if(!RM){const up=pc.animate([{transform:"translateY(0) scale(1)"},{transform:"translateY(-6px) scale(1.12)"}],{duration:180,easing:"ease-out",fill:"forwards"});await up.finished;}
+   pc.setAttribute("style",pieceStyle(3,""));
+   if(!RM){const ring=document.createElement("div");ring.style.cssText="position:absolute;width:78%;height:78%;border-radius:50%;pointer-events:none";el.appendChild(ring);
+    ring.animate([{boxShadow:"0 0 0 0 rgba(156,116,36,.6)"},{boxShadow:"0 0 0 12px rgba(156,116,36,0)"}],{duration:420,easing:"ease-out"});
+    await pc.animate([{transform:"translate(-2px,2px) translateY(-6px) scale(1.12)"},{transform:"translate(-2px,2px) translateY(1px) scale(.98)",offset:.8},{transform:"translate(-2px,2px) translateY(0) scale(1)"}],{duration:260,easing:"ease-in-out"}).finished;ring.remove();}}
+  await wait(T.pause+120);}
+ await wait(1100);if(!document.body.contains(hold))return;hold.innerHTML=mini(R.n,R.o);btn.disabled=false;btn.focus();}
+function howtoHTML(){
+ const rule=(key,title,text,cap)=>{const R=RULES[key];return `<div class="rule"><div><div id="hold-${key}">${mini(R.n,R.o)}</div>${cap?`<p class="cap draft">${cap}</p>`:""}${R.demo?`<button class="b sm" data-demo="${key}" aria-label="Show me: ${title}">Show me</button>`:""}</div><div class="draft"><h3 class="h3">${title}</h3><p>${text}</p></div></div>`;};
+ return `<div class="prose" style="max-width:720px">
+ <h1 class="h1">How to play</h1>
+ <nav class="toc" aria-label="On this page"><a class="link" href="#" data-to="rules">The rules</a><a class="link" href="#" data-to="house">Our house rules</a><a class="link" href="#" data-to="using">Using the game</a></nav>
+ <p class="lead draft">Take all of your opponent's pieces, or leave them with no move. Each player starts with twelve men on the dark squares. The light men start at the bottom, and the dark men at the top.</p>
+ <h2 class="h2" id="rules">The rules</h2>
+ ${rule("move","Moving","Men move one square diagonally forward, onto an empty dark square. Light men move up the board, and dark men move down.")}
+ ${rule("take","Taking","When an opponent's man is next to yours and the square beyond it is empty, you can jump over it and take it. Taking is your choice: you never have to.")}
+ ${rule("chain","Jumping again","After a jump, the same piece can jump again if there is another piece to take. You can stop after any jump. A piece can only be taken once in a turn.")}
+ ${rule("king","Kings","A man that reaches the far side becomes a king, and that ends the turn. A king is two men stacked, with a brass band. It moves and jumps one square in any diagonal direction. Only a king can take a king.")}
+ ${rule("end","Winning","If it's your turn and you can't move, you lose. A player with no pieces left can't move, so taking every piece wins too. You can also give up.","Light to move, and blocked")}
+ <h2 class="h2" id="house">Our house rules</h2>
+ <div class="draft"><p>These are the rules our family played by. They differ from standard English draughts in four ways.</p>
+ <table class="cmp"><thead><tr><th style="width:26%"><span class="sr">Rule</span></th><th>Standard English draughts</th><th>Our house rules</th></tr></thead><tbody>
+ <tr><th>Taking</th><td>You must take when you can</td><td class="ours">Taking is your choice</td></tr>
+ <tr><th>Jumping again</th><td>You must finish every jump in the chain</td><td class="ours">You can stop after any jump</td></tr>
+ <tr><th>Men and kings</th><td>Any piece can take a king</td><td class="ours">Only a king can take a king</td></tr>
+ <tr><th>First move</th><td>Dark moves first</td><td class="ours">You choose who moves first</td></tr></tbody></table>
+ <div class="aside"><p><strong>Why is taking a choice?</strong> Grandad liked forced taking. I thought the game was more tactical without it. <a class="link" href="#/about">Read about Ernest</a></p></div></div>
+ <h2 class="h2" id="using">Using the game</h2>
+ <div class="two draft">
+  <div class="card"><h3 class="h3">Mouse or touch</h3><ul>
+   <li>Click or tap one of your pieces to pick it up. Cream dots show where it can go.</li>
+   <li>Click a dot to move there. Click the piece again to put it down.</li>
+   <li>After a jump, the piece stays up if it can jump again. Click the next dot, or press <strong>End turn</strong>.</li>
+   <li><strong>Show tips</strong> puts a ring on every square you can finish a move on.</li>
+   <li><strong>Undo</strong> goes back to the start of your last turn. Against the computer, it takes back the computer's reply too.</li>
+   <li><strong>Give up</strong> ends the game. <strong>New game</strong> goes back to the choices.</li></ul></div>
+  <div class="card"><h3 class="h3">Keyboard</h3><ul>
+   <li><kbd>Tab</kbd> moves between the buttons and onto the board.</li>
+   <li>The arrow keys move from square to square.</li>
+   <li><kbd>Enter</kbd> or <kbd>Space</kbd> picks up a piece, or moves it to the square you are on.</li>
+   <li><kbd>Escape</kbd> puts the piece down.</li>
+   <li>A screen reader reads each square's row and column, and what stands on it. Every move is read out.</li></ul></div>
+ </div>
+ <p style="margin:28px 0 0"><a class="b pri" href="#/" style="display:inline-block;padding:12px 22px;font-size:16px">Start a game</a></p></div>`;}
+function wireHowto(){
+ document.querySelectorAll("[data-demo]").forEach(b=>b.onclick=()=>playDemo(b.dataset.demo,b));
+ // The site uses the address hash for pages, so the contents links scroll instead of changing it.
+ document.querySelectorAll(".toc a").forEach(a=>a.onclick=e=>{e.preventDefault();const t=document.getElementById(a.dataset.to);t.setAttribute("tabindex","-1");t.scrollIntoView({behavior:RM?"auto":"smooth"});t.focus({preventScroll:true});});}
+
+// ---------- About (spec 6.1.11 item 5) ----------
+// Owner-approved changes (2026-11-15): paragraphs, a smaller photo on a phone, the family board, a caption.
+function aboutHTML(){
+ // The owner's text from About.js (commit da953ce), with "past away" corrected. A1 adds paragraph breaks only.
+ const tribute=["This game was made in loving memory of my grandad, Ernest Rumbol, who sadly passed away in December of 2020. My grandad taught me this game many years ago. Over the years we have played thousands of games together.",
+  "As I got older and understood the game more, the more games I won. However, grandad still loved playing even when he wiped the board clean because he lost the game after the first move. We played with many different rule sets, his favourite was forcing users to take a piece if available, I thought the game was more tactical if you didn't.",
+  "I hope that people play this game with as much fun as we did. May my grandad rest in peace."];
+ const ph=(title,alt,ratio)=>`<div class="frame" style="padding:9px"><div class="inlay"><div class="ph" style="aspect-ratio:${ratio}" role="img" aria-label="${alt}"><strong>${title}</strong><span>Placeholder until the owner supplies it</span></div></div></div>`;
+ const photo=`<figure class="photo">${ph("Photo of Ernest","Placeholder for a photo of Ernest","4/5")}<figcaption class="cap todo">Caption to come, in the owner's words: for example, where or when the photo was taken</figcaption></figure>`;
+ return `<h1 class="h1">Ernest Rumbol</h1>
+ <div class="about">${photo}<div class="prose">
+  ${tribute.map(t=>`<p style="font-size:${phone?17:18}px;line-height:1.6">${t}</p>`).join("")}
+  <figure class="board-photo">${ph("The family board","Placeholder for a photo of the family draughts board","4/3")}<figcaption class="cap draft">The board we played on</figcaption></figure>
+  <h2 class="h2">How it's built</h2>
+  <p class="draft">The game is a React and TypeScript web app, hosted on GitHub Pages. The computer's moves come from a separate API, built with .NET and Azure Functions. The code for both is on GitHub: <a class="link" href="https://github.com/OllieRumbol/draughtsgame">the web app</a> and <a class="link" href="https://github.com/OllieRumbol/DraughtsGameFunction">the API</a>.</p>
+ </div></div>`;}
+
+// ---------- Page not found (spec 6.1.10 item 3) ----------
+function missingHTML(){return `<div class="prose" style="padding:12px 0 8px">
+ <div style="width:96px;margin:0 0 18px">${mini(3,{alt:"An empty corner of a draughts board."})}</div>
+ <h1 class="h1">Page not found</h1><p class="draft">There's no page at this address.</p>
+ <p><a class="b pri" href="#/" style="display:inline-block;padding:10px 18px">Go to Play</a></p></div>`;}
+
+// ---------- Pages and demo controls ----------
+function route(){const h=location.hash.replace(/^#/,"")||"/";page=h==="/"?"play":h==="/howtoplay"?"howto":h==="/about"?"about":"missing";build();}
+function build(){const pg=document.getElementById("pg");pg.className="pg"+(dark?" dark":"")+(phone?" phone":"")+(drafts?" drafts":"");pg.style.width=phone?"340px":"100%";pg.style.setProperty("--lift",T.lift+"ms");
+ const main=page==="play"?(S?gameHTML():setupHTML()):page==="howto"?howtoHTML():page==="about"?aboutHTML():missingHTML();
+ pg.innerHTML=header()+`<main>${main}</main>`;els={};
+ document.getElementById("theme").onclick=()=>{dark=!dark;build();document.getElementById("theme").focus();};
+ if(page==="play"){if(S)wireGame();else wireSetup();}if(page==="howto")wireHowto();}
+function mark(){[["vD",!phone],["vP",phone],["vT",drafts]].forEach(([i,o])=>document.getElementById(i).setAttribute("aria-pressed",o));}
+// Leaving Play keeps the game, as spec 6.1.8 item 7 says. A computer move in progress finishes off screen.
+addEventListener("hashchange",()=>{route();scrollTo(0,0);});
+document.getElementById("vD").onclick=()=>{phone=false;build();mark();};
+document.getElementById("vP").onclick=()=>{phone=true;build();mark();};
+document.getElementById("vR").onclick=()=>{cancelled=true;busy=false;fresh(true);location.hash="#/";build();};
+document.getElementById("vX").onclick=()=>{location.hash="#/old-page";};
+document.getElementById("vT").onclick=()=>{drafts=!drafts;build();mark();};
+route();mark();
+</script>
+</body>
+</html>
