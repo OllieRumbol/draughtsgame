@@ -1,0 +1,16 @@
+# Generated files
+dist/
+coverage/
+playwright-report/
+test-results/
+package-lock.json
+
+# Written by hand: Prettier would rewrap the Markdown tables and the design mockup.
+docs/
+*.md
+
+# Local settings
+.claude/
+
+# The old workflow, left as it is. T2 deletes it, and this line with it.
+.github/workflows/main_deploy.yml

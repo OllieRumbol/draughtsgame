@@ -37,7 +37,7 @@ T1 adds the first two scripts to `package.json`, and T2 adds `npm run e2e`. Late
 
 Goal: the repository builds on Vite, React and TypeScript, with current packages; every pull request is checked automatically; `main` is protected; and the old game is still live.
 
-- [ ] **T1 — Replace Create React App with Vite, React and TypeScript**
+- [x] **T1 — Replace Create React App with Vite, React and TypeScript**
   - Refs: spec 3 goal 1, spec 4, spec 6.5 items 5, 7 and 8, plan 1, plan 1.1, plan 2, plan 3.1, plan 3.5 decisions 1, 2, 5, 7, 9, 12 and 15, plan 5 (`no-console`), plan 6 (Content Security Policy), plan 7.1
   - Depends on: —
   - Done when:
@@ -55,6 +55,11 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
     - `LICENSE` holds the MIT licence, and the README says that it covers the code only, not the About tribute or the photos (plan 3.5 decision 15).
   - Verify: `npm ci`, then `npm run audit`, then `npm run check`; then `npm outdated` lists no direct dependency other than the holds in plan 3.5 decision 1, with the output in the pull request; then `npm run dev` and a POST of the spec 5.2 request to `http://localhost:5173/api/GetPotentialMoves` returns the four squares; then the built `dist/index.html` contains the Content Security Policy tag with the API host
   - Notes:
+    - `minimatch` is overridden to 11 for `@typescript-eslint/typescript-estree` only (GHSA-g3hv-75wg-m249). Remove the override when `typescript-eslint` uses `minimatch` 11. The owner approved this and the other plan differences in PR 62 on 2026-11-16.
+    - T2 deletes `.github/workflows/main_deploy.yml` and its line in `.prettierignore`. `.gitattributes` keeps LF, so the Prettier check passes on Windows.
+    - T10 deletes `src/pages/placeholder/`. The site has no icon since `public/` went; T10 decides. Delete each `.gitkeep` when its folder gets a file.
+    - The Content Security Policy is build-only, after `<meta charset>`, and fails the build on an empty `VITE_API_BASE_URL`. T8 still adds the check in `api.ts`.
+    - Vitest: jsdom, no globals (`src/test-setup.ts` cleans up), skips `e2e/`. Build-time code is in `config/`. `no-console` is off in `scripts/` only.
 
 - [ ] **T2 — Add the CI workflow, and remove the old one**
   - Refs: spec 3 goal 2, spec 6.5 items 5 and 7, spec 9, plan 3.5 decisions 10, 11 and 14, plan 6 (CI credentials, third-party actions, vulnerabilities), plan 7.1, plan 8.2, test 37, risk 6

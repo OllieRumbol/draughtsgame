@@ -1,0 +1,57 @@
+import { fileURLToPath, URL } from "node:url";
+import babel from "@rolldown/plugin-babel";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import { defineConfig, loadEnv, type Plugin } from "vite";
+import { configDefaults } from "vitest/config";
+import { contentSecurityPolicy } from "./config/csp.ts";
+
+// Writes the Content Security Policy into the built index.html, straight after the charset (plan section 6).
+// Only for builds: the dev server's hot reload needs an inline script that the policy would block.
+function contentSecurityPolicyPlugin(apiBaseUrl: string): Plugin {
+  const charset = '<meta charset="UTF-8" />';
+
+  return {
+    name: "content-security-policy",
+    apply: "build",
+    transformIndexHtml(html) {
+      if (!html.includes(charset)) {
+        throw new Error(`index.html must contain ${charset}, so the Content Security Policy can follow it.`);
+      }
+      const policy = `<meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy(apiBaseUrl)}" />`;
+      return html.replace(charset, `${charset}\n    ${policy}`);
+    },
+  };
+}
+
+// The dev server forwards /api to the live API (plan section 3.5, decision 9).
+// The address comes from .env.production, so it is written in one place.
+function liveApiProxy(): Record<string, { target: string; changeOrigin: boolean }> {
+  const liveApiBaseUrl = loadEnv("production", process.cwd(), "VITE_").VITE_API_BASE_URL;
+  return { "/api": { target: new URL(liveApiBaseUrl).origin, changeOrigin: true } };
+}
+
+export default defineConfig(({ command, mode }) => {
+  const env = loadEnv(mode, process.cwd(), "VITE_");
+
+  return {
+    // The site is served from https://ollierumbol.github.io/draughtsgame/ (spec section 2.5).
+    base: "/draughtsgame/",
+    plugins: [
+      react(),
+      // The React Compiler, through Babel (plan section 3.5, decision 2).
+      babel({ presets: [reactCompilerPreset()] }),
+      contentSecurityPolicyPlugin(env.VITE_API_BASE_URL ?? ""),
+    ],
+    resolve: {
+      alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+    },
+    // Only the dev server needs the proxy, so a build or a test run never reads the live address.
+    server: command === "serve" && mode === "development" ? { proxy: liveApiProxy() } : {},
+    test: {
+      environment: "jsdom",
+      setupFiles: ["./src/test-setup.ts"],
+      // e2e/ holds the Playwright tests, which Playwright runs (plan section 7.1).
+      exclude: [...configDefaults.exclude, "e2e/**"],
+    },
+  };
+});
