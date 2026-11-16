@@ -55,6 +55,11 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
     - `LICENSE` holds the MIT licence, and the README says that it covers the code only, not the About tribute or the photos (plan 3.5 decision 15).
   - Verify: `npm ci`, then `npm run audit`, then `npm run check`; then `npm outdated` lists no direct dependency other than the holds in plan 3.5 decision 1, with the output in the pull request; then `npm run dev` and a POST of the spec 5.2 request to `http://localhost:5173/api/GetPotentialMoves` returns the four squares; then the built `dist/index.html` contains the Content Security Policy tag with the API host
   - Notes:
+    - `package.json` has `overrides: { minimatch: "^11.0.8" }`. `typescript-eslint` 8.72.2 brings `minimatch` 10.2.6, which has GHSA-g3hv-75wg-m249 (moderate). The parser only calls `minimatch()`, which version 11 keeps. Remove the override when `typescript-eslint` depends on `minimatch` 11.
+    - `@babel/core` is 8, the latest. The built bundle contains the React Compiler's cache, so the compiler runs.
+    - `.prettierignore` skips `.github/workflows/main_deploy.yml`, which is left as it is. T2 deletes the file and that line.
+    - Carried forward: `src/pages/placeholder/` is deleted in T10. Each `.gitkeep` is deleted when its folder gets a file. The old `public/favicon.ico` went with `public/`, so the site has no icon until T10.
+    - Decisions for later tasks: the Content Security Policy is added at build only, after `<meta charset>`, because the dev server's hot reload needs an inline script. Vitest runs in jsdom without globals, so `src/test-setup.ts` loads `jest-dom` and cleans up. Build-time code lives in `config/` (`tsconfig.node.json`). `no-console` is off for `scripts/` only.
 
 - [ ] **T2 — Add the CI workflow, and remove the old one**
   - Refs: spec 3 goal 2, spec 6.5 items 5 and 7, spec 9, plan 3.5 decisions 10, 11 and 14, plan 6 (CI credentials, third-party actions, vulnerabilities), plan 7.1, plan 8.2, test 37, risk 6

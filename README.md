@@ -1,70 +1,59 @@
-# Getting Started with Create React App
+# Draughts
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A draughts game for the web, made in memory of Ernest Rumbol and played with our family's house rules. Two people can play on one device, or one person can play against the computer. The computer's moves come from a separate API, [DraughtsGameFunction](https://github.com/OllieRumbol/DraughtsGameFunction).
 
-## Available Scripts
+The live site is at <https://ollierumbol.github.io/draughtsgame>.
 
-In the project directory, you can run:
+The site is being rebuilt. Until the release, the live site still runs the old game, and a merge to `main` does not deploy (`docs/plan.md`, section 8.3).
 
-### `npm start`
+## Documents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+| Document | What it holds |
+| --- | --- |
+| [`docs/spec.md`](docs/spec.md) | What the site must do |
+| [`docs/plan.md`](docs/plan.md) | How it is built |
+| [`docs/tasks.md`](docs/tasks.md) | The order of work, and its progress |
+| [`docs/design/site.html`](docs/design/site.html) | The approved design. Open it in a browser. |
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Requirements
 
-### `npm test`
+Node.js 26, the version in `.nvmrc`. Node.js 24 also works.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Install
 
-### `npm run build`
+```bash
+npm ci
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Run
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm run dev
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Then open <http://localhost:5173/draughtsgame/>. The dev server forwards requests for `/api` to the live API, so games against the computer also work locally (`docs/plan.md`, section 3.5, decision 9).
 
-### `npm run eject`
+## Test and check
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+| Command | What it does |
+| --- | --- |
+| `npm run test` | Runs the unit and component tests once |
+| `npm run check` | Type check, lint, format check, tests and build. Run it before a pull request. |
+| `npm run audit` | Fails on any known vulnerability that is not approved in [`docs/audit-exceptions.md`](docs/audit-exceptions.md) |
+| `npm run format` | Formats the code with Prettier |
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Build
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+npm run build
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+The site is written to `dist/`. Run `npm run preview` to serve the build on your computer.
 
-## Learn More
+## Deployment
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+GitHub Actions builds the site and deploys it to GitHub Pages. `docs/plan.md`, section 8, describes the workflow, the switch from the old site, and how to roll back.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Licence
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The code is under the MIT licence, in [`LICENSE`](LICENSE). The licence does not cover the About page's tribute or the photos. They remain the owner's.
