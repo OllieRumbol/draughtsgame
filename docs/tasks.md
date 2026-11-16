@@ -88,6 +88,7 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
     - This task's pull request is the first one that the ruleset checks. It ticks this task.
   - Verify: `gh api repos/OllieRumbol/draughtsgame/rulesets` lists the ruleset, and `gh api repos/OllieRumbol/draughtsgame/rulesets/<id>` shows the settings above; `gh repo view --json deleteBranchOnMerge` shows `true`; the pull request page shows the two required checks
   - Notes:
+    - Checkpoint (2026-11-16): before T3, `main` had no ruleset and no classic protection, and "Automatically delete head branches" was off. The `check` and `e2e` jobs had run on PR 63 and on `main`. Next: the owner makes the ruleset and turns on branch deletion, then this pull request ticks T3.
 
 ## Phase 2 — Rules
 
