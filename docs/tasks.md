@@ -79,7 +79,7 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
     - The phone projects use the `Pixel 7` and `iPhone 17` presets of Playwright 1.65. The smoke test fails on any console error, so a Content Security Policy violation fails it.
     - For T3: the required checks are the jobs named `check` and `e2e`. T1's carried points are done: the `.prettierignore` line is removed, and the README says Node.js 26 is used in CI.
 
-- [ ] **T3 — Protect `main` with a ruleset (manual)**
+- [x] **T3 — Protect `main` with a ruleset (manual)**
   - Refs: plan 6 (branch protection), `~/.claude/rules/github.md`
   - Depends on: T2
   - Done when:
@@ -88,7 +88,9 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
     - This task's pull request is the first one that the ruleset checks. It ticks this task.
   - Verify: `gh api repos/OllieRumbol/draughtsgame/rulesets` lists the ruleset, and `gh api repos/OllieRumbol/draughtsgame/rulesets/<id>` shows the settings above; `gh repo view --json deleteBranchOnMerge` shows `true`; the pull request page shows the two required checks
   - Notes:
-    - Checkpoint (2026-11-16): before T3, `main` had no ruleset and no classic protection, and "Automatically delete head branches" was off. The `check` and `e2e` jobs had run on PR 63 and on `main`. Next: the owner makes the ruleset and turns on branch deletion, then this pull request ticks T3.
+    - The owner made the ruleset "Protect main" on 2026-11-16: the default branch, a pull request with 0 approvals, the required checks `check` and `e2e` from GitHub Actions, no bypass, and deletion and force pushes blocked. "Require branches to be up to date" is off.
+    - GitHub set `require_extra_approval_for_unattributed_changes` to `true` by itself. Its docs say it only affects pull requests that Copilot opens, and only with a non-zero approval count. If it ever blocks a merge, set it to `false`.
+    - "Automatically delete head branches" is on. Job names `check` and `e2e` must stay the same, or the required checks never pass.
 
 ## Phase 2 — Rules
 
