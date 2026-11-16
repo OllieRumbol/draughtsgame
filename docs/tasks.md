@@ -37,7 +37,7 @@ T1 adds the first two scripts to `package.json`, and T2 adds `npm run e2e`. Late
 
 Goal: the repository builds on Vite, React and TypeScript, with current packages; every pull request is checked automatically; `main` is protected; and the old game is still live.
 
-- [ ] **T1 — Replace Create React App with Vite, React and TypeScript**
+- [x] **T1 — Replace Create React App with Vite, React and TypeScript**
   - Refs: spec 3 goal 1, spec 4, spec 6.5 items 5, 7 and 8, plan 1, plan 1.1, plan 2, plan 3.1, plan 3.5 decisions 1, 2, 5, 7, 9, 12 and 15, plan 5 (`no-console`), plan 6 (Content Security Policy), plan 7.1
   - Depends on: —
   - Done when:
@@ -55,12 +55,11 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
     - `LICENSE` holds the MIT licence, and the README says that it covers the code only, not the About tribute or the photos (plan 3.5 decision 15).
   - Verify: `npm ci`, then `npm run audit`, then `npm run check`; then `npm outdated` lists no direct dependency other than the holds in plan 3.5 decision 1, with the output in the pull request; then `npm run dev` and a POST of the spec 5.2 request to `http://localhost:5173/api/GetPotentialMoves` returns the four squares; then the built `dist/index.html` contains the Content Security Policy tag with the API host
   - Notes:
-    - `package.json` overrides `minimatch` to `^11.0.8` for `@typescript-eslint/typescript-estree` only. Version 8.72.2 brings `minimatch` 10.2.6, which has GHSA-g3hv-75wg-m249 (moderate). The parser only calls `minimatch()`, which version 11 keeps. Remove the override when `typescript-eslint` depends on `minimatch` 11.
-    - Not in the plan: the Content Security Policy plugin also fails the build when `VITE_API_BASE_URL` is empty. T8 still adds the start-up check in `api.ts` (plan 2). `.gitattributes` checks text files out with LF, because Prettier's check failed on Windows with `core.autocrlf`.
-    - `@babel/core` is 8, the latest. The compiler runs: in the build, the placeholder page reads a memo cache (`c(1)` and `react.memo_cache_sentinel`), and without the compiler it does not. React itself also contains that marker, so a bare search for it proves nothing.
-    - `.prettierignore` skips `.github/workflows/main_deploy.yml`, which is left as it is. T2 deletes the file and that line.
-    - Carried forward: `src/pages/placeholder/` is deleted in T10. Each `.gitkeep` is deleted when its folder gets a file. The old `public/favicon.ico` went with `public/`, so the site has no icon until T10.
-    - Decisions for later tasks: the Content Security Policy is added at build only, after `<meta charset>`, because the dev server's hot reload needs an inline script. Vitest runs in jsdom without globals, so `src/test-setup.ts` loads `jest-dom` and cleans up. Build-time code lives in `config/` (`tsconfig.node.json`). `no-console` is off for `scripts/` only.
+    - `minimatch` is overridden to 11 for `@typescript-eslint/typescript-estree` only (GHSA-g3hv-75wg-m249). Remove the override when `typescript-eslint` uses `minimatch` 11.
+    - T2 deletes `.github/workflows/main_deploy.yml` and its line in `.prettierignore`. `.gitattributes` keeps LF, so the Prettier check passes on Windows.
+    - T10 deletes `src/pages/placeholder/`. The site has no icon since `public/` went; T10 decides. Delete each `.gitkeep` when its folder gets a file.
+    - The Content Security Policy is build-only, after `<meta charset>`, and fails the build on an empty `VITE_API_BASE_URL`. T8 still adds the check in `api.ts`.
+    - Vitest: jsdom, no globals (`src/test-setup.ts` cleans up), skips `e2e/`. Build-time code is in `config/`. `no-console` is off in `scripts/` only.
 
 - [ ] **T2 — Add the CI workflow, and remove the old one**
   - Refs: spec 3 goal 2, spec 6.5 items 5 and 7, spec 9, plan 3.5 decisions 10, 11 and 14, plan 6 (CI credentials, third-party actions, vulnerabilities), plan 7.1, plan 8.2, test 37, risk 6
