@@ -73,6 +73,10 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
     - Test 37: the pull request records a probe in which a package with a known advisory made `npm run audit` fail, and the probe was removed.
   - Verify: the workflow passes on this task's pull request; after the merge, the run on `main` shows `deploy` as skipped, and `https://ollierumbol.github.io/draughtsgame` still serves the old game
   - Notes:
+    - Firefox could not start on the owner's Windows computer when run from Claude's tools ("spawn UNKNOWN", "Accessing a corrupted shared library"), even after a reinstall. Smart App Control is off and Defender has no detection. The other four projects pass locally. CI runs all five on Linux.
+    - The `deploy` job builds the site itself (`npm run build`) from the same commit as `check` and `e2e`, because plan 8.2 lists only the Pages steps. It has no package cache, so a cache from another run cannot reach what it publishes.
+    - The phone projects use the `Pixel 7` and `iPhone 17` presets of Playwright 1.65. The smoke test fails on any console error, so a Content Security Policy violation fails it.
+    - For T3: the required checks are the jobs named `check` and `e2e`. T1's carried points are done: the `.prettierignore` line is removed, and the README says Node.js 26 is used in CI.
 
 - [ ] **T3 — Protect `main` with a ruleset (manual)**
   - Refs: plan 6 (branch protection), `~/.claude/rules/github.md`

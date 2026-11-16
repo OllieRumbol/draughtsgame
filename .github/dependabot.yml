@@ -1,0 +1,17 @@
+# Weekly version updates keep spec section 6.5, items 5 and 7 true after the release (plan section 3.5, decision 14).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # typescript-eslint supports TypeScript below 6.1 only, so a newer TypeScript cannot install
+      # (plan section 3.5, decisions 1 and 14). Change this range when typescript-eslint supports one.
+      - dependency-name: typescript
+        versions: [">=6.1.0"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  # No path filter. The ruleset on main requires the check and e2e jobs, and a required check
+  # that never runs would stop a pull request from merging (~/.claude/rules/github.md).
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels that pull request's older run.
+# Runs on main are never cancelled, so a deploy is never stopped halfway (plan section 8.2).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    # The ruleset requires a check with this exact name (T3).
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install packages
+        run: npm ci
+
+      # Any known vulnerability fails the build, unless the owner approved it in
+      # docs/audit-exceptions.md (spec section 6.5, item 5, and plan section 6).
+      - name: Audit packages
+        run: npm run audit
+
+      - name: Type check, lint, format check, tests and build
+        run: npm run check
+
+  e2e:
+    # The ruleset requires a check with this exact name (T3).
+    name: e2e
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Install the Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build, then run the end-to-end tests against vite preview
+        run: npm run e2e
+
+      - name: Upload the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+
+  deploy:
+    name: deploy
+    needs: [check, e2e]
+    # Only main, only on a push or a manual run, and only after the owner sets the repository
+    # variable DEPLOY_ENABLED to true at the release (plan sections 8.2 and 8.3).
+    # The ref check stops a manual run on another branch from deploying that branch.
+    if: >-
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && github.ref == 'refs/heads/main'
+      && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # The workflow token can publish to Pages from this job only. No stored token (plan section 6).
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    # One deploy at a time, and a running deploy is never cancelled.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # No package cache in this job, so a cache written elsewhere cannot reach what it publishes.
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Set up Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
