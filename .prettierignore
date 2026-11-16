@@ -11,6 +11,3 @@ docs/
 
 # Local settings
 .claude/
-
-# The old workflow, left as it is. T2 deletes it, and this line with it.
-.github/workflows/main_deploy.yml

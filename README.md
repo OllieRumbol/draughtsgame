@@ -19,7 +19,7 @@ Play it at <https://ollierumbol.github.io/draughtsgame>.
 
 ## Get started
 
-You need Node.js 26, the version in `.nvmrc`. Node.js 24 also works.
+You need Node.js 26, the version in `.nvmrc` and in CI. Node.js 24 also works.
 
 1. Install the packages:
 
