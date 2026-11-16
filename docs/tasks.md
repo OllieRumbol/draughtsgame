@@ -61,7 +61,7 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
     - The Content Security Policy is build-only, after `<meta charset>`, and fails the build on an empty `VITE_API_BASE_URL`. T8 still adds the check in `api.ts`.
     - Vitest: jsdom, no globals (`src/test-setup.ts` cleans up), skips `e2e/`. Build-time code is in `config/`. `no-console` is off in `scripts/` only.
 
-- [ ] **T2 — Add the CI workflow, and remove the old one**
+- [x] **T2 — Add the CI workflow, and remove the old one**
   - Refs: spec 3 goal 2, spec 6.5 items 5 and 7, spec 9, plan 3.5 decisions 10, 11 and 14, plan 6 (CI credentials, third-party actions, vulnerabilities), plan 7.1, plan 8.2, test 37, risk 6
   - Depends on: T1
   - Done when:
@@ -73,7 +73,7 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
     - Test 37: the pull request records a probe in which a package with a known advisory made `npm run audit` fail, and the probe was removed.
   - Verify: the workflow passes on this task's pull request; after the merge, the run on `main` shows `deploy` as skipped, and `https://ollierumbol.github.io/draughtsgame` still serves the old game
   - Notes:
-    - Firefox could not start on the owner's Windows computer when run from Claude's tools ("spawn UNKNOWN", "Accessing a corrupted shared library"), even after a reinstall. Smart App Control is off and Defender has no detection. The other four projects pass locally. CI runs all five on Linux.
+    - Firefox could not start on the owner's Windows computer when run from Claude's tools ("spawn UNKNOWN", "Accessing a corrupted shared library"), even after a reinstall. Smart App Control is off and Defender has no detection. The other four pass locally. In CI, on Node 26.13.1, all five passed (PR 63).
     - `e2e` uploads the `dist/` it tested as the `site` artifact, and `deploy` publishes exactly that, with no checkout or install. Plan 8.2 does not say where `deploy` gets `dist/`. The Playwright browsers are not cached: a few minutes a run, kept simple on purpose.
     - Dependabot groups npm minor and patch updates, and ignores `@types/node` major updates. Update those by hand when `.nvmrc` moves to a newer Node.js LTS.
     - The phone projects use the `Pixel 7` and `iPhone 17` presets of Playwright 1.65. The smoke test fails on any console error, so a Content Security Policy violation fails it.
