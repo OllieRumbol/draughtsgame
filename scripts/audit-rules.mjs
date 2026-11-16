@@ -3,6 +3,8 @@
 // A row whose review date has passed also fails the audit, so every exception is looked at again.
 
 const ADVISORY_ID = /GHSA(-[0-9a-z]{4}){3}/i;
+// An Advisory cell must hold the ID and nothing else, so it can match the ID that npm audit reports.
+const ADVISORY_CELL = /^GHSA(-[0-9a-z]{4}){3}$/i;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
@@ -25,7 +27,7 @@ export function parseExceptions(markdown) {
       .map((cell) => cell.trim());
 
     // Only a row that starts with an advisory ID is an exception. This skips the header and divider rows.
-    if (cells.length !== 4 || !ADVISORY_ID.test(cells[0])) {
+    if (cells.length !== 4 || !ADVISORY_CELL.test(cells[0])) {
       continue;
     }
 

@@ -1,8 +1,8 @@
-/// <reference types="vitest/config" />
 import { fileURLToPath, URL } from "node:url";
 import babel from "@rolldown/plugin-babel";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig, loadEnv, type Plugin } from "vite";
+import { configDefaults } from "vitest/config";
 import { contentSecurityPolicy } from "./config/csp.ts";
 
 // Writes the Content Security Policy into the built index.html, straight after the charset (plan section 6).
@@ -23,11 +23,15 @@ function contentSecurityPolicyPlugin(apiBaseUrl: string): Plugin {
   };
 }
 
-export default defineConfig(({ mode }) => {
+// The dev server forwards /api to the live API (plan section 3.5, decision 9).
+// The address comes from .env.production, so it is written in one place.
+function liveApiProxy(): Record<string, { target: string; changeOrigin: boolean }> {
+  const liveApiBaseUrl = loadEnv("production", process.cwd(), "VITE_").VITE_API_BASE_URL;
+  return { "/api": { target: new URL(liveApiBaseUrl).origin, changeOrigin: true } };
+}
+
+export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "VITE_");
-  // The dev proxy forwards /api to the live API (plan section 3.5, decision 9).
-  // Its address comes from .env.production, so it is written in one place.
-  const liveApiOrigin = new URL(loadEnv("production", process.cwd(), "VITE_").VITE_API_BASE_URL).origin;
 
   return {
     // The site is served from https://ollierumbol.github.io/draughtsgame/ (spec section 2.5).
@@ -41,14 +45,13 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
     },
-    server: {
-      proxy: {
-        "/api": { target: liveApiOrigin, changeOrigin: true },
-      },
-    },
+    // Only the dev server needs the proxy, so a build or a test run never reads the live address.
+    server: command === "serve" && mode === "development" ? { proxy: liveApiProxy() } : {},
     test: {
       environment: "jsdom",
       setupFiles: ["./src/test-setup.ts"],
+      // e2e/ holds the Playwright tests, which Playwright runs (plan section 7.1).
+      exclude: [...configDefaults.exclude, "e2e/**"],
     },
   };
 });

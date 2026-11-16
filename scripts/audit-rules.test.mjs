@@ -35,6 +35,12 @@ describe("parseExceptions", () => {
   it("finds no rows in the empty table", () => {
     expect(parseExceptions("| Advisory | Package | Reason | Review by |\n| --- | --- | --- | --- |\n")).toEqual([]);
   });
+
+  it("does not accept an Advisory cell with more than the ID in it", () => {
+    const row = "| GHSA-abcd-efgh-ijkl (example-tool) | example-tool | Build only | 2026-12-31 |";
+
+    expect(parseExceptions(row)).toEqual([]);
+  });
 });
 
 describe("reportedAdvisories", () => {
