@@ -11,8 +11,9 @@ on:
 permissions:
   contents: read
 
-# A new push to a pull request cancels that pull request's older run.
-# Runs on main are never cancelled, so a deploy is never stopped halfway (plan section 8.2).
+# A new push to a pull request cancels that pull request's older run. A run on main that has
+# started is never cancelled. A run on main that is still waiting is replaced by a newer one,
+# so the newest commit is the one checked and deployed (plan section 8.2).
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -73,12 +74,22 @@ jobs:
       - name: Build, then run the end-to-end tests against vite preview
         run: npm run e2e
 
+      # Kept on a pass too, so a test that failed once and passed on its retry can be looked into (plan section 9, risk 5).
       - name: Upload the Playwright report
-        if: failure()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: playwright-report
+          retention-days: 7
+
+      # The deploy job publishes this build, the one the end-to-end tests ran against.
+      - name: Upload the tested site
+        uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: dist
+          if-no-files-found: error
           retention-days: 7
 
   deploy:
@@ -106,22 +117,11 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v7
+      - name: Download the tested site
+        uses: actions/download-artifact@v8
         with:
-          persist-credentials: false
-
-      # No package cache in this job, so a cache written elsewhere cannot reach what it publishes.
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-
-      - name: Install packages
-        run: npm ci
-
-      - name: Build
-        run: npm run build
+          name: site
+          path: dist
 
       - name: Set up Pages
         uses: actions/configure-pages@v6

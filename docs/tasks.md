@@ -74,7 +74,8 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
   - Verify: the workflow passes on this task's pull request; after the merge, the run on `main` shows `deploy` as skipped, and `https://ollierumbol.github.io/draughtsgame` still serves the old game
   - Notes:
     - Firefox could not start on the owner's Windows computer when run from Claude's tools ("spawn UNKNOWN", "Accessing a corrupted shared library"), even after a reinstall. Smart App Control is off and Defender has no detection. The other four projects pass locally. CI runs all five on Linux.
-    - The `deploy` job builds the site itself (`npm run build`) from the same commit as `check` and `e2e`, because plan 8.2 lists only the Pages steps. It has no package cache, so a cache from another run cannot reach what it publishes.
+    - `e2e` uploads the `dist/` it tested as the `site` artifact, and `deploy` publishes exactly that, with no checkout or install. Plan 8.2 does not say where `deploy` gets `dist/`. The Playwright browsers are not cached: a few minutes a run, kept simple on purpose.
+    - Dependabot groups npm minor and patch updates, and ignores `@types/node` major updates. Update those by hand when `.nvmrc` moves to a newer Node.js LTS.
     - The phone projects use the `Pixel 7` and `iPhone 17` presets of Playwright 1.65. The smoke test fails on any console error, so a Content Security Policy violation fails it.
     - For T3: the required checks are the jobs named `check` and `e2e`. T1's carried points are done: the `.prettierignore` line is removed, and the README says Node.js 26 is used in CI.
 

@@ -14,5 +14,7 @@ test("the placeholder page opens with no errors", async ({ page }) => {
   await page.goto("./");
 
   await expect(page.getByRole("heading", { level: 1, name: "Draughts" })).toBeVisible();
+  // Wait until nothing else is loading, so a font or style blocked after the heading appears is caught too.
+  await page.waitForLoadState("networkidle");
   expect(errors).toEqual([]);
 });
