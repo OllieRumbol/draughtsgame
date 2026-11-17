@@ -45,6 +45,21 @@ export function hasMove(board: Board, player: Player): boolean {
   return squaresOf(board, player).some((from) => nextSteps(board, from, null).length > 0);
 }
 
+// Spec section 2.1, item 7, for the player who moves next. The reason is shown with the result (spec section 6.3).
+export type Outcome = { kind: "playing" } | { kind: "win"; winner: Player; reason: "noPieces" | "noMoves" };
+
+// The player to move with no legal move loses. It does not matter whether the other player could move,
+// so there is no tie.
+export function outcome(board: Board, toMove: Player): Outcome {
+  if (hasMove(board, toMove)) {
+    return { kind: "playing" };
+  }
+
+  const winner: Player = toMove === 1 ? 2 : 1;
+  const reason = squaresOf(board, toMove).length === 0 ? "noPieces" : "noMoves";
+  return { kind: "win", winner, reason };
+}
+
 // The board holds the piece on `from`. During a chain, `chain` holds the chain so far. The captured pieces
 // may still be on the board or already faded: either way they cannot be captured again (plan section 3.5, decision 13).
 // It cannot tell that a king was promoted during this chain. The reducer ends the chain when a man becomes a king,
