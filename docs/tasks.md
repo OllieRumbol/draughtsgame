@@ -112,7 +112,7 @@ Goal: `src/game/` holds the house rules, matching the API, and every rule exampl
     - The search keeps a man unpromoted until `applyMove`, as the API does. A man has no forward jump from its far row, so its chain stops there (test 6). T5's `findPath` can rely on this.
     - `src/game/test-boards.ts` holds board helpers for the rules tests, for T5 too. Nothing in the app imports it, so it is not in the build. An ESLint rule stops `src/game/` importing React or the rest of the app.
 
-- [ ] **T5 — Add the end of the game and the computer's jump order**
+- [x] **T5 — Add the end of the game and the computer's jump order**
   - Refs: spec 2.1 item 7, spec 4.1 items 4 and 7, spec 6.1.5 items 3 and 4, spec 6.1.6 item 1, spec 6.2.1 examples 7, 13 and 14, spec 6.2.2, plan 3.3.2, tests 3, 8 and 9
   - Depends on: T4
   - Done when:
@@ -122,6 +122,10 @@ Goal: `src/game/` holds the house rules, matching the API, and every rule exampl
     - Tests 3, 8 and 9 pass.
   - Verify: `npm run check`
   - Notes:
+    - `findPath` picks the matching move from `legalMoves`, so it uses exactly the same rules and cannot disagree with them. Plan 3.3.2 says it searches the chains from `from`. The result is the same. When several chains match, the first one found is used.
+    - `takes` is compared with the captured pieces as a sorted list, so a response that names the same piece twice does not match.
+    - `outcome` gives the reason `noPieces` when the player to move has no pieces left, and `noMoves` otherwise. T6 and T14 show it (spec 6.3).
+    - Test 3 works out the tips from `legalMoves` inside the test. The web app gets its tips from the API (T16), so it needs no tips function.
 
 ## Phase 3 — Game
 
