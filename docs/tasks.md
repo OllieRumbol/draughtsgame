@@ -106,6 +106,10 @@ Goal: `src/game/` holds the house rules, matching the API, and every rule exampl
     - Tests 1, 2, 4, 6 and 7 pass, with the boards copied from spec 6.2.1.
   - Verify: `npm run check`
   - Notes:
+    - Ported from `MoveGenerator.cs` with its direction order (up-left, up-right, down-left, down-right), so both find chains in the same order. Duplicate chains keep the first one found. The expected lists for examples 5 and 6 come from the API's `MoveGeneratorTests.cs`.
+    - `nextSteps` takes the board with the piece on `from`. During a chain, the captured pieces may still be drawn or already faded. Either way they cannot be captured again. T6 can remove them at each jump.
+    - Test 7 differs from plan 7.2: a chain can never land on a square it captured (landings are an even number of rows from the start, captured pieces an odd number; checked on 20,000 random boards). So test 7 checks that a captured piece cannot be captured again, drawn or faded. Owner approval: pending.
+    - `src/game/test-boards.ts` holds board helpers for the rules tests, for T5 too. An ESLint rule stops `src/game/` importing React or the rest of the app.
 
 - [ ] **T5 — Add the end of the game and the computer's jump order**
   - Refs: spec 2.1 item 7, spec 4.1 items 4 and 7, spec 6.1.5 items 3 and 4, spec 6.1.6 item 1, spec 6.2.1 examples 7, 13 and 14, spec 6.2.2, plan 3.3.2, tests 3, 8 and 9
