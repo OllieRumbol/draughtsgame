@@ -35,7 +35,7 @@ export function legalMoves(board: Board, player: Player): Move[] {
 
   for (const from of squaresOf(board, player)) {
     moves.push(...simpleMoves(board, from));
-    moves.push(...captureChains(board, from, player));
+    moves.push(...captureChains(board, from));
   }
 
   return moves;
@@ -111,7 +111,7 @@ function simpleMoves(board: Board, from: Position): Move[] {
 
 // Follows every capture chain from `start`. Each landing square is a separate legal move,
 // because a chain may stop after any jump (spec section 2.1, item 2).
-function captureChains(board: Board, start: Position, player: Player): Move[] {
+function captureChains(board: Board, start: Position): Move[] {
   const piece = cellAt(board, start);
   const moves: Move[] = [];
   const found = new Set<string>();
@@ -135,10 +135,9 @@ function captureChains(board: Board, start: Position, player: Player): Move[] {
       }
 
       // A man that reaches the far row becomes a king, and its chain stops (spec section 2.1, item 6).
-      const becomesKing = !isKing(piece) && jump.to.row === farRow(player);
-      if (!becomesKing) {
-        follow(jump.to, capturedNow, pathNow);
-      }
+      // The piece is promoted only when the move is applied, and a man has no forward jump from its far row,
+      // so the search stops there by itself.
+      follow(jump.to, capturedNow, pathNow);
     }
   };
 
