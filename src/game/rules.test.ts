@@ -103,6 +103,38 @@ describe("legalMoves", () => {
   it("does not change the board it is given", () => {
     expect(() => legalMoves(frozen(boardWith([1, 2, K2], [2, 3, M1], [4, 3, M1])), 2)).not.toThrow();
   });
+
+  // T12 and T15 show a move one step at a time from its path (plan section 3.3.1).
+  it("gives each move a path: the end square for a normal move, and each landing square in order for a chain", () => {
+    const examples: [Board, 1 | 2][] = [
+      [boardWith([3, 2, K2], [4, 3, M1], [2, 3, M1]), 2],
+      [boardWith([6, 1, M1], [5, 2, M2], [3, 4, M2]), 1],
+      [boardWith([1, 2, K2], [2, 3, M1], [4, 3, M1], [4, 1, M1], [2, 1, M1]), 2],
+      [boardWith([7, 4, K2], [6, 3, M1], [4, 1, M1], [4, 3, M1], [2, 1, M1], [2, 3, M1]), 2],
+    ];
+
+    for (const [board, player] of examples) {
+      for (const found of legalMoves(board, player)) {
+        const name = describeMove(found);
+        expect(found.path.at(-1), name).toEqual(found.to);
+
+        if (found.captured.length === 0) {
+          expect(found.path, name).toEqual([found.to]);
+          continue;
+        }
+
+        // Each jump goes from the previous landing, over the captured piece, to the next landing.
+        expect(found.path, name).toHaveLength(found.captured.length);
+        found.path.forEach((landing, index) => {
+          const takeoff = index === 0 ? found.from : found.path[index - 1];
+          const over = { row: (takeoff.row + landing.row) / 2, col: (takeoff.col + landing.col) / 2 };
+          expect(Math.abs(landing.row - takeoff.row), name).toBe(2);
+          expect(Math.abs(landing.col - takeoff.col), name).toBe(2);
+          expect(found.captured[index], name).toEqual(over);
+        });
+      }
+    }
+  });
 });
 
 // Plan section 7.2, test 6: promotion ends a chain (spec section 2.1, item 6, and section 6.1.3, item 5).
@@ -144,9 +176,10 @@ describe("nextSteps", () => {
     ]);
   });
 
-  it("gives no targets for a piece that cannot move, or for an empty square", () => {
+  it("gives no targets for a piece that cannot move, for an empty square, or for a square off the board", () => {
     expect(nextSteps(STARTING_BOARD, at(6, 1), null)).toEqual([]);
     expect(nextSteps(STARTING_BOARD, at(4, 1), null)).toEqual([]);
+    expect(nextSteps(STARTING_BOARD, at(8, 1), null)).toEqual([]);
   });
 
   it("gives normal moves and jumps when no chain is under way", () => {

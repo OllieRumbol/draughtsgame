@@ -47,7 +47,13 @@ export function hasMove(board: Board, player: Player): boolean {
 
 // The board holds the piece on `from`. During a chain, `chain` holds the chain so far. The captured pieces
 // may still be on the board or already faded: either way they cannot be captured again (plan section 3.5, decision 13).
+// It cannot tell that a king was promoted during this chain. The reducer ends the chain when a man becomes a king,
+// before it asks for more steps (plan section 3.3.3, "Moves and chains").
 export function nextSteps(board: Board, from: Position, chain: ChainSoFar | null): Step[] {
+  if (!isOnBoard(from)) {
+    return [];
+  }
+
   const piece = cellAt(board, from);
   if (ownerOf(piece) === null) {
     return [];
@@ -104,9 +110,14 @@ function squaresOf(board: Board, player: Player): Position[] {
 }
 
 function simpleMoves(board: Board, from: Position): Move[] {
-  return nextSteps(board, from, null)
-    .filter((step) => step.captured === null)
-    .map((step) => ({ from, to: step.to, captured: [], path: [step.to] }));
+  const moves: Move[] = [];
+  for (const direction of directionsFor(cellAt(board, from))) {
+    const to = offset(from, direction, 1);
+    if (isEmpty(board, to)) {
+      moves.push({ from, to, captured: [], path: [to] });
+    }
+  }
+  return moves;
 }
 
 // Follows every capture chain from `start`. Each landing square is a separate legal move,
