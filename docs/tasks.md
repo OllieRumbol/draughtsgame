@@ -96,7 +96,7 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
 
 Goal: `src/game/` holds the house rules, matching the API, and every rule example in spec 6.2.1 and 6.2.2 passes as a test with no rendering.
 
-- [ ] **T4 — Add the board and the legal moves**
+- [x] **T4 — Add the board and the legal moves**
   - Refs: spec 2.1, spec 2.3, spec 4.1 item 11, spec 6.1.2 items 2 and 6, spec 6.1.3 items 4 and 5, spec 6.2.1 examples 1–6, 8, 11 and 12, plan 3.2, plan 3.3.1, plan 3.3.2, plan 3.5 decisions 4 and 13, tests 1, 2, 4, 6 and 7, risk 2
   - Depends on: T1
   - Done when:
