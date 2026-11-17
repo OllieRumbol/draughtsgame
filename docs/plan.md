@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *how will we build it?* It turns the approved requirements in spec.md into a design, and it is agreed before any code is written.
 
 Status: Approved
-Last updated: 2026-11-15
+Last updated: 2026-11-17 (decision 13, test 7 and risk 3, approved in T4)
 
 ---
 
@@ -320,7 +320,7 @@ Anything that fails a check is discarded (spec section 6.1.8, item 5).
 | 10 | Deployment | GitHub Actions, with `actions/upload-pages-artifact` and `actions/deploy-pages` | It needs no stored token, only the workflow's `pages: write` and `id-token: write` permissions ([GitHub Docs: custom workflows for Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)). This meets spec section 6.5, item 5. | The `gh-pages` package with the 2021 `TOKEN` secret |
 | 11 | Tests | Vitest and React Testing Library for units and components; MSW for the API; Playwright and `@axe-core/playwright` for end-to-end and accessibility | `~/.claude/rules/react.md`. The accessibility checks in spec section 6.5, item 1 need a real browser for colour contrast, which jsdom cannot compute. | jsdom-only accessibility checks; Cypress |
 | 12 | Old code | Remove the old `src/` in the tooling phase. The old app stays live from `gh-pages` until the release. | The new tools cannot build JSX in `.js` files. The owner chose on 2026-11-14 to keep the old game live, rather than show a placeholder (section 8.3). | Keeping both apps side by side; a placeholder page on the live site |
-| 13 | A captured piece during the person's chain | Fades away at its jump, as the computer's do. `rules.ts` still treats its square as taken until the turn ends. | Matches the API (section 3.2), so both give the same moves. The square can only matter in rare king loops. | Keeping captured pieces on the board until the turn ends |
+| 13 | A captured piece during the person's chain | Fades away at its jump, as the computer's do. `rules.ts` still treats its square as taken until the turn ends. | Matches the API (section 3.2), so both give the same moves. A chain can never land on a square it captured, because landings are an even number of rows from the start and captured pieces an odd number. So fading a captured piece at its jump changes nothing a player can do. | Keeping captured pieces on the board until the turn ends |
 | 14 | Package updates | Dependabot version updates, weekly, for npm and GitHub Actions. It ignores `typescript` updates outside the range that `typescript-eslint` supports (decision 1), so it does not open a pull request that cannot install. | Keeps spec section 6.5, items 5 and 7 true after the release, at no cost | Updating by hand |
 | 15 | Licence | MIT, for the code only. The README says that the About tribute and the photos are not covered, and stay the owner's. | The repository is public, and `layout.md` lists `LICENSE` as a root file. The owner chose this on 2026-11-15. | No licence (default copyright); MIT for everything, which would let anyone reuse the tribute and the photos |
 
@@ -470,7 +470,7 @@ How to tell whether it works:
 | 4 | `nextSteps`: example 8 (targets), example 11 (switching pieces), and that a piece with no moves gives none | 6.1.2; 6.2.1 #8, #11 | Wrong targets marked |
 | 5 | Chains: example 9 (stays selected, next jump shown), example 10 (End turn) | 6.1.3; 6.2.1 #9–10 | Forced continuation; a lost "End turn" |
 | 6 | Promotion ends a chain: example 12 | 2.1 item 6; 6.2.1 #12 | A new king jumping again |
-| 7 | A captured square blocks landing until the turn ends (decision 13) | 3.2 | A chain that the API would not allow |
+| 7 | A captured piece cannot be captured again in the same chain, whether it is still drawn or has faded, and no chain lands on a square it captured (decision 13) | 2.1 item 5; 3.2 | A piece captured twice; a chain that the API would not allow |
 | 8 | `outcome`: examples 13 and 14, a player with no pieces, and a position where neither player can move, each with its winner and reason | 2.1 item 7; 6.2.1 #13–14; 6.3 | Spec 4.1, item 7: the API asked for a move after the game ended; the old tie rule left in by mistake |
 | 9 | `findPath`: examples 15 to 18, including `takes` in board order and an illegal response | 6.1.5 items 3–4; 6.2.2 | Spec 4.1, item 4: the chain shown in one step; illegal moves accepted |
 | 10 | Reducer: select, select again (put down), switch, choose a non-target | 6.1.2 | Spec 4.1, item 13: the invalid-move dialog |
@@ -558,7 +558,7 @@ Steps 2.2 and 2.3 are minutes apart. The GitHub documentation ([configuring a pu
 | --- | --- | --- | --- |
 | 1 | The deploy from Actions is first used at the release, so a fault in it shows up late | Medium | Every pull request builds the same `dist/` that `deploy` uploads, and the end-to-end tests run against it. At the release, rollback is to point Pages back to `gh-pages`, which still holds the old app (section 8.3). |
 | 2 | The web app's rules and the API's rules drift apart | Medium | Tests 2 and 3 use the API's own examples. A port of `MoveGenerator.cs`, not a rewrite from memory. A difference shows as an illegal computer move, which the web app treats as a failure (section 4). |
-| 3 | A captured square that stays blocked during a chain confuses a player, because it looks empty | Low: only in king loops | Decision 13 and test 7. If it is ever reported, show captured pieces as faint until the turn ends. |
+| 3 | A faded captured piece is still counted as taken during the chain | None | A chain cannot land on it (decision 13), and test 7 checks that it cannot be captured again. |
 | 4 | `typescript-eslint` holds TypeScript at 6.0 | Medium | Decision 1. Dependabot ignores the `typescript` updates that cannot install (decision 14), and still updates `typescript-eslint`. When its supported range allows a newer TypeScript, the ignore is changed in the same pull request as the update. |
 | 5 | Playwright tests fail now and then in CI | Medium | The tests use the mocked API, wait for elements to be visible (not fixed sleeps), and retry once in CI. A failure is recorded, not ignored (`~/.claude/CLAUDE.md`, "Working on a task", step 5). |
 | 6 | `npm audit` reports a build-only advisory with no fix, and blocks every pull request | Medium | The exceptions file in section 6, approved by the owner, with a review date |

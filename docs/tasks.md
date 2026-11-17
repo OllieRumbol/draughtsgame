@@ -108,7 +108,8 @@ Goal: `src/game/` holds the house rules, matching the API, and every rule exampl
   - Notes:
     - Ported from `MoveGenerator.cs` with its direction order (up-left, up-right, down-left, down-right), so both find chains in the same order. Duplicate chains keep the first one found. The expected lists for examples 5 and 6 come from the API's `MoveGeneratorTests.cs`.
     - `nextSteps` takes the board with the piece on `from`. During a chain, the captured pieces may still be drawn or already faded. Either way they cannot be captured again. T6 can remove them at each jump.
-    - Test 7 differs from plan 7.2: a chain can never land on a square it captured (landings are an even number of rows from the start, captured pieces an odd number; checked on 20,000 random boards). So test 7 checks that a captured piece cannot be captured again, drawn or faded. Owner approval: pending.
+    - Test 7 differs from plan 7.2: a chain can never land on a square it captured (landings are an even number of rows from the start, captured pieces an odd number; checked on 20,000 random boards). So test 7 checks that a captured piece cannot be captured again, drawn or faded. The owner approved the new wording of plan test 7, decision 13 and risk 3 on 2026-11-17.
+    - The search keeps a man unpromoted until `applyMove`, as the API does. A man has no forward jump from its far row, so its chain stops there (test 6). T5's `findPath` can rely on this.
     - `src/game/test-boards.ts` holds board helpers for the rules tests, for T5 too. An ESLint rule stops `src/game/` importing React or the rest of the app.
 
 - [ ] **T5 — Add the end of the game and the computer's jump order**
