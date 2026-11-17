@@ -21,4 +21,25 @@ export default defineConfig([
   { rules: { "no-console": "error" } },
   // Command-line scripts report their result on the console.
   { files: ["scripts/**"], rules: { "no-console": "off" } },
+  // Plan section 3.1: src/game/ is plain TypeScript. It imports nothing from React or from the rest of the app.
+  {
+    files: ["src/game/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["react", "react/*", "react-dom", "react-dom/*", "react-router", "react-router/*"],
+              message: "src/game/ must not import React (plan section 3.1).",
+            },
+            {
+              group: ["@/*", "!@/game", "!@/game/*", "../*"],
+              message: "src/game/ imports nothing from the rest of the app (plan section 3.1).",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);

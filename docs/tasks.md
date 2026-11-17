@@ -96,7 +96,7 @@ Goal: the repository builds on Vite, React and TypeScript, with current packages
 
 Goal: `src/game/` holds the house rules, matching the API, and every rule example in spec 6.2.1 and 6.2.2 passes as a test with no rendering.
 
-- [ ] **T4 — Add the board and the legal moves**
+- [x] **T4 — Add the board and the legal moves**
   - Refs: spec 2.1, spec 2.3, spec 4.1 item 11, spec 6.1.2 items 2 and 6, spec 6.1.3 items 4 and 5, spec 6.2.1 examples 1–6, 8, 11 and 12, plan 3.2, plan 3.3.1, plan 3.3.2, plan 3.5 decisions 4 and 13, tests 1, 2, 4, 6 and 7, risk 2
   - Depends on: T1
   - Done when:
@@ -106,6 +106,11 @@ Goal: `src/game/` holds the house rules, matching the API, and every rule exampl
     - Tests 1, 2, 4, 6 and 7 pass, with the boards copied from spec 6.2.1.
   - Verify: `npm run check`
   - Notes:
+    - Ported from `MoveGenerator.cs` with its direction order (up-left, up-right, down-left, down-right), so both find chains in the same order. Duplicate chains keep the first one found. The expected lists for examples 5 and 6 come from the API's `MoveGeneratorTests.cs`.
+    - `nextSteps` takes the board with the piece on `from`. During a chain, the captured pieces may still be drawn or already faded. Either way they cannot be captured again. T6 can remove them at each jump. It cannot tell that a man became a king during the chain, so T6 ends the chain on promotion before it asks for more steps (plan 3.3.3).
+    - Test 7 differs from plan 7.2: a chain can never land on a square it captured (landings are an even number of rows from the start, captured pieces an odd number; checked on 20,000 random boards). So test 7 checks that a captured piece cannot be captured again, drawn or faded. The owner approved the new wording of plan test 7, decision 13 and risk 3 on 2026-11-17.
+    - The search keeps a man unpromoted until `applyMove`, as the API does. A man has no forward jump from its far row, so its chain stops there (test 6). T5's `findPath` can rely on this.
+    - `src/game/test-boards.ts` holds board helpers for the rules tests, for T5 too. Nothing in the app imports it, so it is not in the build. An ESLint rule stops `src/game/` importing React or the rest of the app.
 
 - [ ] **T5 — Add the end of the game and the computer's jump order**
   - Refs: spec 2.1 item 7, spec 4.1 items 4 and 7, spec 6.1.5 items 3 and 4, spec 6.1.6 item 1, spec 6.2.1 examples 7, 13 and 14, spec 6.2.2, plan 3.3.2, tests 3, 8 and 9
