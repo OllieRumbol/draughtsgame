@@ -54,8 +54,12 @@ describe("findPath", () => {
   it("example 18: a move from a square with no player 2 piece is not legal", () => {
     const board = boardWith([2, 3, M2], [5, 2, M1]);
 
-    expect(findPath(board, 2, at(3, 2), at(4, 3), [])).toBeNull();
+    // (3,2) can be reached by the man on (2,3), but the response says the move starts on the empty square (1,4).
+    expect(findPath(board, 2, at(1, 4), at(3, 2), [])).toBeNull();
+    // A player 1 piece is not the computer's.
     expect(findPath(board, 2, at(5, 2), at(4, 1), [])).toBeNull();
+    // From the right square, the same end is legal.
+    expect(findPath(board, 2, at(2, 3), at(3, 2), [])?.path).toEqual([at(3, 2)]);
   });
 
   it("is null when no legal move matches the response", () => {
@@ -67,8 +71,8 @@ describe("findPath", () => {
     expect(findPath(board, 2, at(0, 1), at(4, 5), [at(1, 2)])).toBeNull();
     // A piece the chain does not take.
     expect(findPath(board, 2, at(0, 1), at(2, 3), [at(3, 4)])).toBeNull();
-    // A captured piece named twice.
-    expect(findPath(board, 2, at(0, 1), at(4, 5), [at(1, 2), at(1, 2)])).toBeNull();
+    // A captured piece named twice, for a chain that takes it once.
+    expect(findPath(board, 2, at(0, 1), at(2, 3), [at(1, 2), at(1, 2)])).toBeNull();
   });
 
   it("is null for a capture that the house rules forbid: a man taking a king", () => {
