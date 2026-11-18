@@ -141,7 +141,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 5, 10 and 16 pass.
   - Verify: `npm run check`
   - Notes:
-    - Not in plan 3.3.3: `GameState` has `requestCount`, the number of requests for the computer's move so far. The next request gets `requestCount + 1`, so T7 can ignore a late answer by its id. Owner approval: pending.
+    - Not in plan 3.3.3: `GameState` has `requestCount`, the number of requests for the computer's move so far. The next request gets `requestCount + 1`, so T7 can ignore a late answer by its id. The owner approved adding it to plan 3.3.3 on 2026-11-18.
     - `chooseTarget` on a square that is not a target does what `select` would do, so a stray click never shows an error. During a chain, both do nothing.
     - A step that makes a man a king ends the turn before the reducer asks `nextSteps` for more, as the T4 Notes asked. A captured piece is removed from `board` at its own jump; `chain.captured` still counts it.
     - For T7: the reducer ignores `undo`, `giveUp` and the computer actions, and `lastComputerMove` stays `null`. In the `over` phase every action is ignored.

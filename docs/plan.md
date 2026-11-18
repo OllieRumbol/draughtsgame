@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *how will we build it?* It turns the approved requirements in spec.md into a design, and it is agreed before any code is written.
 
 Status: Approved
-Last updated: 2026-11-17 (decision 13, test 7 and risk 3, approved in T4)
+Last updated: 2026-11-18 (section 3.3.3, `requestCount`, approved in T6)
 
 ---
 
@@ -195,6 +195,7 @@ export type GameState = {
   turnStart: Snapshot; // the start of the current turn, for Undo during a chain
   history: Snapshot[]; // the start of each finished turn, for Undo
   lastComputerMove: { from: Position; to: Position } | null;
+  requestCount: number; // the requests for the computer's move so far. The next one gets requestCount + 1.
   phase: Phase;
 };
 
@@ -229,7 +230,7 @@ Rules that the reducer enforces:
   * In a computer game, `canUndo` is also false when `history` holds no snapshot for the person's turn. This happens in a game that the computer started, before the person's first turn ends. Undo never restores a snapshot for the computer's turn, so it never starts a new request.
 * **Computer moving.** In `computerMoving`, `board` changes at each `computerStepShown`, so the state matches what the screen shows.
 * **Give up during the computer's turn.** In `computerThinking` or `computerMoving`, `giveUp` restores `turnStart`, which is the board before the computer's move. Then the phase becomes `over`, and the computer wins (spec section 6.1.6, item 4). The hook's cleanup cancels the request or the animation.
-* **Stale responses.** `requestId` goes up by one for every request. A `computerMoveReceived` or `computerMoveFailed` with an old `requestId` is ignored (spec section 6.6, item 5).
+* **Stale responses.** `requestCount` counts the requests in this game, and each new request gets `requestCount + 1`, so `requestId` goes up by one for every request. A `computerMoveReceived` or `computerMoveFailed` with an old `requestId` is ignored (spec section 6.6, item 5).
 * **Purity.** The reducer is pure. It never calls the API or storage. Hooks do that (section 3.3.4).
 
 #### 3.3.4 API service (`src/services/api.ts`)
