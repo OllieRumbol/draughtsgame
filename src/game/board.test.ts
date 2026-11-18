@@ -26,6 +26,11 @@ describe("the starting board", () => {
     ]);
   });
 
+  it("cannot be changed, so every new game starts from the same board", () => {
+    expect(Object.isFrozen(STARTING_BOARD)).toBe(true);
+    expect(STARTING_BOARD.every((row) => Object.isFrozen(row))).toBe(true);
+  });
+
   it("has 12 men for each player, all on dark squares, with player 2 on rows 0 to 2 and player 1 on rows 5 to 7", () => {
     const pieces: { row: number; col: number; cell: Cell }[] = [];
     STARTING_BOARD.forEach((cells, row) => cells.forEach((cell, col) => pieces.push({ row, col, cell })));

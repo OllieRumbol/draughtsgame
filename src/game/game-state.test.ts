@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { type Board, type Player, CELL, STARTING_BOARD } from "@/game/board";
 import { type Action, type GameState, type Settings, gameReducer, newGame } from "@/game/game-state";
+import { nextSteps } from "@/game/rules";
 import { at, boardWith } from "@/game/test-boards";
 
 const { player1Man: M1, player2Man: M2, player1King: K1 } = CELL;
@@ -8,8 +9,12 @@ const { player1Man: M1, player2Man: M2, player1King: K1 } = CELL;
 const twoPlayers: Settings = { opponent: "twoPlayers", level: "easy", firstPlayer: 1 };
 const againstComputer: Settings = { opponent: "computer", level: "normal", firstPlayer: 1 };
 
-// A game in progress on the given board, at the start of `toMove`'s turn.
+// A game in progress on the given board, at the start of a person's turn. In a computer game the person is
+// always player 1, so a turn for player 2 there is a state real play never reaches.
 function gameOn(board: Board, toMove: Player = 1, settings: Settings = twoPlayers): GameState {
+  if (settings.opponent === "computer" && toMove === 2) {
+    throw new Error("In a computer game, player 2 is the computer, so it never has a person's turn.");
+  }
   const game = newGame({ ...settings, firstPlayer: 1 });
   return { ...game, board, toMove, turnStart: { board, toMove, capturedBy: game.capturedBy } };
 }
@@ -151,6 +156,13 @@ describe("a chain", () => {
       chain: { start: at(6, 1), captured: [at(5, 2)] },
     });
     expect(afterFirstJump.toMove).toBe(1);
+    // (2,5) is the only target: the selected piece's next steps during the chain.
+    if (afterFirstJump.phase.kind !== "turn" || !afterFirstJump.phase.chain) {
+      throw new Error("Expected a chain under way.");
+    }
+    expect(nextSteps(afterFirstJump.board, at(4, 3), afterFirstJump.phase.chain)).toEqual([
+      { to: at(2, 5), captured: at(3, 4) },
+    ]);
   });
 
   it("removes the captured piece at its own jump, and counts it (plan section 3.5, decision 13)", () => {

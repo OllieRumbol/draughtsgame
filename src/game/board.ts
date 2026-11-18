@@ -26,7 +26,8 @@ export const CELL = {
 export const BOARD_SIZE = 8;
 
 // Spec section 2.3. Row 0 is at the top. Player 2 starts on rows 0 to 2, and player 1 on rows 5 to 7.
-export const STARTING_BOARD: Board = [
+// Frozen, because every new game starts from it: a change to it would change every later game.
+const startingRows: Cell[][] = [
   [0, 2, 0, 2, 0, 2, 0, 2],
   [2, 0, 2, 0, 2, 0, 2, 0],
   [0, 2, 0, 2, 0, 2, 0, 2],
@@ -36,6 +37,7 @@ export const STARTING_BOARD: Board = [
   [0, 1, 0, 1, 0, 1, 0, 1],
   [1, 0, 1, 0, 1, 0, 1, 0],
 ];
+export const STARTING_BOARD: Board = Object.freeze(startingRows.map((row) => Object.freeze(row)));
 
 export function isOnBoard(position: Position): boolean {
   return position.row >= 0 && position.row < BOARD_SIZE && position.col >= 0 && position.col < BOARD_SIZE;

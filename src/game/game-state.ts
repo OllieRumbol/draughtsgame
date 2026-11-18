@@ -86,9 +86,19 @@ export function gameReducer(state: GameState, action: Action): GameState {
       return chooseTarget(state, action.at);
     case "endTurn":
       return endTurnByChoice(state);
-    // T7 adds Undo, Give up and the computer's actions.
-    default:
+    // T7 adds Undo, Give up and the computer's actions. Until then they change nothing.
+    case "undo":
+    case "giveUp":
+    case "computerMoveReceived":
+    case "computerMoveFailed":
+    case "computerStepShown":
+    case "retry":
       return state;
+    default: {
+      // Every action is handled above. A new action type that is not makes this a type error.
+      const unhandled: never = action;
+      return unhandled;
+    }
   }
 }
 
