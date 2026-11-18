@@ -122,6 +122,15 @@ describe("a normal move", () => {
     expect(second.turnStart).toEqual({ board: second.board, toMove: 1, capturedBy: { 1: 0, 2: 0 } });
   });
 
+  it("gives each request for the computer's move the next id, so a late answer to an older one can be ignored", () => {
+    const afterThreeRequests = { ...newGame(againstComputer), requestCount: 3 };
+
+    const state = play(afterThreeRequests, select(5, 2), target(4, 3));
+
+    expect(state.phase).toEqual({ kind: "computerThinking", requestId: 4 });
+    expect(state.requestCount).toBe(4);
+  });
+
   it("asks the computer for its move after the person's turn in a computer game", () => {
     const state = play(newGame(againstComputer), select(5, 2), target(4, 3));
 
