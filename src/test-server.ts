@@ -4,5 +4,5 @@ import { setupServer } from "msw/node";
 
 export const server = setupServer();
 
-// The address in .env.test. MSW answers it, so no test request leaves the computer (plan section 2).
-export const API_BASE_URL = "https://api.test/api";
+// The address from .env.test. MSW answers it, so no test request leaves the computer (plan section 2).
+export const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL;

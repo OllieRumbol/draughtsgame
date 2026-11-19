@@ -54,7 +54,19 @@ describe("the time limit", () => {
     const result = await getNextMove(STARTING_BOARD, "easy", anySignal(), SHORT_LIMIT_MS);
 
     expect(result).toEqual({ ok: false, failure: { kind: "timeout" } });
-    expect(Date.now() - started).toBeLessThan(5_000);
+    expect(Date.now() - started).toBeLessThan(1_000);
+  });
+
+  it("is 15 seconds when the caller does not set one (spec section 6.1.9, item 5)", async () => {
+    answerNextMove(() => HttpResponse.json(nextMoveBody));
+    answerTips(() => HttpResponse.json(tipsBody));
+    const timeout = vi.spyOn(AbortSignal, "timeout");
+
+    await getNextMove(STARTING_BOARD, "easy", anySignal());
+    await getTips(STARTING_BOARD, 1, anySignal());
+
+    expect(timeout.mock.calls).toEqual([[15_000], [15_000]]);
+    timeout.mockRestore();
   });
 });
 
@@ -267,7 +279,8 @@ describe("the requests", () => {
     return sent;
   }
 
-  it("asks for the computer's move with Difficulty and Board only, and the board holds only the values 0 to 5", async () => {
+  // The board is sent as it is given. The Cell type (0 to 5) is what keeps a 6 out of it (spec section 6.1.5, item 1).
+  it("asks for the computer's move with Difficulty and Board only, and sends the board unchanged", async () => {
     const sent = recordRequests(NEXT_MOVE_URL, () => HttpResponse.json(nextMoveBody));
 
     await getNextMove(STARTING_BOARD, "normal", anySignal());
@@ -275,8 +288,6 @@ describe("the requests", () => {
     expect(sent).toEqual([
       { method: "POST", contentType: "application/json", body: { Difficulty: "normal", Board: STARTING_BOARD } },
     ]);
-    const board = (sent[0].body as { Board: number[][] }).Board;
-    expect(board.flat().every((cell) => cell >= 0 && cell <= 5)).toBe(true);
   });
 
   it("sends each level by the API's name (spec section 2.4)", async () => {
