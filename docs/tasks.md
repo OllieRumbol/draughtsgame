@@ -173,6 +173,10 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 17 and 18 pass.
   - Verify: `npm run check`
   - Notes:
+    - Time-limit proof (plan 7.1), with Vitest 5.1 on jsdom, MSW 3.0.7 and Node 24.19: a 50 ms `AbortSignal.timeout` ended a request that MSW never answered with a `TimeoutError` after about 66 ms. The caller's abort gave an `AbortError`. The first test in `api.test.ts` keeps this proof.
+    - MSW 3 renamed the `listen` option to `onUnhandledFrame`. `src/test-setup.ts` starts the server from `src/test-server.ts` for every test file, with `"error"` for an unhandled request. Each test adds its responses with `server.use()`.
+    - Decision: the caller's abort gives `{ kind: "network" }`, because plan 4 has no abort kind and maps a rejected `fetch` to `network`. A square outside rows and columns 0 to 7 is `badBody`. The service sends `Content-Type: application/json`, as the old app did.
+    - For T15 and T16: the hook must ignore the result after its own abort (plan 4). The 15-second default is not tested by waiting (plan 7.1).
 
 - [ ] **T9 — Add saving in the browser**
   - Refs: spec 4.1 item 14, spec 6.1.8, spec 6.5 item 6, spec 6.6 items 9–11, plan 3.4, plan 4, tests 19 and 20
