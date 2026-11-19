@@ -156,6 +156,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 11 to 15 pass.
   - Verify: `npm run check`
   - Notes:
+    - `computerMoving.step` is the number of jumps already shown. Each `computerStepShown` applies the next jump, so `board` matches the screen. After the last jump, the turn ends and `lastComputerMove` is set. The reducer trusts the move: `useComputerTurn` checks it with `findPath` first (plan 3.3.4).
+    - "Try again" gives the request a new id (`requestCount + 1`), as every request gets. So a late answer to the failed request is ignored.
+    - Not in the spec: a player who gives up during their own chain keeps the board as it is. Only a give-up during the computer's turn goes back to `turnStart` (spec 6.1.6 item 4). The game is over either way, and Undo is not offered.
+    - New game clears the mark because `newGame` starts with `lastComputerMove: null`. T14 must build the next game with `newGame`.
+    - For T9: a state saved during `computerMoving` or a chain has part of a move on its board. Spec 6.1.8 item 1 saves after every turn, so save only at the end of a turn, or load such a state from `turnStart`.
 
 - [ ] **T8 — Add the API service**
   - Refs: spec 3 goal 7, spec 4.1 item 10, spec 5.1, spec 5.2, spec 6.1.5 item 1, spec 6.1.9 items 4 and 5, plan 2, plan 3.3.4, plan 4, plan 7.1, tests 17 and 18
