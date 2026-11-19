@@ -131,7 +131,7 @@ Goal: `src/game/` holds the house rules, matching the API, and every rule exampl
 
 Goal: a full game can be played in the new look, against another person or the computer, with undo, saving, tips and every failure handled.
 
-- [ ] **T6 — Add the game reducer for turns and chains**
+- [x] **T6 — Add the game reducer for turns and chains**
   - Refs: spec 4.1 items 3 and 13, spec 6.1.1 item 4, spec 6.1.2, spec 6.1.3, spec 6.1.6 items 1–3, spec 6.3, spec 6.2.1 examples 9 and 10, plan 3.3.3, plan 3.5 decision 3, tests 5, 10 and 16
   - Depends on: T5
   - Done when:
