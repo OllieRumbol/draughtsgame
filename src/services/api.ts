@@ -111,11 +111,9 @@ async function postJson(
   try {
     return { ok: true, value: await response.json() };
   } catch {
-    // The body is not JSON, or the time limit or the caller stopped it while it was being read.
-    if (timeLimit.aborted) {
-      return failed({ kind: "timeout" });
-    }
-    return failed(signal.aborted ? { kind: "network" } : { kind: "badBody" });
+    // The body is not JSON, or it stopped part-way. Plan section 4 shows every failure in the same way,
+    // so a time limit or an abort while the body is read is also "badBody".
+    return failed({ kind: "badBody" });
   }
 }
 
