@@ -12,6 +12,7 @@ import {
   farRow,
   isKing,
   isOnBoard,
+  otherPlayer,
   ownerOf,
   samePosition,
 } from "./board";
@@ -55,7 +56,7 @@ export function outcome(board: Board, toMove: Player): Outcome {
     return { kind: "playing" };
   }
 
-  const winner: Player = toMove === 1 ? 2 : 1;
+  const winner = otherPlayer(toMove);
   const reason = squaresOf(board, toMove).length === 0 ? "noPieces" : "noMoves";
   return { kind: "win", winner, reason };
 }

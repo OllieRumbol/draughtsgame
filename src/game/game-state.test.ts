@@ -517,6 +517,16 @@ describe("Give up", () => {
     expect(play(newGame(twoPlayers), giveUp).phase).toEqual({ kind: "over", result: { winner: 2, reason: "gaveUp" } });
   });
 
+  it("during a player's own chain, keeps the board as it is, because the final board stays on view (item 2)", () => {
+    const afterFirstJump = play(gameOn(boardWith([6, 1, M1], [5, 2, M2], [3, 4, M2])), select(6, 1), target(4, 3));
+
+    const gaveUp = play(afterFirstJump, giveUp);
+
+    expect(gaveUp.phase).toEqual({ kind: "over", result: { winner: 2, reason: "gaveUp" } });
+    expect(gaveUp.board).toEqual(afterFirstJump.board);
+    expect(gaveUp.capturedBy).toEqual({ 1: 1, 2: 0 });
+  });
+
   it("in a computer game, on the person's turn, the computer wins", () => {
     expect(play(newGame(againstComputer), giveUp).phase).toEqual({
       kind: "over",

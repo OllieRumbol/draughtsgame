@@ -10,6 +10,7 @@ import {
   cellAt,
   isKing,
   isOnBoard,
+  otherPlayer,
   ownerOf,
   samePosition,
 } from "./board";
@@ -277,14 +278,17 @@ function giveUp(state: GameState): GameState {
   const winner = state.settings.opponent === "computer" ? COMPUTER : otherPlayer(state.toMove);
   const result: Result = { winner, reason: "gaveUp" };
 
-  // During the computer's turn, its move is cancelled, and any jumps already shown are taken back.
-  // turnStart is the board before the computer's move.
-  if (state.phase.kind !== "turn") {
-    const { board, capturedBy } = state.turnStart;
-    return { ...state, board, capturedBy, phase: { kind: "over", result } };
-  }
+  // During the computer's turn, its move is cancelled, and any jumps already shown are taken back:
+  // turnStart is the board before the computer's move. On a person's turn, the board stays as it is, even
+  // part-way through a chain, because the final board stays on view (spec section 6.1.6, item 2).
+  const finalPosition = state.phase.kind === "turn" ? state : state.turnStart;
 
-  return { ...state, phase: { kind: "over", result } };
+  return {
+    ...state,
+    board: finalPosition.board,
+    capturedBy: finalPosition.capturedBy,
+    phase: { kind: "over", result },
+  };
 }
 
 // useComputerTurn has already checked the move with findPath (plan section 3.3.4).
@@ -345,10 +349,6 @@ function retry(state: GameState): GameState {
 
 function isComputersTurn(settings: Settings, toMove: Player): boolean {
   return settings.opponent === "computer" && toMove === COMPUTER;
-}
-
-function otherPlayer(player: Player): Player {
-  return player === 1 ? 2 : 1;
 }
 
 function addCapture(capturedBy: Record<Player, number>, player: Player): Record<Player, number> {

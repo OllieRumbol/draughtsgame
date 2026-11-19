@@ -6,6 +6,7 @@ import {
   isDarkSquare,
   isKing,
   isOnBoard,
+  otherPlayer,
   ownerOf,
   samePosition,
   type Cell,
@@ -73,6 +74,11 @@ describe("the square helpers", () => {
   it("knows each player's far row: player 1 moves up to row 0, and player 2 moves down to row 7", () => {
     expect(farRow(1)).toBe(0);
     expect(farRow(2)).toBe(7);
+  });
+
+  it("knows each player's opponent", () => {
+    expect(otherPlayer(1)).toBe(2);
+    expect(otherPlayer(2)).toBe(1);
   });
 
   it("compares squares by row and column", () => {
