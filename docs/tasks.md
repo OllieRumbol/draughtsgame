@@ -144,10 +144,10 @@ Goal: a full game can be played in the new look, against another person or the c
     - Not in plan 3.3.3: `GameState` has `requestCount`, the number of requests for the computer's move so far. The next request gets `requestCount + 1`, so T7 can ignore a late answer by its id. The owner approved adding it to plan 3.3.3 on 2026-11-18.
     - `chooseTarget` on a square that is not a target does what `select` would do, so a stray click never shows an error. During a chain, both do nothing.
     - A step that makes a man a king ends the turn before the reducer asks `nextSteps` for more, as the T4 Notes asked. A captured piece is removed from `board` at its own jump; `chain.captured` still counts it.
-    - For T7: the reducer lists `undo`, `giveUp` and the computer actions by name and ignores them; a `never` check fails the type check if an action is left out. `lastComputerMove` stays `null`. In the `over` phase every action is ignored.
+    - For T7: the reducer lists `undo`, `giveUp` and the computer actions by name and ignores them; a `never` check fails the type check if an action is left out. `lastComputerMove` stays `null`. In the `over` phase every action is ignored (T7 then made Undo work after a win).
     - For T9: `saved-game.ts` must check `requestCount` too (a whole number, 0 or more), although plan 3.4 does not list it yet. `STARTING_BOARD` is frozen.
 
-- [ ] **T7 — Add undo, give up and the computer phases to the reducer**
+- [x] **T7 — Add undo, give up and the computer phases to the reducer**
   - Refs: spec 4.1 items 1, 2 and 9, spec 6.1.5 items 7 and 9, spec 6.1.6 item 4, spec 6.1.7, spec 6.1.9 items 1–3, spec 6.2.3 examples 19–22 and 24, spec 6.6 item 5, plan 3.3.3, tests 11–15
   - Depends on: T6
   - Done when:
@@ -156,6 +156,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 11 to 15 pass.
   - Verify: `npm run check`
   - Notes:
+    - For T15: `computerMoving.step` is the number of jumps already shown. Each `computerStepShown` applies the next jump to `board`. The reducer trusts the move, so `useComputerTurn` must check it with `findPath` first (plan 3.3.4).
+    - For T15: request ids start again at 1 in every new game, so the id alone cannot reject an old game's answer. `useComputerTurn` must abort its request on New game and must not dispatch after its signal is aborted. T15's tests cover this (spec 6.6 item 5).
+    - Decision: a player who gives up during their own chain keeps the board as it is, because the final board stays on view (spec 6.1.6 item 2). Only a give-up during the computer's turn goes back to `turnStart` (spec 6.1.6 item 4).
+    - For T14: New game clears the mark because `newGame` starts with `lastComputerMove: null`, so the next game must be built with `newGame`.
+    - For T9: during `computerMoving`, `board` holds the jumps shown so far. A state saved as `computerThinking` (plan 3.4) must take its board and counts from `turnStart`.
 
 - [ ] **T8 — Add the API service**
   - Refs: spec 3 goal 7, spec 4.1 item 10, spec 5.1, spec 5.2, spec 6.1.5 item 1, spec 6.1.9 items 4 and 5, plan 2, plan 3.3.4, plan 4, plan 7.1, tests 17 and 18

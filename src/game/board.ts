@@ -71,6 +71,10 @@ export function farRow(player: Player): number {
   return player === 1 ? 0 : BOARD_SIZE - 1;
 }
 
+export function otherPlayer(player: Player): Player {
+  return player === 1 ? 2 : 1;
+}
+
 export function samePosition(a: Position, b: Position): boolean {
   return a.row === b.row && a.col === b.col;
 }

@@ -10,6 +10,7 @@ import {
   cellAt,
   isKing,
   isOnBoard,
+  otherPlayer,
   ownerOf,
   samePosition,
 } from "./board";
@@ -24,7 +25,7 @@ export type Settings = {
 export type Phase =
   | { kind: "turn"; selected: Position | null; chain: ChainSoFar | null }
   | { kind: "computerThinking"; requestId: number }
-  | { kind: "computerMoving"; move: Move; step: number }
+  | { kind: "computerMoving"; move: Move; step: number } // step: the number of jumps already shown
   | { kind: "computerFailed"; requestId: number }
   | { kind: "over"; result: Result };
 
@@ -57,6 +58,7 @@ export type Action =
   | { type: "retry" };
 
 // In a computer game, the person is player 1, and the computer is always player 2 (spec section 2.4).
+const PERSON: Player = 1;
 const COMPUTER: Player = 2;
 
 // Spec section 6.1.1, item 4: the starting board, and the chosen first player moves first.
@@ -86,14 +88,18 @@ export function gameReducer(state: GameState, action: Action): GameState {
       return chooseTarget(state, action.at);
     case "endTurn":
       return endTurnByChoice(state);
-    // T7 adds Undo, Give up and the computer's actions. Until then they change nothing.
     case "undo":
+      return undo(state);
     case "giveUp":
+      return giveUp(state);
     case "computerMoveReceived":
+      return receiveComputerMove(state, action.requestId, action.move);
     case "computerMoveFailed":
+      return failComputerMove(state, action.requestId);
     case "computerStepShown":
+      return showComputerStep(state);
     case "retry":
-      return state;
+      return retry(state);
     default: {
       // Every action is handled above. A new action type that is not makes this a type error.
       const unhandled: never = action;
@@ -143,7 +149,8 @@ function playStep(state: GameState, from: Position, step: Step, chain: ChainSoFa
   const move: Move = { from, to: step.to, captured: step.captured ? [step.captured] : [], path: [step.to] };
   const board = applyMove(state.board, move);
   const capturedBy = step.captured ? addCapture(state.capturedBy, state.toMove) : state.capturedBy;
-  const afterStep: GameState = { ...state, board, capturedBy };
+  // The person's move or jump removes the mark on the computer's last move (spec section 6.1.5, item 9).
+  const afterStep: GameState = { ...state, board, capturedBy, lastComputerMove: null };
 
   if (!step.captured) {
     return endTurn(afterStep);
@@ -179,7 +186,7 @@ function endTurnByChoice(state: GameState): GameState {
 }
 
 function endTurn(state: GameState): GameState {
-  const next: Player = state.toMove === 1 ? 2 : 1;
+  const next = otherPlayer(state.toMove);
   const ended: GameState = {
     ...state,
     toMove: next,
@@ -205,6 +212,139 @@ function endTurn(state: GameState): GameState {
 function askTheComputer(state: GameState): GameState {
   const requestId = state.requestCount + 1;
   return { ...state, requestCount: requestId, phase: { kind: "computerThinking", requestId } };
+}
+
+// Spec section 6.1.7. Undo is not available while the computer is thinking or showing its move (item 4),
+// or after a player gives up (item 7). During a chain, there is always something to undo: the jumps so far.
+export function canUndo(state: GameState): boolean {
+  const phase = state.phase;
+  if (phase.kind === "computerThinking" || phase.kind === "computerMoving") {
+    return false;
+  }
+  if (phase.kind === "over" && phase.result.reason === "gaveUp") {
+    return false;
+  }
+  if (phase.kind === "turn" && phase.chain !== null) {
+    return true;
+  }
+  return undoPoint(state) >= 0;
+}
+
+function undo(state: GameState): GameState {
+  if (!canUndo(state)) {
+    return state;
+  }
+
+  // During a chain, Undo returns to the start of the current turn (item 3).
+  if (state.phase.kind === "turn" && state.phase.chain !== null) {
+    return restore(state, state.turnStart, state.history);
+  }
+
+  const index = undoPoint(state);
+  return restore(state, state.history[index], state.history.slice(0, index));
+}
+
+// The snapshot that Undo goes back to, as an index in `history`, or -1 when there is none.
+// In a computer game, it is the start of the person's last turn, so the computer's reply is removed with it
+// (item 1). Undo never goes back to the start of the computer's turn, so it never starts a new request.
+function undoPoint(state: GameState): number {
+  if (state.settings.opponent === "twoPlayers") {
+    return state.history.length - 1;
+  }
+  return state.history.findLastIndex((snapshot) => snapshot.toMove === PERSON);
+}
+
+// The board, the turn and the captured counts all come back together (item 5). It is then always a person's turn.
+function restore(state: GameState, snapshot: Snapshot, history: Snapshot[]): GameState {
+  return {
+    ...state,
+    board: snapshot.board,
+    toMove: snapshot.toMove,
+    capturedBy: snapshot.capturedBy,
+    turnStart: snapshot,
+    history,
+    lastComputerMove: null,
+    phase: { kind: "turn", selected: null, chain: null },
+  };
+}
+
+// Spec section 6.1.6, item 4. In a two-player game, the player whose turn it is gives up.
+// In a computer game, only the person can give up, at any time, so the computer wins.
+function giveUp(state: GameState): GameState {
+  if (state.phase.kind === "over") {
+    return state;
+  }
+
+  const winner = state.settings.opponent === "computer" ? COMPUTER : otherPlayer(state.toMove);
+  const result: Result = { winner, reason: "gaveUp" };
+
+  // During the computer's turn, its move is cancelled, and any jumps already shown are taken back:
+  // turnStart is the board before the computer's move. On a person's turn, the board stays as it is, even
+  // part-way through a chain, because the final board stays on view (spec section 6.1.6, item 2).
+  const finalPosition = state.phase.kind === "turn" ? state : state.turnStart;
+
+  return {
+    ...state,
+    board: finalPosition.board,
+    capturedBy: finalPosition.capturedBy,
+    phase: { kind: "over", result },
+  };
+}
+
+// useComputerTurn has already checked the move with findPath (plan section 3.3.4).
+function receiveComputerMove(state: GameState, requestId: number, move: Move): GameState {
+  if (!isWaitingFor(state, requestId)) {
+    return state;
+  }
+  return { ...state, phase: { kind: "computerMoving", move, step: 0 } };
+}
+
+// Spec section 6.1.9, item 1: the board stays as it was, and "Try again" is offered.
+function failComputerMove(state: GameState, requestId: number): GameState {
+  if (!isWaitingFor(state, requestId)) {
+    return state;
+  }
+  return { ...state, phase: { kind: "computerFailed", requestId } };
+}
+
+// An answer counts only while the reducer waits for that request. A late answer to an older request, or one that
+// arrives after Undo, Give up or New game, is ignored (spec section 6.6, item 5).
+function isWaitingFor(state: GameState, requestId: number): boolean {
+  return state.phase.kind === "computerThinking" && state.phase.requestId === requestId;
+}
+
+// Shows the next jump of the computer's move, so the board matches the screen (spec section 6.1.5, items 4 to 6).
+// Each captured piece is removed at its own jump. A man that lands on the far row becomes a king in applyMove.
+function showComputerStep(state: GameState): GameState {
+  const phase = state.phase;
+  if (phase.kind !== "computerMoving") {
+    return state;
+  }
+
+  const { move, step } = phase;
+  const from = step === 0 ? move.from : move.path[step - 1];
+  const to = move.path[step];
+  const captured: Position | undefined = move.captured[step];
+
+  const board = applyMove(state.board, { from, to, captured: captured ? [captured] : [], path: [to] });
+  const capturedBy = captured ? addCapture(state.capturedBy, state.toMove) : state.capturedBy;
+  const shown: GameState = { ...state, board, capturedBy };
+
+  const isLastStep = step + 1 === move.path.length;
+  if (!isLastStep) {
+    return { ...shown, phase: { kind: "computerMoving", move, step: step + 1 } };
+  }
+
+  // The start and end squares stay marked until the person's next move or jump (spec section 6.1.5, item 9).
+  return endTurn({ ...shown, lastComputerMove: { from: move.from, to: move.to } });
+}
+
+// Spec section 6.1.9, item 2: the same request again. It gets a new id, as every request does.
+function retry(state: GameState): GameState {
+  if (state.phase.kind !== "computerFailed") {
+    return state;
+  }
+  return askTheComputer(state);
 }
 
 function isComputersTurn(settings: Settings, toMove: Player): boolean {
