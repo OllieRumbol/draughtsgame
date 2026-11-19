@@ -162,7 +162,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - For T14: New game clears the mark because `newGame` starts with `lastComputerMove: null`, so the next game must be built with `newGame`.
     - For T9: during `computerMoving`, `board` holds the jumps shown so far. A state saved as `computerThinking` (plan 3.4) must take its board and counts from `turnStart`.
 
-- [ ] **T8 — Add the API service**
+- [x] **T8 — Add the API service**
   - Refs: spec 3 goal 7, spec 4.1 item 10, spec 5.1, spec 5.2, spec 6.1.5 item 1, spec 6.1.9 items 4 and 5, plan 2, plan 3.3.4, plan 4, plan 7.1, tests 17 and 18
   - Depends on: T4
   - Done when:
@@ -173,6 +173,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 17 and 18 pass.
   - Verify: `npm run check`
   - Notes:
+    - Time-limit proof (plan 7.1), on jsdom with MSW 3.0.7 and Node 24.19: a 50 ms limit ended an unanswered request with a `TimeoutError` in about 66 ms. The first test in `api.test.ts` keeps it.
+    - MSW 3 calls the `listen` option `onUnhandledFrame`. `src/test-setup.ts` starts the server in `src/test-server.ts` for every test file. Tests add responses with `server.use()`.
+    - Decision: the caller's abort gives `network` (plan 4 has no abort kind). The request sends `Content-Type: application/json`, as the old app did.
+    - Decision: any failure while the body is read is `badBody`. MSW 3 with Node's `fetch` crashes when a body stops part-way, so a separate `timeout` there could not be tested.
+    - For T15 and T16: the hook must ignore the result after its own abort (plan 4).
 
 - [ ] **T9 — Add saving in the browser**
   - Refs: spec 4.1 item 14, spec 6.1.8, spec 6.5 item 6, spec 6.6 items 9–11, plan 3.4, plan 4, tests 19 and 20
