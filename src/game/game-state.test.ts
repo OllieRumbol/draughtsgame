@@ -396,6 +396,14 @@ describe("Undo", () => {
     expect(play(afterFirstJump, undo)).toEqual(start);
   });
 
+  it("during a chain on a later turn, keeps the earlier turns", () => {
+    const start = gameOn(boardWith([6, 1, M1], [5, 2, M2], [3, 4, M2], [7, 6, M1], [0, 7, M2]));
+    const afterTwoTurns = play(start, select(7, 6), target(6, 7), select(0, 7), target(1, 6));
+    const afterFirstJump = play(afterTwoTurns, select(6, 1), target(4, 3));
+
+    expect(play(afterFirstJump, undo)).toEqual(afterTwoTurns);
+  });
+
   it("in a game the computer started, goes back to the person's first turn, and does not ask the computer again", () => {
     const computerFirst = computerPlays(newGame({ ...againstComputer, firstPlayer: 2 }), simpleMove(2, 1, 3, 0));
     const personMoved = play(computerFirst, select(5, 2), target(4, 3));
