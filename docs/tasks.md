@@ -147,7 +147,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - For T7: the reducer lists `undo`, `giveUp` and the computer actions by name and ignores them; a `never` check fails the type check if an action is left out. `lastComputerMove` stays `null`. In the `over` phase every action is ignored (T7 then made Undo work after a win).
     - For T9: `saved-game.ts` must check `requestCount` too (a whole number, 0 or more), although plan 3.4 does not list it yet. `STARTING_BOARD` is frozen.
 
-- [ ] **T7 — Add undo, give up and the computer phases to the reducer**
+- [x] **T7 — Add undo, give up and the computer phases to the reducer**
   - Refs: spec 4.1 items 1, 2 and 9, spec 6.1.5 items 7 and 9, spec 6.1.6 item 4, spec 6.1.7, spec 6.1.9 items 1–3, spec 6.2.3 examples 19–22 and 24, spec 6.6 item 5, plan 3.3.3, tests 11–15
   - Depends on: T6
   - Done when:
