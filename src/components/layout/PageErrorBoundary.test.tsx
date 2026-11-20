@@ -30,7 +30,14 @@ function renderFailingPage() {
               </PageErrorBoundary>
             ),
           },
-          { path: "about", element: <h1>About</h1> },
+          {
+            path: "about",
+            element: (
+              <PageErrorBoundary>
+                <h1>About</h1>
+              </PageErrorBoundary>
+            ),
+          },
         ],
       },
     ],
@@ -41,20 +48,18 @@ function renderFailingPage() {
 
 beforeEach(() => {
   pageFails = true;
-  vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
   // React reports the caught error on the console. The test expects it.
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
 afterEach(() => {
   vi.restoreAllMocks();
-  vi.unstubAllGlobals();
   window.localStorage.clear();
 });
 
 // Plan section 4: an unexpected error while a page draws.
 describe("the page error boundary", () => {
-  it("shows 'Something went wrong' with New game, and the header keeps working", async () => {
+  it("shows 'Something went wrong' with New game, and the header and the other pages keep working", async () => {
     const user = userEvent.setup();
     renderFailingPage();
 
@@ -63,6 +68,19 @@ describe("the page error boundary", () => {
 
     await user.click(screen.getByRole("link", { name: "About" }));
     expect(await screen.findByRole("heading", { level: 1, name: "About" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Something went wrong" })).not.toBeInTheDocument();
+  });
+
+  it("draws a page again when the player comes back to it", async () => {
+    const user = userEvent.setup();
+    renderFailingPage();
+    await screen.findByRole("heading", { level: 1, name: "Something went wrong" });
+
+    await user.click(screen.getByRole("link", { name: "About" }));
+    pageFails = false;
+    await user.click(screen.getByRole("link", { name: "Play" }));
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Game setup" })).toBeInTheDocument();
   });
 
   it("New game clears the saved game and draws the page again", async () => {

@@ -1,18 +1,10 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { isValidElement } from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { PageErrorBoundary } from "@/components/layout/PageErrorBoundary";
 import { routes } from "@/routes";
 import { renderApp } from "@/test-app";
-
-beforeEach(() => {
-  vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
-});
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
 
 // Plan section 7.2, test 28: the routes, including the old addresses (spec section 6.1.10).
 describe("the routes", () => {

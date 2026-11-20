@@ -29,7 +29,6 @@ async function findSwitch(): Promise<HTMLElement> {
 }
 
 afterEach(() => {
-  vi.unstubAllGlobals();
   window.localStorage.clear();
   document.documentElement.removeAttribute("data-theme");
 });

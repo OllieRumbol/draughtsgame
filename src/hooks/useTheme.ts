@@ -14,6 +14,7 @@ export function useTheme(): { theme: Theme; toggleTheme: () => void } {
   const theme = chosen ?? deviceTheme;
 
   // tokens.css follows the device by itself. data-theme on <html> is set only once the player has chosen.
+  // public/theme.js sets a saved choice before the first paint. This keeps it up to date after that.
   useEffect(() => {
     if (chosen === null) {
       document.documentElement.removeAttribute("data-theme");

@@ -28,6 +28,21 @@ test("follows the device's setting while the page is open, until the player uses
   await expect(page.locator("body")).toHaveCSS("background-color", LIGHT_PAGE);
 });
 
+test("shows the player's saved choice from the first paint, not the device's mode first", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.addInitScript(() => window.localStorage.setItem("draughts.theme", "light"));
+  await page.goto("./#/about", { waitUntil: "commit" });
+
+  // The first page colour once the styles apply. Before that, the body has no background. The test polls with
+  // page.evaluate, because the site's Content Security Policy blocks the eval that a string in waitForFunction uses.
+  let firstColour = "";
+  for (let attempt = 0; attempt < 500 && ["", "rgba(0, 0, 0, 0)"].includes(firstColour); attempt++) {
+    firstColour = await page.evaluate(() => (document.body ? getComputedStyle(document.body).backgroundColor : ""));
+  }
+
+  expect(firstColour).toBe(LIGHT_PAGE);
+});
+
 test("keeps the player's choice after a refresh and on another page", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("./#/");

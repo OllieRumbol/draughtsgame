@@ -17,6 +17,11 @@ export default defineConfig([
     extends: [js.configs.recommended],
     languageOptions: { globals: globals.node },
   },
+  // public/theme.js runs in the browser, before the app (see the file).
+  {
+    files: ["public/**/*.js"],
+    languageOptions: { globals: globals.browser },
+  },
   // Plan section 5: the site never logs to the console.
   { rules: { "no-console": "error" } },
   // Command-line scripts report their result on the console.

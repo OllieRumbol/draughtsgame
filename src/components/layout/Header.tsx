@@ -25,7 +25,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
       </Link>
       <nav className={styles.nav} aria-label="Main">
         {pages.map((page) => (
-          <NavLink key={page.to} to={page.to} end className={styles.link}>
+          <NavLink key={page.to} to={page.to} className={styles.link}>
             {page.label}
           </NavLink>
         ))}
