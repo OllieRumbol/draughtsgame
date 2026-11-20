@@ -2,7 +2,7 @@
   Design tokens (plan section 3.6). Every colour in the site comes from here. No component has a hex colour.
 
   Each page token holds its light and its dark value in light-dark(). The browser picks one from the page's
-  color-scheme: the device's setting until the player uses the switch, then the player's choice
+  color-scheme: the device's setting until the player uses the light and dark button, then the player's choice
   (spec section 6.4.1, item 2). The board and piece tokens are the same in both modes.
 */
 :root {
@@ -44,7 +44,7 @@
   --line-height: 1.5;
 }
 
-/* The player's choice from the switch wins over the device's setting. */
+/* The player's choice from the light and dark button wins over the device's setting. */
 :root[data-theme="light"] {
   color-scheme: light;
 }

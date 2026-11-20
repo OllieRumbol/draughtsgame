@@ -24,8 +24,12 @@ function deviceIs(dark: boolean): { switchTo: (dark: boolean) => void } {
   };
 }
 
-async function findSwitch(): Promise<HTMLElement> {
-  return screen.findByRole("switch", { name: "Dark mode" });
+// The button for the mode that is on. Its name offers the other mode, and its word shows that mode too.
+async function findButtonInMode(mode: "light" | "dark"): Promise<HTMLElement> {
+  const offered = mode === "dark" ? "light" : "dark";
+  const button = await screen.findByRole("button", { name: `Switch to ${offered} mode` });
+  expect(button).toHaveTextContent(mode === "dark" ? "Light" : "Dark");
+  return button;
 }
 
 afterEach(() => {
@@ -33,22 +37,22 @@ afterEach(() => {
   document.documentElement.removeAttribute("data-theme");
 });
 
-// Plan section 7.2, test 27: the theme switch, its name and state, and that it is remembered
-// (spec section 6.4.1, item 2, and section 6.6, item 13).
-describe("the light and dark switch", () => {
-  it("has the name 'Dark mode', and starts in the device's mode on the first visit", async () => {
+// Plan section 7.2, test 27: the light and dark button, its name and the mode it shows, and that the choice is
+// remembered (spec section 6.4.1, item 2, and section 6.6, item 13).
+describe("the light and dark button", () => {
+  it("starts in the device's mode on the first visit: a sun and 'Light' on a dark device", async () => {
     deviceIs(true);
     renderApp();
 
-    expect(await findSwitch()).toHaveAttribute("aria-checked", "true");
+    await findButtonInMode("dark");
     expect(document.documentElement).not.toHaveAttribute("data-theme");
   });
 
-  it("is off when the device is in light mode", async () => {
+  it("shows a moon and 'Dark' on a light device", async () => {
     deviceIs(false);
     renderApp();
 
-    expect(await findSwitch()).toHaveAttribute("aria-checked", "false");
+    await findButtonInMode("light");
   });
 
   it("switches the mode, says which mode is on, and remembers the choice", async () => {
@@ -56,15 +60,15 @@ describe("the light and dark switch", () => {
     deviceIs(false);
     renderApp();
 
-    await user.click(await findSwitch());
+    await user.click(await findButtonInMode("light"));
 
-    expect(await findSwitch()).toHaveAttribute("aria-checked", "true");
+    await findButtonInMode("dark");
     expect(document.documentElement).toHaveAttribute("data-theme", "dark");
     expect(window.localStorage.getItem(THEME_KEY)).toBe("dark");
 
-    await user.click(await findSwitch());
+    await user.click(await findButtonInMode("dark"));
 
-    expect(await findSwitch()).toHaveAttribute("aria-checked", "false");
+    await findButtonInMode("light");
     expect(document.documentElement).toHaveAttribute("data-theme", "light");
     expect(window.localStorage.getItem(THEME_KEY)).toBe("light");
   });
@@ -75,24 +79,24 @@ describe("the light and dark switch", () => {
 
     renderApp("#/about");
 
-    expect(await findSwitch()).toHaveAttribute("aria-checked", "true");
+    await findButtonInMode("dark");
     expect(document.documentElement).toHaveAttribute("data-theme", "dark");
   });
 
-  it("follows the device when it changes, until the player uses the switch (spec section 6.6, item 13)", async () => {
+  it("follows the device when it changes, until the player uses the button (spec section 6.6, item 13)", async () => {
     const user = userEvent.setup();
     const device = deviceIs(false);
     renderApp();
 
     device.switchTo(true);
-    expect(await findSwitch()).toHaveAttribute("aria-checked", "true");
+    await findButtonInMode("dark");
 
-    await user.click(await findSwitch());
+    await user.click(await findButtonInMode("dark"));
     device.switchTo(true);
     device.switchTo(false);
     device.switchTo(true);
 
-    expect(await findSwitch()).toHaveAttribute("aria-checked", "false");
+    await findButtonInMode("light");
   });
 
   it("uses the device's mode when the stored value is not 'light' or 'dark'", async () => {
@@ -101,7 +105,22 @@ describe("the light and dark switch", () => {
 
     renderApp();
 
-    expect(await findSwitch()).toHaveAttribute("aria-checked", "true");
+    await findButtonInMode("dark");
     expect(document.documentElement).not.toHaveAttribute("data-theme");
+  });
+
+  it("draws a moon in light mode and a sun in dark mode, hidden from screen readers", async () => {
+    const user = userEvent.setup();
+    deviceIs(false);
+    renderApp();
+
+    const moon = (await findButtonInMode("light")).querySelector("svg");
+    await user.click(await findButtonInMode("light"));
+    const sun = (await findButtonInMode("dark")).querySelector("svg");
+
+    expect(moon).toHaveAttribute("aria-hidden", "true");
+    expect(sun).toHaveAttribute("aria-hidden", "true");
+    expect(moon?.innerHTML).not.toBe(sun?.innerHTML);
+    expect(sun?.querySelector("circle")).not.toBeNull();
   });
 });
