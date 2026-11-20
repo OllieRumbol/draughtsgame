@@ -2,7 +2,7 @@
 
 > **What this document is for:** It answers *what do we do next?* It splits the approved design into small, verifiable steps and tracks progress against them.
 
-Last updated: 2026-11-15
+Last updated: 2026-11-20
 
 <!--
 How to use this file
@@ -193,18 +193,23 @@ Goal: a full game can be played in the new look, against another person or the c
     - For T14: start the reducer with `loadSavedGame` from `useSavedGame.ts`, as a lazy starting state. It only reads storage. Pass the game to `useSavedGame`, or `null` for game setup. `null` clears the saved game, including one that failed a check (spec 6.1.8 items 4 and 5).
     - For T10: the theme key (plan 2) goes in `storage.ts` with `useTheme`.
 
-- [ ] **T10 — Add the design tokens, the layout and the routes**
+- [x] **T10 — Add the design tokens, the layout and the routes**
   - Refs: spec 3 goal 5, spec 6.1.10, spec 6.4.1, spec 6.5 item 1, spec 6.6 item 13, plan 3.3.5, plan 3.4 (theme), plan 3.5 decisions 5, 7 and 8, plan 3.6, plan 4 (error boundary), design, tests 27 and 28
   - Depends on: T1, T2
   - Done when:
     - `src/styles/tokens.css` holds every colour token in plan 3.6, for light and dark, and the type scale. The board tokens are the same in both modes. No component has a hex colour.
-    - The header has the wordmark, the three page links with the current page marked, and the light and dark switch, as the design shows. `useTheme` follows the device until the switch is used, then remembers the choice (spec 6.4.1 item 2).
+    - The header has the wordmark, the three page links with the current page marked, and the light and dark button, as the design shows. `useTheme` follows the device until the button is used, then remembers the choice (spec 6.4.1 item 2).
     - `src/routes.tsx` has the routes in plan 3.3.5. Play, How to play and About show placeholder headings. An unknown address shows "page not found" with a link to Play.
     - Each page has an error boundary, from `react-error-boundary` (plan 4).
     - The Playwright accessibility harness from plan 7.1 runs axe with the tags in plan 7.1 on each page, in light and dark mode, at 320 px and 1280 px. It starts test 34, and later tasks add their states to it.
     - Tests 27 and 28 pass.
   - Verify: `npm run check`, then `npm run e2e`
   - Notes:
+    - Owner approvals on 2026-11-20: the moon or sun button (spec 6.4.1 item 2 and 6.6 item 13, plan 3.1, 3.4 and 7.2 test 27, `site.html`), and the "page not found" text.
+    - Tokens use `light-dark()`. `public/theme.js` sets a saved choice before the first paint. `data-theme` is set only once the player chooses.
+    - Also added: the site icon (the frame's crown, as the T1 Notes asked), a `<title>` for each page, and `e2e/theme.spec.ts`. axe runs in desktop Chromium only.
+    - Sizes follow plan 3.6, not the design: the wordmark is 24 px, the links and the button 16 px.
+    - For T17: the "page not found" board picture. Placeholder headings: Play (T14), How to play (T17), About (T18).
 
 - [ ] **T11 — Draw the board, the pieces and the marks**
   - Refs: spec 4.1 items 5 and 6, spec 6.1.2, spec 6.4.2 items 3–7, spec 6.6 item 12, plan 3.3.6, plan 3.6 (signature, colour tokens, board marks, motion), design, tests 36 and 38, risk 11

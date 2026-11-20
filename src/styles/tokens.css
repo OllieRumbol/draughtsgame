@@ -1,0 +1,54 @@
+/*
+  Design tokens (plan section 3.6). Every colour in the site comes from here. No component has a hex colour.
+
+  Each page token holds its light and its dark value in light-dark(). The browser picks one from the page's
+  color-scheme: the device's setting until the player uses the light and dark button, then the player's
+  choice (spec section 6.4.1, item 2). The board and piece tokens are the same in both modes.
+*/
+:root {
+  color-scheme: light dark;
+
+  /* The page. Contrast is in plan section 3.6. */
+  --page: light-dark(#f6efe3, #1c1814);
+  --surface: light-dark(#fbf7f0, #26201a);
+  --border: light-dark(#e3d5be, #3a3027);
+  --text: light-dark(#3b2a1a, #efe6d8);
+  --text-muted: light-dark(#7a6650, #b8a890);
+  --button: light-dark(#efe4d2, #302820);
+  --button-primary: light-dark(#5a3a22, #c9a25a);
+  --on-primary: light-dark(#fbf7f0, #1c1814);
+  --brass: light-dark(#9c7424, #c9a25a);
+  --stack-light-edge: light-dark(#8a7458, #bfa884);
+  --stack-dark-edge: light-dark(#8a7458, #8a7a68);
+
+  /* The board and the pieces: the same in both modes. */
+  --maple: #e8d3a9;
+  --walnut: #8a5a36;
+  --frame: #5a3a22;
+  --board-brass: #9c7424;
+  --board-mark: #cda965;
+  --man-light: #f4ebdd;
+  --man-light-edge: #bfa884;
+  --man-dark: #1e140e;
+  --man-dark-edge: #0a0604;
+  --cream: #fff6e2;
+
+  /* Type (plan section 3.6): Fraunces for the wordmark and headings, Source Sans 3 for everything else. */
+  --font-heading: "Fraunces Variable", Georgia, serif;
+  --font-body: "Source Sans 3 Variable", system-ui, sans-serif;
+  --text-14: 14px;
+  --text-16: 16px;
+  --text-20: 20px;
+  --text-24: 24px;
+  --text-32: 32px;
+  --line-height: 1.5;
+}
+
+/* The player's choice from the light and dark button wins over the device's setting. */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}

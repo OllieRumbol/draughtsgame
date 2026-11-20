@@ -16,6 +16,10 @@
   Text marked "draft" is Claude's draft. The owner approves it in T14, T17 and T18.
   The About tribute is the owner's text from About.js, with "past away" corrected (spec.md section 6.1.11, item 5).
   Where this file and plan.md differ, plan.md wins.
+  Changed on 2026-11-20, as the owner chose: the light and dark control is a moon or sun button with a word.
+  The owner approved that button in the game-screen design shown in the session on 2026-11-14. The copy saved
+  that day had a text-only button, because its icon font worked only in the session, and the whole-site
+  version then made it a "Dark mode" switch.
 -->
 <html lang="en-GB">
 <head>
@@ -39,10 +43,8 @@ body{margin:0;background:#EDE7DC;font-family:system-ui,sans-serif;padding:16px}
 .nav a{color:var(--muted);text-decoration:none;padding:4px 0;border-bottom:2px solid transparent}
 .nav a:hover{color:var(--text)}
 .nav a[aria-current=page]{color:var(--text);border-bottom-color:var(--brass)}
-.tg{display:inline-flex;align-items:center;gap:8px;background:var(--button);color:var(--text);border:none;border-radius:6px;padding:5px 9px;font:inherit;cursor:pointer}
-.tg .sw{width:26px;height:14px;border-radius:7px;background:var(--border);position:relative;transition:background .2s}
-.tg .sw::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--text);transition:transform .2s}
-.tg[aria-checked=true] .sw{background:var(--brass)}.tg[aria-checked=true] .sw::after{transform:translateX(12px)}
+.tg{display:inline-flex;align-items:center;gap:6px;background:var(--button);color:var(--text);border:none;border-radius:6px;padding:5px 9px;font:inherit;cursor:pointer}
+.tg svg{width:16px;height:16px;flex:none}
 .lay{display:grid;gap:14px;align-items:start}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
 .lbl{font-size:12px;color:var(--muted);margin:0 0 2px}
@@ -195,8 +197,11 @@ function stack(n,dk,horiz,label){
  return `<div class="stk"><div style="display:flex;gap:6px;align-items:flex-end;min-height:9px">${towers}</div><span>${label} ${n}</span></div>`;}
 
 // ---------- Header (every page, spec 6.4.1 items 2 and 4) ----------
+// The light and dark button: a moon and "Dark" in light mode, a sun and "Light" in dark mode. Its name says what it does.
+const moonSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>`;
+const sunSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>`;
 function header(){const l=(href,id,t)=>`<a href="#${href}"${page===id?' aria-current="page"':""}>${t}</a>`;
- return `<header class="hd"><a class="wm" href="#/">Draughts</a><nav class="nav" aria-label="Main">${l("/","play","Play")}${l("/howtoplay","howto","How to play")}${l("/about","about","About")}<button class="tg" id="theme" role="switch" aria-checked="${dark}">Dark mode<span class="sw" aria-hidden="true"></span></button></nav></header>`;}
+ return `<header class="hd"><a class="wm" href="#/">Draughts</a><nav class="nav" aria-label="Main">${l("/","play","Play")}${l("/howtoplay","howto","How to play")}${l("/about","about","About")}<button class="tg" id="theme" type="button" aria-label="Switch to ${dark?"light":"dark"} mode">${dark?sunSvg:moonSvg}${dark?"Light":"Dark"}</button></nav></header>`;}
 
 // ---------- Play: setup (spec 6.1.1, 6.4.2 item 1) ----------
 function setupHTML(){const isCpu=setup.opp==="cpu";

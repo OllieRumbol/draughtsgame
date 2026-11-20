@@ -1,0 +1,41 @@
+/* The header on every page, as in the design (docs/design/site.html). */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.wordmark {
+  color: inherit;
+  font-family: var(--font-heading);
+  font-size: var(--text-24);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.link {
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--text);
+}
+
+/* The current page (spec section 6.4.1, item 4). */
+.link[aria-current="page"] {
+  border-bottom-color: var(--brass);
+  color: var(--text);
+}
