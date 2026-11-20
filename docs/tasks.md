@@ -2,7 +2,7 @@
 
 > **What this document is for:** It answers *what do we do next?* It splits the approved design into small, verifiable steps and tracks progress against them.
 
-Last updated: 2026-11-15
+Last updated: 2026-11-20
 
 <!--
 How to use this file
@@ -208,7 +208,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - Each page token in `tokens.css` holds both values in `light-dark()`. MDN's compatibility data gives Chrome 123, Firefox 120 and Safari 17.5. `data-theme` on `<html>` is set only once the player chooses. `e2e/theme.spec.ts` checks a live change in real browsers.
     - `public/theme.js` sets a saved choice before the first paint, so a page never shows the device's mode first. It is a classic script in `<head>`, allowed by `script-src 'self'`. The build prints a notice that it cannot be bundled, which is expected.
     - Outside the Done when list: the site icon is the frame's crown on walnut (`public/favicon.svg`), as the T1 Notes asked T10 to decide. Each page sets its own `<title>`. axe runs in desktop Chromium only.
-    - The light and dark control is the moon or sun button with a word, as the owner chose on 2026-11-20 (it had become a switch in the whole-site design). `docs/design/site.html` is updated to match, and the owner approved the matching spec, plan and tasks wording on 2026-11-20. Sizes follow the type scale in plan 3.6: the wordmark is 24 px, the links and the button 16 px.
+    - The light and dark control is the moon or sun button with a word, as the owner chose on 2026-11-20 (it had become a switch in the whole-site design). `docs/design/site.html` is updated to match. The owner approved the new wording on 2026-11-20: spec 6.4.1 item 2 and 6.6 item 13, plan 3.1, 3.4 and 7.2 test 27, and this task's Done when. Sizes follow the type scale in plan 3.6: the wordmark is 24 px, the links and the button 16 px.
     - For T17: the "page not found" page has no small board picture yet. The design shows one, and T17 builds those pictures.
     - Placeholder headings: Play (T14), How to play (T17), About (T18). The owner approved the "page not found" text, "There's no page at this address.", on 2026-11-20.
 

@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *what are we building, and why?* It is agreed before any design or code, and it is the source of truth for requirements.
 
 Status: Approved
-Last updated: 2026-11-15 (the end-of-game rule, now also in the API; after /review-plan: sections 6.1.4 item 6, 6.1.6 item 4 and 6.1.7 item 1; after the whole-site design: section 6.1.11 items 3 and 5)
+Last updated: 2026-11-20 (section 6.4.1 item 2 and section 6.6 item 13: the light and dark button, approved in T10)
 
 ---
 

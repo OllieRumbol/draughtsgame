@@ -1,6 +1,6 @@
 // Light or dark mode (spec section 6.4.1, item 2, and section 6.6, item 13).
-// The page follows the device's setting until the player uses the light and dark button. From then on, the player's choice is
-// kept in this browser, and the device's setting is no longer used.
+// The page follows the device's setting until the player uses the light and dark button. From then on,
+// the player's choice is kept in this browser, and the device's setting is no longer used.
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { THEME_KEY, readItem, writeItem } from "@/services/storage";
 

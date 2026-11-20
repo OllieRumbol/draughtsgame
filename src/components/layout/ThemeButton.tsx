@@ -20,6 +20,7 @@ export function ThemeButton({ theme, onToggle }: ThemeButtonProps) {
   );
 }
 
+// The icons are drawn with the same paths as the design (docs/design/site.html), so change both together.
 function MoonIcon() {
   return (
     <svg className={styles.icon} viewBox="0 0 24 24" aria-hidden="true">

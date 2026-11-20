@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *how will we build it?* It turns the approved requirements in spec.md into a design, and it is agreed before any code is written.
 
 Status: Approved
-Last updated: 2026-11-18 (section 3.3.3, `requestCount`, approved in T6)
+Last updated: 2026-11-20 (sections 3.1, 3.4 and 7.2 test 27: the light and dark button, approved in T10)
 
 ---
 
