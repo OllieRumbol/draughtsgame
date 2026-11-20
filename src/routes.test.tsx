@@ -1,6 +1,9 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { isValidElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { PageErrorBoundary } from "@/components/layout/PageErrorBoundary";
+import { routes } from "@/routes";
 import { renderApp } from "@/test-app";
 
 beforeEach(() => {
@@ -47,6 +50,15 @@ describe("the routes", () => {
 
     await user.click(screen.getByRole("link", { name: "Draughts" }));
     expect(await screen.findByRole("heading", { level: 1, name: "Play" })).toBeInTheDocument();
+  });
+
+  it("wraps every page in its own error boundary, so the header stays when a page fails (plan section 4)", () => {
+    const pages = routes[0].children ?? [];
+
+    expect(pages).toHaveLength(4);
+    for (const page of pages) {
+      expect(isValidElement(page.element) && page.element.type === PageErrorBoundary).toBe(true);
+    }
   });
 
   it("gives each page one main heading and its own title", async () => {
