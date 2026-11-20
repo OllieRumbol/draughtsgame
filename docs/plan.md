@@ -84,11 +84,11 @@ src/
     useComputerTurn.ts      Asks the API, with time limit and cancel
     useTips.ts              Show tips
     useSavedGame.ts         Load on start, save after every turn
-    useTheme.ts             Light or dark, and the switch
+    useTheme.ts             Light or dark, and the button
     usePrefersReducedMotion.ts
   components/
     board/                  Board, Square, Piece, marks, animation, keyboard
-    layout/                 Header, navigation, theme switch, footer
+    layout/                 Header, navigation, light and dark button, footer
     live-region/            Screen reader announcements
   pages/
     play/                   Setup, game screen, status, controls, captured stacks
@@ -306,7 +306,7 @@ The board uses the ARIA grid pattern: `role="grid"`, with rows and `gridcell`s, 
 
 Anything that fails a check is discarded (spec section 6.1.8, item 5).
 
-**Theme (`localStorage`, key `draughts.theme`).** `"light"` or `"dark"`, written only when the player uses the switch.
+**Theme (`localStorage`, key `draughts.theme`).** `"light"` or `"dark"`, written only when the player uses the light and dark button.
 
 **Storage failures.** Every read and write is wrapped in `try`/`catch`. If storage is not available, the game runs without saving (spec section 6.6, item 10).
 
@@ -496,7 +496,7 @@ How to tell whether it works:
 | 24 | Component: failure shows the message and "Try again"; Try again succeeds (examples 24 and 25) | 6.1.9; 6.2.3 #24–25 | Spec 4.1, item 10 |
 | 25 | Component: the board grid's keyboard use (arrows over every square, stopping at the edges; Enter, Space, Escape) and square names, including a light square | 6.4.3 | Keyboard play missing |
 | 26 | Component: announcements in the live region for a move, a capture, the computer's move, a failure and the result | 6.4.3 item 3 | Silent screen reader |
-| 27 | Component: the theme switch, its name and state, and that it is remembered | 6.4.1 item 2 | Theme not kept |
+| 27 | Component: the light and dark button, its name and the mode it shows, and that it is remembered | 6.4.1 item 2 | Theme not kept |
 | 28 | Component: routes `#/`, `#/howtoplay`, `#/about` and an unknown address | 6.1.10 | Broken old links |
 | 29 | Component: the About page has no project cards and no old tools list, and has the placeholder until the photo exists | 6.1.11 items 5–6 | Old content left in |
 | 30 | E2E: a two-player game from setup to a win, with no network | 6.1.1–6.1.6 | The main flow broken |

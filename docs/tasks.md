@@ -198,7 +198,7 @@ Goal: a full game can be played in the new look, against another person or the c
   - Depends on: T1, T2
   - Done when:
     - `src/styles/tokens.css` holds every colour token in plan 3.6, for light and dark, and the type scale. The board tokens are the same in both modes. No component has a hex colour.
-    - The header has the wordmark, the three page links with the current page marked, and the light and dark switch, as the design shows. `useTheme` follows the device until the switch is used, then remembers the choice (spec 6.4.1 item 2).
+    - The header has the wordmark, the three page links with the current page marked, and the light and dark button, as the design shows. `useTheme` follows the device until the button is used, then remembers the choice (spec 6.4.1 item 2).
     - `src/routes.tsx` has the routes in plan 3.3.5. Play, How to play and About show placeholder headings. An unknown address shows "page not found" with a link to Play.
     - Each page has an error boundary, from `react-error-boundary` (plan 4).
     - The Playwright accessibility harness from plan 7.1 runs axe with the tags in plan 7.1 on each page, in light and dark mode, at 320 px and 1280 px. It starts test 34, and later tasks add their states to it.
@@ -208,7 +208,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - Each page token in `tokens.css` holds both values in `light-dark()`. MDN's compatibility data gives Chrome 123, Firefox 120 and Safari 17.5. `data-theme` on `<html>` is set only once the player chooses. `e2e/theme.spec.ts` checks a live change in real browsers.
     - `public/theme.js` sets a saved choice before the first paint, so a page never shows the device's mode first. It is a classic script in `<head>`, allowed by `script-src 'self'`. The build prints a notice that it cannot be bundled, which is expected.
     - Outside the Done when list: the site icon is the frame's crown on walnut (`public/favicon.svg`), as the T1 Notes asked T10 to decide. Each page sets its own `<title>`. axe runs in desktop Chromium only.
-    - The light and dark control is the moon or sun button with a word, as the owner chose on 2026-11-20 (it had become a switch in the whole-site design). `docs/design/site.html` is updated to match. Sizes follow the type scale in plan 3.6: the wordmark is 24 px, the links and the button 16 px.
+    - The light and dark control is the moon or sun button with a word, as the owner chose on 2026-11-20 (it had become a switch in the whole-site design). `docs/design/site.html` is updated to match, and the owner approved the matching spec, plan and tasks wording on 2026-11-20. Sizes follow the type scale in plan 3.6: the wordmark is 24 px, the links and the button 16 px.
     - For T17: the "page not found" page has no small board picture yet. The design shows one, and T17 builds those pictures.
     - Placeholder headings: Play (T14), How to play (T17), About (T18). The owner approved the "page not found" text, "There's no page at this address.", on 2026-11-20.
 

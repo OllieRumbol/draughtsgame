@@ -488,7 +488,7 @@ The exact wording of each message is drafted with the design and approved by the
 1. The look is "classic wood" (section 2.6). The owner signs off the look.
 2. The page has a light mode and a dark mode. The board and the pieces look the same in both modes.
    * On the first visit, the page uses the device's light or dark setting.
-   * Every page has a switch between light and dark. The switch has an accessible name, and it says which mode is on.
+   * Every page has a button that switches between light and dark. It shows a moon and "Dark" in light mode, and a sun and "Light" in dark mode. Its accessible name says what it does, such as "Switch to dark mode", so it also tells which mode is on. The owner chose this button on 2026-11-20.
    * The player's choice is remembered in this browser, on every page and after a refresh. From then on, the device's setting is not used.
    * There is no option to follow the device again, other than clearing the site's data in the browser.
 3. Every page works from 320 px to 2560 px wide, with no sideways scrolling.
@@ -554,7 +554,7 @@ The content is in section 6.1.11. Each board picture on How to play has a text a
 10. The browser does not allow storage, for example in some private windows. The game works, but is not saved.
 11. The page is open in two tabs of the same browser. Each tab saves after every turn, and the latest save is kept. A tab does not update when the other tab plays. The owner chose this on 2026-11-13.
 12. Tips are shown, and then the player selects a piece. Both kinds of mark are shown, and they look different.
-13. The device switches between light and dark mode during a game. If the player has not used the switch, the page follows. If they have, the page keeps their choice. The game is not affected either way.
+13. The device switches between light and dark mode during a game. If the player has not used the light and dark button, the page follows. If they have, the page keeps their choice. The game is not affected either way.
 14. The person changes the browser zoom up to 200%. The page still works, with no sideways scrolling at 1280 px wide.
 15. A tips response arrives after the turn has ended or the board has changed. It is ignored.
 
