@@ -179,7 +179,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - Decision: any failure while the body is read is `badBody`. MSW 3 with Node's `fetch` crashes when a body stops part-way, so a separate `timeout` there could not be tested.
     - For T15 and T16: the hook must ignore the result after its own abort (plan 4).
 
-- [ ] **T9 — Add saving in the browser**
+- [x] **T9 — Add saving in the browser**
   - Refs: spec 4.1 item 14, spec 6.1.8, spec 6.5 item 6, spec 6.6 items 9–11, plan 3.4, plan 4, tests 19 and 20
   - Depends on: T7
   - Done when:
