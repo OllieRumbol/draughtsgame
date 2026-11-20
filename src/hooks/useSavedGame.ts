@@ -4,19 +4,12 @@ import type { GameState } from "@/game/game-state";
 import { parseSavedGame, toSavedGame } from "@/game/saved-game";
 import { SAVED_GAME_KEY, readItem, removeItem, writeItem } from "@/services/storage";
 
-// The saved game, or null when there is none. Saved data that fails a check is removed, and game setup
-// is shown with no error (spec section 6.1.8, item 5). For the reducer's starting state.
+// The saved game, or null when there is none or it fails a check, so game setup shows with no error
+// (spec section 6.1.8, item 5). For the reducer's starting state, so it only reads: rendering must not change
+// storage. Saved data that failed a check is removed by useSavedGame(null) on the setup screen.
 export function loadSavedGame(): GameState | null {
   const text = readItem(SAVED_GAME_KEY);
-  if (text === null) {
-    return null;
-  }
-
-  const game = parseSavedGame(text);
-  if (game === null) {
-    removeItem(SAVED_GAME_KEY);
-  }
-  return game;
+  return text === null ? null : parseSavedGame(text);
 }
 
 // Saves the game whenever its saved form changes, so the saves fall at the save points in plan section 3.4:

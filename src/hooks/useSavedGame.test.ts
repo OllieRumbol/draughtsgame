@@ -47,10 +47,18 @@ describe("loadSavedGame", () => {
     expect(loadSavedGame()).toEqual(game);
   });
 
-  it("gives null for damaged data, and removes it, so game setup shows with no error", () => {
+  it("gives null for damaged data, so game setup shows with no error, and only reads storage", () => {
     window.localStorage.setItem(SAVED_GAME_KEY, '{"settings":');
 
     expect(loadSavedGame()).toBeNull();
+    expect(window.localStorage.getItem(SAVED_GAME_KEY)).toBe('{"settings":');
+  });
+
+  it("lets the setup screen remove damaged data (useSavedGame with null)", () => {
+    window.localStorage.setItem(SAVED_GAME_KEY, '{"settings":');
+
+    renderHook(() => useSavedGame(loadSavedGame()));
+
     expect(window.localStorage.getItem(SAVED_GAME_KEY)).toBeNull();
   });
 

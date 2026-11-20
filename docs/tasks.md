@@ -189,9 +189,8 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 19 and 20 pass.
   - Verify: `npm run check`
   - Notes:
-    - How saving works: `toSavedGame` gives the form that plan 3.4 saves. A turn is saved from `turnStart`, with no selection. `computerMoving` is saved as `computerThinking` from `turnStart`, with `requestId` = `requestCount` (as the T7 Notes asked). `useSavedGame` writes whenever that form changes, except during a chain, so the writes fall at the save points in plan 3.4.
-    - `parseSavedGame` checks more than the list in plan 3.4: `requestCount` (as the T6 Notes asked), the captured counts, the last-move mark, and the phase. It accepts only the phases that `toSavedGame` gives, and the phase must fit whose turn it is, so a loaded game never waits for a move that cannot come.
-    - For T14: start the reducer with `loadSavedGame` from `useSavedGame.ts`, and pass the game to `useSavedGame`, or `null` for game setup. `null` clears the saved game (New game, spec 6.1.8 item 4).
+    - Plan 3.4 changed, approved by the owner on 2026-11-20: more checks on a saved game (`turnStart` for the player to move, the counts, `requestCount`, the last-move mark and the phase), and two lines on how `computerMoving` is saved and when the game is written.
+    - For T14: start the reducer with `loadSavedGame` from `useSavedGame.ts`, as a lazy starting state. It only reads storage. Pass the game to `useSavedGame`, or `null` for game setup. `null` clears the saved game, including one that failed a check (spec 6.1.8 items 4 and 5).
     - For T10: the theme key (plan 2) goes in `storage.ts` with `useTheme`.
 
 - [ ] **T10 — Add the design tokens, the layout and the routes**

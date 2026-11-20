@@ -289,15 +289,20 @@ The board uses the ARIA grid pattern: `role="grid"`, with rows and `gridcell`s, 
 **Saved game (`localStorage`, key `draughts.game.v1`).** The `GameState` from section 3.3.3, saved as JSON after every change to it, except a change of selection, a step inside a chain, and `computerStepShown`. So the save points are: Start game, the end of every turn (which includes game over and the start of the computer's turn), Undo, Give up, a failed computer move, and Try again.
 
 * The phases `computerThinking` and `computerMoving` are saved as `computerThinking`. So a refresh asks the API again (spec section 6.1.8, item 3).
+* `computerMoving` is saved as `computerThinking`, with the board from before the computer's move, and `requestId` = `requestCount`.
 * A selection is not saved. After a refresh, no piece is selected.
 * A chain in progress is not saved, so a refresh mid-chain returns to the start of that turn.
 * After Undo, the saved game is the restored one. So a refresh does not bring back the undone turns.
+* The game is written whenever its saved form changes, except during a chain. So a selection and a computer jump being shown write nothing.
 
 `saved-game.ts` checks the parsed JSON before it is used:
 
 * 8 rows of 8 cells, with values 0 to 5;
 * the settings values;
-* `turnStart` and every snapshot in the history.
+* `turnStart` and every snapshot in the history, with `turnStart` for the player to move;
+* the captured counts and `requestCount`, as whole numbers of 0 or more;
+* the last-move mark: two squares on the board, or none;
+* the phase: only a phase that is saved (`turn` with nothing selected, `computerThinking`, `computerFailed` or `over`), and one that fits whose turn it is. A request id must be from 1 to `requestCount`.
 
 Anything that fails a check is discarded (spec section 6.1.8, item 5).
 

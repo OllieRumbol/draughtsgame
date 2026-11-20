@@ -7,7 +7,8 @@ import type { GameState, Phase, Result, Settings, Snapshot } from "./game-state"
 export function toSavedGame(state: GameState): GameState {
   const phase = state.phase;
 
-  // A selection is not saved, and a chain in progress goes back to the start of its turn.
+  // A selection is not saved, and a chain in progress goes back to the start of its turn. Outside a chain,
+  // the board is still the one in turnStart, because every move or jump either ends the turn or starts a chain.
   if (phase.kind === "turn") {
     const { board, toMove, capturedBy } = state.turnStart;
     return { ...state, board, toMove, capturedBy, phase: { kind: "turn", selected: null, chain: null } };
@@ -46,6 +47,7 @@ function isSavedGame(value: unknown): value is GameState {
     isPlayer(toMove) &&
     isCaptureCounts(capturedBy) &&
     isSnapshot(turnStart) &&
+    turnStart.toMove === toMove &&
     Array.isArray(history) &&
     history.every(isSnapshot) &&
     isLastComputerMove(lastComputerMove) &&

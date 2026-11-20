@@ -182,6 +182,10 @@ describe("parseSavedGame", () => {
 
   it.each([
     ["a player 3 to move", (save: Record<string, unknown>) => (save.toMove = 3)],
+    [
+      "a turnStart for the other player",
+      (save: Record<string, unknown>) => ((save.turnStart as Record<string, unknown>).toMove = 2),
+    ],
     ["a negative captured count", (save: Record<string, unknown>) => (save.capturedBy = { 1: -1, 2: 0 })],
     ["a request count that is not whole", (save: Record<string, unknown>) => (save.requestCount = 1.5)],
     ["no request count", (save: Record<string, unknown>) => delete save.requestCount],
@@ -207,7 +211,11 @@ describe("parseSavedGame", () => {
   });
 
   it("discards a phase that does not fit whose turn it is, so a loaded game never waits for a move that cannot come", () => {
-    const personsTurnForTheComputer = changed((save) => (save.toMove = 2));
+    // turnStart changes with toMove, so only the phase check can reject this one.
+    const personsTurnForTheComputer = changed((save) => {
+      save.toMove = 2;
+      (save.turnStart as Record<string, unknown>).toMove = 2;
+    });
     const { before } = computerChainHalfShown();
     const thinkingSave = JSON.parse(savedText(before)) as Record<string, unknown>;
     const computerThinksInTwoPlayerGame = JSON.stringify({ ...thinkingSave, settings: twoPlayers });
