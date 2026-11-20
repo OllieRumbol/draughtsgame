@@ -193,7 +193,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - For T14: start the reducer with `loadSavedGame` from `useSavedGame.ts`, as a lazy starting state. It only reads storage. Pass the game to `useSavedGame`, or `null` for game setup. `null` clears the saved game, including one that failed a check (spec 6.1.8 items 4 and 5).
     - For T10: the theme key (plan 2) goes in `storage.ts` with `useTheme`.
 
-- [ ] **T10 — Add the design tokens, the layout and the routes**
+- [x] **T10 — Add the design tokens, the layout and the routes**
   - Refs: spec 3 goal 5, spec 6.1.10, spec 6.4.1, spec 6.5 item 1, spec 6.6 item 13, plan 3.3.5, plan 3.4 (theme), plan 3.5 decisions 5, 7 and 8, plan 3.6, plan 4 (error boundary), design, tests 27 and 28
   - Depends on: T1, T2
   - Done when:
@@ -205,12 +205,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 27 and 28 pass.
   - Verify: `npm run check`, then `npm run e2e`
   - Notes:
-    - Each page token in `tokens.css` holds both values in `light-dark()`. MDN's compatibility data gives Chrome 123, Firefox 120 and Safari 17.5. `data-theme` on `<html>` is set only once the player chooses. `e2e/theme.spec.ts` checks a live change in real browsers.
-    - `public/theme.js` sets a saved choice before the first paint, so a page never shows the device's mode first. It is a classic script in `<head>`, allowed by `script-src 'self'`. The build prints a notice that it cannot be bundled, which is expected.
-    - Outside the Done when list: the site icon is the frame's crown on walnut (`public/favicon.svg`), as the T1 Notes asked T10 to decide. Each page sets its own `<title>`. axe runs in desktop Chromium only.
-    - The light and dark control is the moon or sun button with a word, as the owner chose on 2026-11-20 (it had become a switch in the whole-site design). `docs/design/site.html` is updated to match. The owner approved the new wording on 2026-11-20: spec 6.4.1 item 2 and 6.6 item 13, plan 3.1, 3.4 and 7.2 test 27, and this task's Done when. Sizes follow the type scale in plan 3.6: the wordmark is 24 px, the links and the button 16 px.
-    - For T17: the "page not found" page has no small board picture yet. The design shows one, and T17 builds those pictures.
-    - Placeholder headings: Play (T14), How to play (T17), About (T18). The owner approved the "page not found" text, "There's no page at this address.", on 2026-11-20.
+    - Owner approvals on 2026-11-20: the moon or sun button (spec 6.4.1 item 2 and 6.6 item 13, plan 3.1, 3.4 and 7.2 test 27, `site.html`), and the "page not found" text.
+    - Tokens use `light-dark()`. `public/theme.js` sets a saved choice before the first paint. `data-theme` is set only once the player chooses.
+    - Also added: the site icon (the frame's crown, as the T1 Notes asked), a `<title>` for each page, and `e2e/theme.spec.ts`. axe runs in desktop Chromium only.
+    - Sizes follow plan 3.6, not the design: the wordmark is 24 px, the links and the button 16 px.
+    - For T17: the "page not found" board picture. Placeholder headings: Play (T14), How to play (T17), About (T18).
 
 - [ ] **T11 — Draw the board, the pieces and the marks**
   - Refs: spec 4.1 items 5 and 6, spec 6.1.2, spec 6.4.2 items 3–7, spec 6.6 item 12, plan 3.3.6, plan 3.6 (signature, colour tokens, board marks, motion), design, tests 36 and 38, risk 11
