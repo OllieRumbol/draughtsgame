@@ -1,0 +1,7 @@
+/* The width of every page, as in the design (docs/design/site.html). Works from 320 px wide (spec section 6.4.1, item 3). */
+.layout {
+  box-sizing: border-box;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px 16px 24px;
+}

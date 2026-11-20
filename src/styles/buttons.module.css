@@ -1,0 +1,12 @@
+/* The one main action of a view (plan section 3.6, --button-primary). Used on a button or a link. */
+.primary {
+  display: inline-block;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  background: var(--button-primary);
+  color: var(--on-primary);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}

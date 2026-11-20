@@ -5,6 +5,9 @@
 // The "v1" lets a later version discard old saves (plan section 2).
 export const SAVED_GAME_KEY = "draughts.game.v1";
 
+// "light" or "dark", written only when the player uses the switch (plan section 3.4).
+export const THEME_KEY = "draughts.theme";
+
 // The stored text, or null when there is none or storage cannot be read.
 export function readItem(key: string): string | null {
   try {

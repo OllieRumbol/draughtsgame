@@ -1,10 +1,37 @@
-/* The fonts the site serves itself (plan section 3.5, decision 7). T10 adds the design tokens (plan section 3.6). */
+/* The base styles for every page. The values come from tokens.css (plan section 3.6). */
 body {
   margin: 0;
-  font-family: "Source Sans 3 Variable", system-ui, sans-serif;
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--text-16);
+  line-height: var(--line-height);
+  transition:
+    background-color 0.25s,
+    color 0.25s;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 h1 {
-  font-family: "Fraunces Variable", Georgia, serif;
-  font-weight: 500;
+  font-size: var(--text-32);
+  margin: 0 0 12px;
+}
+
+/* The focus is always visible (spec section 6.4.3, item 4). */
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
 }

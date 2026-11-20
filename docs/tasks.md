@@ -205,6 +205,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 27 and 28 pass.
   - Verify: `npm run check`, then `npm run e2e`
   - Notes:
+    - Each page token in `tokens.css` holds both values in `light-dark()`. MDN's compatibility data gives Chrome 123, Firefox 120 and Safari 17.5. `data-theme` on `<html>` is set only once the player chooses. `e2e/theme.spec.ts` checks a live switch in real browsers.
+    - Outside the Done when list: the site icon is the frame's crown on walnut (`public/favicon.svg`), as the T1 Notes asked T10 to decide. Each page sets its own `<title>`. `e2e/theme.spec.ts` covers spec 6.6 item 13. axe runs in desktop Chromium only.
+    - Sizes follow the type scale in plan 3.6, not the design: the wordmark is 24 px, and the links and the switch are 16 px. So at 320 px the switch wraps to its own row.
+    - For T17: the "page not found" page has no small board picture yet. The design shows one, and T17 builds those pictures.
+    - Placeholder headings: Play (T14), How to play (T17), About (T18).
 
 - [ ] **T11 — Draw the board, the pieces and the marks**
   - Refs: spec 4.1 items 5 and 6, spec 6.1.2, spec 6.4.2 items 3–7, spec 6.6 item 12, plan 3.3.6, plan 3.6 (signature, colour tokens, board marks, motion), design, tests 36 and 38, risk 11
