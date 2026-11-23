@@ -56,7 +56,13 @@
   transform: translate(-2px, 2px) translateY(-7%) scale(1.1);
 }
 
-/* The player's other pieces step back while a piece is selected (plan section 3.6, and risk 11). */
+/* The player's other pieces step back while a piece is selected: they shrink to 86% and fade to 70%, for both
+   players. The owner chose this on 2026-11-23, with the exception for the dark men in spec section 6.5, item 1. */
 .steppedBack {
   opacity: 0.7;
+  transform: scale(0.86);
+}
+
+.king.steppedBack {
+  transform: translate(-2px, 2px) scale(0.86);
 }

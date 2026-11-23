@@ -27,3 +27,31 @@ test("clicking and double-clicking on the board selects no text and shows no car
   expect(result.userSelect).toBe("none");
   expect(result.caretColor).toBe("rgba(0, 0, 0, 0)");
 });
+
+// Plan section 3.6, "Selected piece", as the owner chose on 2026-11-23 (risk 11): the player's other pieces
+// shrink to 86% and fade to 70%, for both players. The other player's pieces stay as they are.
+test("steps the player's other pieces back by shrinking and fading them, for both players", async ({ page }) => {
+  await page.goto("./#/");
+  const looks = () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("[data-look]")].reduce<Record<string, { opacity: string; transform: string }>>(
+        (found, piece) => {
+          const style = getComputedStyle(piece);
+          found[piece.getAttribute("data-look") ?? ""] = { opacity: style.opacity, transform: style.transform };
+          return found;
+        },
+        {},
+      ),
+    );
+
+  await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
+  const player1 = await looks();
+  await page.getByRole("gridcell", { name: "Row 5, column 4, empty, target" }).click();
+  await page.getByRole("gridcell", { name: "Row 3, column 6, player 2's man" }).click();
+  const player2 = await looks();
+
+  for (const found of [player1, player2]) {
+    expect(found.steppedBack).toEqual({ opacity: "0.7", transform: "matrix(0.86, 0, 0, 0.86, 0, 0)" });
+    expect(found.resting).toEqual({ opacity: "1", transform: "none" });
+  }
+});
