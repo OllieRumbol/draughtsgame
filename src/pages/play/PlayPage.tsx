@@ -27,7 +27,7 @@ export function PlayPage() {
           <CapturedStack count={game.capturedBy[1]} menOf={2} label="Player 1 took" />
         </div>
         <div className={styles.panel}>
-          <p className={styles.placeholder}>The game status and the controls come in T14.</p>
+          <p className={styles.placeholder}>The game status and the controls go here.</p>
         </div>
       </div>
     </>

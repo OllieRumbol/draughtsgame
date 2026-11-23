@@ -18,8 +18,11 @@ export function Piece({ cell, position, look }: PieceProps) {
   const kind = isKing(cell) ? styles.king : "";
   const lookClass = look === "lifted" ? styles.lifted : look === "steppedBack" ? styles.steppedBack : "";
 
+  // The lifted piece sits above its neighbours, so its shadow and its larger size are never covered.
+  const slotClass = look === "lifted" ? `${styles.slot} ${styles.raised}` : styles.slot;
+
   return (
-    <div className={styles.slot} style={{ left: `${position.col * 12.5}%`, top: `${position.row * 12.5}%` }}>
+    <div className={slotClass} style={{ left: `${position.col * 12.5}%`, top: `${position.row * 12.5}%` }}>
       <div
         className={`${styles.piece} ${colour} ${kind} ${lookClass}`}
         data-piece={isKing(cell) ? "king" : "man"}

@@ -8,6 +8,11 @@
   height: 12.5%;
 }
 
+/* The lifted piece's slot, above the other pieces, as in the design. The focus ring is above this. */
+.raised {
+  z-index: 3;
+}
+
 /* Lathe rings: two thin rings turned into the face of the piece. */
 .piece {
   box-sizing: border-box;

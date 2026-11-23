@@ -226,8 +226,9 @@ Goal: a full game can be played in the new look, against another person or the c
   - Notes:
     - Risk 11: the owner chose on 2026-11-23 that the other pieces shrink to 86% and fade to 70%, for both players, after seeing the fade, the shrink and both on the real board. The owner approved the exception for the dark men in spec 3 goal 6 and 6.5 item 1, and plan 3.6 and risk 11 changed to match.
     - The Play page now shows a two-player game with the board and the captured men, laid out as the design shows, so the board can be seen and played. T14 adds setup, the status, the controls and saving. A visible placeholder marks their place.
-    - Outside the Done when list: `dev/board.html` (dev only, never built) shows the board in every state plan 3.6 draws. Each square has its spec 6.4.3 item 2 name now, because the squares are buttons that need a name. For T13: the keyboard, one roving `tabindex` (every square has `tabIndex={-1}` until then) and the live region.
-    - Sizes follow plan 3.6: "For Ernest" and the captured men's labels are 14 px (the design has 11.5 px and 12 px). The phone layout starts below 640 px, because the plan gives no breakpoint. The grain and shadow colours are tokens in `tokens.css`.
+    - Outside the Done when list: `dev/board.html` (dev only, never built) shows the board in every state plan 3.6 draws. The phone layout is 640 px wide or narrower, because the plan gives no breakpoint.
+    - For T13: every square has a name now (spec 6.4.3 item 2, plus "target" and "selected", as the design adds), and `tabIndex={-1}` until T13 adds the roving `tabindex` and the live region. A click on a light square clears the selection (spec 6.1.2 item 5); Enter or Space on it does nothing (plan 3.3.6).
+    - For T12: pieces are keyed by their square, so a moved piece is drawn afresh. The slide needs a stable id for each piece, as the design has.
 
 - [ ] **T12 — Add the board's motion**
   - Refs: spec 6.1.5 item 4, plan 3.5 decision 6, plan 3.6 (motion), design

@@ -55,3 +55,29 @@ test("steps the player's other pieces back by shrinking and fading them, for bot
     expect(found.resting).toEqual({ opacity: "1", transform: "none" });
   }
 });
+
+// Plan section 3.6, "Keyboard focus": the two-tone ring sits outside the other marks, and the focused square's own
+// wood never covers its piece (a design review found the piece hidden on 2026-11-23).
+test("draws the focus ring above the pieces, and keeps the focused square's piece in view", async ({ page }) => {
+  await page.goto("./#/");
+  const square = page.getByRole("gridcell", { name: "Row 6, column 1, player 1's man" });
+
+  // Focus after a key press, as keyboard play will, so the square matches :focus-visible.
+  await page.keyboard.press("Shift");
+  await square.focus();
+
+  const focus = await square.evaluate((element) => {
+    const ring = getComputedStyle(element, "::after");
+    return {
+      focusVisible: element.matches(":focus-visible"),
+      squareLayer: getComputedStyle(element).zIndex,
+      ringLayer: ring.zIndex,
+      ring: ring.boxShadow,
+    };
+  });
+
+  expect(focus.focusVisible).toBe(true);
+  expect(focus.squareLayer).toBe("auto");
+  expect(focus.ringLayer).toBe("5");
+  expect(focus.ring).toContain("inset");
+});

@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useReducer } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { Board } from "@/components/board/Board";
 import { type Board as BoardCells, type Position, CELL } from "@/game/board";
 import { type GameState, type Settings, gameReducer, newGame } from "@/game/game-state";
@@ -91,14 +91,26 @@ describe("selecting a piece", () => {
     expect(square("Row 5, column 4, empty")).toBeInTheDocument();
   });
 
-  it("does nothing when a light square is chosen (plan section 3.3.6)", async () => {
+  it("clears the selection when a light square is clicked, as for any other square (spec section 6.1.2, item 5)", async () => {
     const user = userEvent.setup();
-    const dispatch = vi.fn();
-    render(<Board state={newGame(twoPlayers)} dispatch={dispatch} tips={[]} />);
+    render(<PlayableBoard start={gameOn(board)} />);
 
+    await user.click(square("Row 6, column 3, player 1's man"));
+    await user.click(square("Row 5, column 1, light square"));
+
+    expect(square("Row 6, column 3, player 1's man")).toBeInTheDocument();
+    expect(screen.queryAllByTestId("target")).toHaveLength(0);
+  });
+
+  it("ignores a light square during a chain, as for any square that is not a target (spec section 6.1.2, item 5)", async () => {
+    const user = userEvent.setup();
+    render(<PlayableBoard start={gameOn(boardWith([6, 1, M1], [5, 2, M2], [3, 4, M2]))} />);
+
+    await user.click(square("Row 7, column 2, player 1's man"));
+    await user.click(square("Row 5, column 4, empty, target"));
     await user.click(square("Row 1, column 1, light square"));
 
-    expect(dispatch).not.toHaveBeenCalled();
+    expect(square("Row 5, column 4, player 1's man, selected")).toBeInTheDocument();
   });
 });
 
