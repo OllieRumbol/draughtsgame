@@ -32,17 +32,18 @@ test("clicking and double-clicking on the board selects no text and shows no car
 // shrink to 86% and fade to 70%, for both players. The other player's pieces stay as they are.
 test("steps the player's other pieces back by shrinking and fading them, for both players", async ({ page }) => {
   await page.goto("./#/");
+  // The look once the lift and the step-back transitions (T12) have finished.
   const looks = () =>
-    page.evaluate(() =>
-      [...document.querySelectorAll("[data-look]")].reduce<Record<string, { opacity: string; transform: string }>>(
-        (found, piece) => {
-          const style = getComputedStyle(piece);
-          found[piece.getAttribute("data-look") ?? ""] = { opacity: style.opacity, transform: style.transform };
-          return found;
-        },
-        {},
-      ),
-    );
+    page.evaluate(async () => {
+      await Promise.all(document.getAnimations().map((animation) => animation.finished));
+      return [...document.querySelectorAll("[data-look]")].reduce<
+        Record<string, { opacity: string; transform: string }>
+      >((found, piece) => {
+        const style = getComputedStyle(piece);
+        found[piece.getAttribute("data-look") ?? ""] = { opacity: style.opacity, transform: style.transform };
+        return found;
+      }, {});
+    });
 
   await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
   const player1 = await looks();

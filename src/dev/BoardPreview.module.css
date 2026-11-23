@@ -30,3 +30,8 @@
   gap: 16px;
   align-items: flex-end;
 }
+
+.buttons {
+  display: flex;
+  gap: 8px;
+}

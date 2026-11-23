@@ -242,6 +242,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - The motion matches the design, checked side by side in the browser at normal and slow speed.
   - Verify: `npm run check`, then `npm run e2e`; then the owner's look at the motion next to the design
   - Notes:
+    - Each piece has a stable id (`tracked-pieces.ts`). A step is recognised only for the selected piece or the computer's next jump, so Undo and a new game redraw the board at once (spec 6.1.7 item 5).
+    - The lift, the step-back and the target dots are CSS transitions, timed through custom properties that the board sets from `timings.ts`. The slide, the capture fade and the crowning use the Web Animations API on `translate`, `scale` and `opacity`.
+    - From the design, where plan 3.6 says nothing: the step-back fades over 220 ms, and the person's piece stays lifted while it slides, then is put down. The page's 0.25 s light and dark fade (T10, `global.css`) is page styling, not board motion, so it is not in `timings.ts`.
+    - For T15: `useComputerMoveSteps(state, dispatch)` shows the computer's move one jump at a time, with the pause. The Play page uses it with `useComputerTurn`. Plan 3.1's list of hooks does not name it.
+    - `dev/board.html` has motion demos: the person's crowning, the computer's chain, and the computer's crowning.
 
 - [ ] **T13 — Add keyboard play and screen reader announcements**
   - Refs: spec 6.4.3, spec 6.5 item 1, plan 3.3.6, tests 25 and 26
