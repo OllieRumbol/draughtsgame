@@ -33,6 +33,15 @@
   --man-dark-edge: #0a0604;
   --cream: #fff6e2;
 
+  /* The wood grain, the lathe rings and the lift shadow: decoration from the design file, the same in both modes.
+     Plan section 3.6 says they need no contrast. */
+  --grain-maple: rgba(120, 80, 30, 0.06);
+  --grain-walnut: rgba(0, 0, 0, 0.12);
+  --grain-walnut-light: rgba(255, 220, 170, 0.06);
+  --ring-light-man: rgba(140, 110, 70, 0.32);
+  --ring-dark-man: rgba(255, 230, 200, 0.12);
+  --lift-shadow: rgba(40, 20, 5, 0.45);
+
   /* Type (plan section 3.6): Fraunces for the wordmark and headings, Source Sans 3 for everything else. */
   --font-heading: "Fraunces Variable", Georgia, serif;
   --font-body: "Source Sans 3 Variable", system-ui, sans-serif;

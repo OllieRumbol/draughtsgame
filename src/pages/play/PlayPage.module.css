@@ -1,0 +1,55 @@
+/* The game screen, as in the design (docs/design/site.html). On desktop: the captured men, the board, then the
+   status and controls. On a phone: one column, with the captured men above and below the board. */
+.game {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 0.62fr);
+  grid-template-areas:
+    "top board panel"
+    "bottom board panel";
+  gap: 14px;
+}
+
+.topStack {
+  grid-area: top;
+  align-self: start;
+  padding-top: 26px;
+}
+
+.board {
+  grid-area: board;
+}
+
+.bottomStack {
+  grid-area: bottom;
+  align-self: end;
+  padding-bottom: 26px;
+}
+
+.panel {
+  grid-area: panel;
+}
+
+/* A visible placeholder until T14 builds the status and the controls. */
+.placeholder {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--text-muted);
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .game {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "top"
+      "board"
+      "bottom"
+      "panel";
+  }
+
+  .topStack,
+  .bottomStack {
+    padding: 0;
+  }
+}

@@ -1,0 +1,55 @@
+/* The walnut frame with a thin brass inlay (plan section 3.6, and docs/design/site.html). */
+.frame {
+  position: relative;
+  padding: 11px 11px 26px;
+  border-radius: 7px;
+  background: repeating-linear-gradient(80deg, var(--grain-walnut) 0 2px, transparent 2px 6px), var(--frame);
+}
+
+.inlay {
+  padding: 2px;
+  border: 2px solid var(--board-brass);
+  background: var(--frame);
+}
+
+/* Square, as wide as its column. On a phone it fills the width of the screen, less the page margins
+   (spec section 6.4.2, item 3). */
+.board {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.pieces {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* "For Ernest" with a crown, set into the bottom edge of the frame. */
+.mark {
+  position: absolute;
+  right: 13px;
+  bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  color: var(--board-mark);
+  font-family: var(--font-heading);
+  font-size: var(--text-14);
+  letter-spacing: 0.4px;
+  line-height: 1;
+}

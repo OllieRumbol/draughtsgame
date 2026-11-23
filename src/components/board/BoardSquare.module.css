@@ -1,0 +1,69 @@
+/* A square of the family board, with wood grain on every square (plan section 3.6). */
+.square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  /* No text caret and no text selection on the board (spec section 6.4.2, item 7, and section 4.1, item 6). */
+  user-select: none;
+  caret-color: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.light {
+  background: repeating-linear-gradient(100deg, var(--grain-maple) 0 2px, transparent 2px 7px), var(--maple);
+  cursor: default;
+}
+
+.dark {
+  background:
+    repeating-linear-gradient(80deg, var(--grain-walnut) 0 2px, transparent 2px 6px),
+    repeating-linear-gradient(85deg, var(--grain-walnut-light) 0 1px, transparent 1px 9px), var(--walnut);
+  cursor: pointer;
+}
+
+/* Keyboard focus: a two-tone ring, dark inside cream, so one tone shows on either wood (plan section 3.6). */
+.square:focus {
+  outline: none;
+}
+
+.square:focus-visible {
+  z-index: 4;
+  box-shadow:
+    inset 0 0 0 2px var(--man-dark),
+    inset 0 0 0 4px var(--cream);
+}
+
+/* The computer's last move: a 2 px cream line inside its start and end squares. */
+.lastMove {
+  position: absolute;
+  inset: 3px;
+  border: 2px solid var(--cream);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* A tip: a cream ring, 60% of the square, with no fill. */
+.tip {
+  position: absolute;
+  box-sizing: border-box;
+  width: 60%;
+  height: 60%;
+  border: 2px solid var(--cream);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* A target: a solid cream dot, 30% of the square. */
+.target {
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: var(--cream);
+  opacity: 0.95;
+  pointer-events: none;
+}

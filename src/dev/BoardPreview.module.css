@@ -1,0 +1,32 @@
+/* Dev only: the layout of the board preview page. */
+.page {
+  box-sizing: border-box;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* About the board's width in the game screen at 1280 px. */
+.board {
+  max-width: 460px;
+}
+
+.stacks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.stackPair {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
