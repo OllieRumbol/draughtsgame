@@ -147,6 +147,7 @@ describe("useSavedGame", () => {
       thinking,
       { type: "computerMoveReceived", requestId: 1, move: reply },
       { type: "computerStepShown" },
+      { type: "computerStepShown" },
     );
     const { rerender } = renderSaving(marked);
     const setItem = vi.spyOn(Storage.prototype, "setItem");

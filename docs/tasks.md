@@ -230,11 +230,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - For T13: square names add "target" and "selected", every square has `tabIndex={-1}`, and a click on a light square clears the selection.
     - The phone layout is 640 px wide or narrower. Sizes follow plan 3.6. Evidence: pull request #74.
 
-- [ ] **T12 — Add the board's motion**
+- [x] **T12 — Add the board's motion**
   - Refs: spec 6.1.5 item 4, plan 3.5 decision 6, plan 3.6 (motion), design
   - Depends on: T11
   - Done when:
-    - `src/components/board/timings.ts` holds every timing in plan 3.6, and nothing else in the code sets a duration.
+    - `src/components/board/timings.ts` holds every timing in plan 3.6, and nothing else in the board's code sets a duration. The page's 0.25 s fade between light and dark mode (T10) stays in `global.css`.
     - Selecting lifts the piece and steps the others back, and putting it down reverses this. Target dots fade in.
     - A move or jump slides, a captured piece fades and shrinks at its own jump, and a man that becomes a king gets the crowning animation, as plan 3.6 sets out.
     - A move can be shown as a list of steps, one jump at a time with the pause between jumps. T15 uses this for the computer.
@@ -242,6 +242,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - The motion matches the design, checked side by side in the browser at normal and slow speed.
   - Verify: `npm run check`, then `npm run e2e`; then the owner's look at the motion next to the design
   - Notes:
+    - Pieces have stable ids (`tracked-pieces.ts`). Undo and a new game redraw the board at once (spec 6.1.7 item 5).
+    - From the design: the step-back takes 220 ms, the person's piece stays lifted while it slides, and clicks are ignored until it lands.
+    - Owner approvals on 2026-11-23: the computer's turn ends after its move is shown (plan 3.3.3), plan 3.1 names the hook, the reworded item 1, and the motion's look.
+    - For T15: use `useComputerMoveSteps(state, dispatch)` with `useComputerTurn`. It shows one jump at a time and ends the turn.
+    - Evidence: pull request #75.
 
 - [ ] **T13 — Add keyboard play and screen reader announcements**
   - Refs: spec 6.4.3, spec 6.5 item 1, plan 3.3.6, tests 25 and 26

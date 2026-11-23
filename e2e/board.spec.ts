@@ -32,21 +32,24 @@ test("clicking and double-clicking on the board selects no text and shows no car
 // shrink to 86% and fade to 70%, for both players. The other player's pieces stay as they are.
 test("steps the player's other pieces back by shrinking and fading them, for both players", async ({ page }) => {
   await page.goto("./#/");
+  // The look once the lift and the step-back transitions (T12) have finished.
   const looks = () =>
-    page.evaluate(() =>
-      [...document.querySelectorAll("[data-look]")].reduce<Record<string, { opacity: string; transform: string }>>(
-        (found, piece) => {
-          const style = getComputedStyle(piece);
-          found[piece.getAttribute("data-look") ?? ""] = { opacity: style.opacity, transform: style.transform };
-          return found;
-        },
-        {},
-      ),
-    );
+    page.evaluate(async () => {
+      await Promise.all(document.getAnimations().map((animation) => animation.finished));
+      return [...document.querySelectorAll("[data-look]")].reduce<
+        Record<string, { opacity: string; transform: string }>
+      >((found, piece) => {
+        const style = getComputedStyle(piece);
+        found[piece.getAttribute("data-look") ?? ""] = { opacity: style.opacity, transform: style.transform };
+        return found;
+      }, {});
+    });
 
   await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
   const player1 = await looks();
   await page.getByRole("gridcell", { name: "Row 5, column 4, empty, target" }).click();
+  // The board ignores clicks while the piece slides, as the design does.
+  await looks();
   await page.getByRole("gridcell", { name: "Row 3, column 6, player 2's man" }).click();
   const player2 = await looks();
 
@@ -80,4 +83,27 @@ test("draws the focus ring above the pieces, and keeps the focused square's piec
   expect(focus.squareLayer).toBe("auto");
   expect(focus.ringLayer).toBe("5");
   expect(focus.ring).toContain("inset");
+});
+
+// Plan section 3.6, "Motion": selecting lifts the piece (180 ms), steps the others back (the design's 220 ms fade)
+// and fades the target dots in (180 ms). The board times these CSS transitions from timings.ts.
+test("times the lift, the step-back and the target dots as the plan sets out", async ({ page }) => {
+  await page.goto("./#/");
+
+  await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
+  const running = await page.evaluate(() =>
+    document.getAnimations().map((animation) => {
+      const name =
+        animation instanceof CSSTransition
+          ? `transition ${animation.transitionProperty}`
+          : animation instanceof CSSAnimation
+            ? `animation ${animation.animationName}`
+            : "script";
+      return `${name} ${animation.effect?.getTiming().duration}`;
+    }),
+  );
+
+  expect(running).toContain("transition transform 180");
+  expect(running).toContain("transition opacity 220");
+  expect(running.some((entry) => /^animation .*target-in.* 180$/.test(entry))).toBe(true);
 });
