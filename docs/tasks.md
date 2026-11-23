@@ -230,7 +230,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - For T13: square names add "target" and "selected", every square has `tabIndex={-1}`, and a click on a light square clears the selection.
     - The phone layout is 640 px wide or narrower. Sizes follow plan 3.6. Evidence: pull request #74.
 
-- [ ] **T12 — Add the board's motion**
+- [x] **T12 — Add the board's motion**
   - Refs: spec 6.1.5 item 4, plan 3.5 decision 6, plan 3.6 (motion), design
   - Depends on: T11
   - Done when:
@@ -242,12 +242,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - The motion matches the design, checked side by side in the browser at normal and slow speed.
   - Verify: `npm run check`, then `npm run e2e`; then the owner's look at the motion next to the design
   - Notes:
-    - Each piece has a stable id (`tracked-pieces.ts`). A step is recognised only for the selected piece or the computer's next jump, so Undo and a new game redraw the board at once (spec 6.1.7 item 5).
-    - The lift, the step-back and the target dots are CSS transitions, timed through custom properties that the board sets from `timings.ts`. The slide, the capture fade and the crowning use the Web Animations API on `translate`, `scale` and `opacity`.
-    - From the design, where plan 3.6 says nothing: the step-back fades over 220 ms, and the person's piece stays lifted while it slides, then is put down. A click while it slides is ignored. A crowned piece is drawn as a man until the crown appears at the top of its rise.
-    - Owner approved on 2026-11-23, after the reviews: one more `computerStepShown` after the last jump ends the computer's turn, once the slide and any crowning have shown (plan 3.3.3); plan 3.1 names `useComputerMoveSteps`; T12 "Done when" item 1 keeps the page's 0.25 s light and dark fade in `global.css`.
-    - For T15: `useComputerMoveSteps(state, dispatch)` shows the computer's move one jump at a time, with the pause, and ends the turn. The Play page uses it with `useComputerTurn`.
-    - `dev/board.html` has motion demos: the person's crowning, the computer's chain, and the computer's crowning.
+    - Pieces have stable ids (`tracked-pieces.ts`). Undo and a new game redraw the board at once (spec 6.1.7 item 5).
+    - From the design: the step-back takes 220 ms, the person's piece stays lifted while it slides, and clicks are ignored until it lands.
+    - Owner approvals on 2026-11-23: the computer's turn ends after its move is shown (plan 3.3.3), plan 3.1 names the hook, the reworded item 1, and the motion's look.
+    - For T15: use `useComputerMoveSteps(state, dispatch)` with `useComputerTurn`. It shows one jump at a time and ends the turn.
+    - Evidence: pull request #75.
 
 - [ ] **T13 — Add keyboard play and screen reader announcements**
   - Refs: spec 6.4.3, spec 6.5 item 1, plan 3.3.6, tests 25 and 26
