@@ -234,7 +234,7 @@ Goal: a full game can be played in the new look, against another person or the c
   - Refs: spec 6.1.5 item 4, plan 3.5 decision 6, plan 3.6 (motion), design
   - Depends on: T11
   - Done when:
-    - `src/components/board/timings.ts` holds every timing in plan 3.6, and nothing else in the code sets a duration.
+    - `src/components/board/timings.ts` holds every timing in plan 3.6, and nothing else in the board's code sets a duration. The page's 0.25 s fade between light and dark mode (T10) stays in `global.css`.
     - Selecting lifts the piece and steps the others back, and putting it down reverses this. Target dots fade in.
     - A move or jump slides, a captured piece fades and shrinks at its own jump, and a man that becomes a king gets the crowning animation, as plan 3.6 sets out.
     - A move can be shown as a list of steps, one jump at a time with the pause between jumps. T15 uses this for the computer.
@@ -244,8 +244,9 @@ Goal: a full game can be played in the new look, against another person or the c
   - Notes:
     - Each piece has a stable id (`tracked-pieces.ts`). A step is recognised only for the selected piece or the computer's next jump, so Undo and a new game redraw the board at once (spec 6.1.7 item 5).
     - The lift, the step-back and the target dots are CSS transitions, timed through custom properties that the board sets from `timings.ts`. The slide, the capture fade and the crowning use the Web Animations API on `translate`, `scale` and `opacity`.
-    - From the design, where plan 3.6 says nothing: the step-back fades over 220 ms, and the person's piece stays lifted while it slides, then is put down. The page's 0.25 s light and dark fade (T10, `global.css`) is page styling, not board motion, so it is not in `timings.ts`.
-    - For T15: `useComputerMoveSteps(state, dispatch)` shows the computer's move one jump at a time, with the pause. The Play page uses it with `useComputerTurn`. Plan 3.1's list of hooks does not name it.
+    - From the design, where plan 3.6 says nothing: the step-back fades over 220 ms, and the person's piece stays lifted while it slides, then is put down. A click while it slides is ignored. A crowned piece is drawn as a man until the crown appears at the top of its rise.
+    - Owner approved on 2026-11-23, after the reviews: one more `computerStepShown` after the last jump ends the computer's turn, once the slide and any crowning have shown (plan 3.3.3); plan 3.1 names `useComputerMoveSteps`; T12 "Done when" item 1 keeps the page's 0.25 s light and dark fade in `global.css`.
+    - For T15: `useComputerMoveSteps(state, dispatch)` shows the computer's move one jump at a time, with the pause, and ends the turn. The Play page uses it with `useComputerTurn`.
     - `dev/board.html` has motion demos: the person's crowning, the computer's chain, and the computer's crowning.
 
 - [ ] **T13 — Add keyboard play and screen reader announcements**

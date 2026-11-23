@@ -1,18 +1,42 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useReducer } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { Board } from "@/components/board/Board";
-import { type Board as BoardCells, CELL } from "@/game/board";
+import { type Board as BoardCells, type Move, CELL } from "@/game/board";
 import { type GameState, type Settings, gameReducer, newGame } from "@/game/game-state";
-import { boardWith } from "@/game/test-boards";
+import { at, boardWith } from "@/game/test-boards";
 
 const { player1Man: M1, player2Man: M2 } = CELL;
 const twoPlayers: Settings = { opponent: "twoPlayers", level: "easy", firstPlayer: 1 };
+const againstComputer: Settings = { opponent: "computer", level: "hard", firstPlayer: 1 };
 
-function gameOn(board: BoardCells): GameState {
-  const game = newGame(twoPlayers);
+function gameOn(board: BoardCells, settings: Settings = twoPlayers): GameState {
+  const game = newGame(settings);
   return { ...game, board, turnStart: { ...game.turnStart, board } };
+}
+
+// The computer's move received, on a board where the person has just moved (7,0) to (6,1).
+function computerMoving(board: BoardCells, move: Move): GameState {
+  let state = gameOn(board, againstComputer);
+  state = gameReducer(state, { type: "select", at: at(7, 0) });
+  state = gameReducer(state, { type: "chooseTarget", at: at(6, 1) });
+  return gameReducer(state, { type: "computerMoveReceived", requestId: 1, move });
+}
+
+// An Element.animate stand-in whose held animations end only when the test calls the function it gives back.
+function holdAnimations(hold: (keyframes: Keyframe[]) => boolean): () => void {
+  const waiting: (() => void)[] = [];
+  vi.mocked(Element.prototype.animate).mockImplementation(
+    (keyframes) =>
+      ({
+        finished: hold(keyframes as Keyframe[])
+          ? new Promise<void>((resolve) => waiting.push(resolve))
+          : Promise.resolve(),
+        cancel() {},
+      }) as unknown as Animation,
+  );
+  return () => waiting.forEach((resolve) => resolve());
 }
 
 function PlayableBoard({ start }: { start: GameState }) {
@@ -64,15 +88,39 @@ describe("the board's motion", () => {
     await user.click(square("Row 6, column 3, player 1's man"));
     await user.click(square("Row 5, column 4, empty, target"));
 
+    // It slides above the other pieces (zIndex 5), as in the design.
     expect(slides()).toEqual([
       {
         keyframes: [
-          { left: "25%", top: "62.5%" },
-          { left: "37.5%", top: "50%" },
+          { left: "25%", top: "62.5%", zIndex: 5 },
+          { left: "37.5%", top: "50%", zIndex: 5 },
         ],
         options: { duration: 200, easing: "cubic-bezier(.4,0,.2,1)" },
       },
     ]);
+  });
+
+  it("slides the computer's jump in 380 ms, and fades the taken piece from 190 ms for 228 ms", () => {
+    const board = boardWith([0, 1, M2], [1, 2, M1], [7, 0, M1]);
+    const jump: Move = { from: at(0, 1), to: at(2, 3), captured: [at(1, 2)], path: [at(2, 3)] };
+    const received = computerMoving(board, jump);
+    const { rerender } = render(<Board state={received} dispatch={() => {}} tips={[]} />);
+
+    rerender(<Board state={gameReducer(received, { type: "computerStepShown" })} dispatch={() => {}} tips={[]} />);
+
+    expect(slides().map((call) => call.options)).toEqual([{ duration: 380, easing: "cubic-bezier(.4,0,.2,1)" }]);
+    expect(captureFades().map((call) => call.options)).toEqual([{ delay: 190, duration: 228, fill: "forwards" }]);
+  });
+
+  it("crowns the computer's man that reaches the far row, when its slide ends", async () => {
+    const board = boardWith([6, 3, M2], [7, 0, M1]);
+    const move: Move = { from: at(6, 3), to: at(7, 4), captured: [], path: [at(7, 4)] };
+    const received = computerMoving(board, move);
+    const { rerender } = render(<Board state={received} dispatch={() => {}} tips={[]} />);
+
+    rerender(<Board state={gameReducer(received, { type: "computerStepShown" })} dispatch={() => {}} tips={[]} />);
+
+    await waitFor(() => expect(crownRises()).toHaveLength(1));
   });
 
   it("grows a jumping piece halfway, and fades and shrinks the taken piece halfway through the jump", async () => {
@@ -99,18 +147,37 @@ describe("the board's motion", () => {
     expect(crownRises()[0].options).toMatchObject({ duration: 180 });
   });
 
+  it("draws the crowned piece as a man until the crown appears at the top of its rise", async () => {
+    const finishRise = holdAnimations((keyframes) => keyframes[1]?.translate === "0 -6px");
+    const user = userEvent.setup();
+    const { container } = render(<PlayableBoard start={gameOn(boardWith([1, 2, M1], [5, 6, M2]))} />);
+
+    await user.click(square("Row 2, column 3, player 1's man"));
+    await user.click(square("Row 1, column 2, empty, target"));
+    await waitFor(() => expect(crownRises()).toHaveLength(1));
+
+    expect(container.querySelector('[data-piece="king"]')).toBeNull();
+    finishRise();
+    await waitFor(() => expect(container.querySelector('[data-piece="king"]')).not.toBeNull());
+  });
+
+  it("ignores a click while the person's piece slides, so the next jump starts where it lands", async () => {
+    const land = holdAnimations((keyframes) => "left" in keyframes[0]);
+    const user = userEvent.setup();
+    render(<PlayableBoard start={gameOn(boardWith([7, 0, M1], [6, 1, M2], [4, 3, M2], [0, 7, M2]))} />);
+
+    await user.click(square("Row 8, column 1, player 1's man"));
+    await user.click(square("Row 6, column 3, empty, target"));
+    await user.click(square("Row 4, column 5, empty, target"));
+
+    expect(square("Row 4, column 5, empty, target")).toBeInTheDocument();
+    await act(async () => land());
+    await user.click(square("Row 4, column 5, empty, target"));
+    expect(square("Row 4, column 5, player 1's man")).toBeInTheDocument();
+  });
+
   it("keeps the person's piece lifted while it slides, and puts it down when it lands, as the design shows", async () => {
-    let land: () => void = () => {};
-    vi.mocked(Element.prototype.animate).mockImplementation(
-      (keyframes) =>
-        ({
-          finished:
-            "left" in (keyframes as Keyframe[])[0]
-              ? new Promise<void>((resolve) => (land = resolve))
-              : Promise.resolve(),
-          cancel() {},
-        }) as unknown as Animation,
-    );
+    const land = holdAnimations((keyframes) => "left" in keyframes[0]);
     const user = userEvent.setup();
     const { container } = render(<PlayableBoard start={newGame(twoPlayers)} />);
 

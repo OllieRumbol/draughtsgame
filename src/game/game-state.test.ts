@@ -48,13 +48,14 @@ function computerMove(board: Board, from: Position, to: Position, takes: Positio
   return move;
 }
 
-// The computer answers the request it is waiting for, and every jump of its move is shown.
+// The computer answers the request it is waiting for, every jump of its move is shown, and then one more step ends
+// the turn (plan section 3.3.3).
 function computerPlays(state: GameState, move: Move): GameState {
   if (state.phase.kind !== "computerThinking") {
     throw new Error("The computer is not thinking.");
   }
   const moving = gameReducer(state, answer(state.phase.requestId, move));
-  return move.path.reduce((shown) => gameReducer(shown, stepShown), moving);
+  return [...move.path, "end"].reduce((shown) => gameReducer(shown, stepShown), moving);
 }
 
 describe("newGame", () => {
@@ -303,8 +304,18 @@ describe("the computer's move", () => {
     expect(oneJumpShown.phase).toEqual({ kind: "computerMoving", move: computersChain, step: 1 });
   });
 
+  it("keeps the computer's turn while its last jump is shown, so the person cannot move yet (item 7)", () => {
+    const lastJumpShowing = play(oneJumpShown, stepShown);
+
+    expect(lastJumpShowing.board).toEqual(boardWith([4, 5, M2], [6, 1, M1]));
+    expect(lastJumpShowing.toMove).toBe(2);
+    expect(lastJumpShowing.phase).toEqual({ kind: "computerMoving", move: computersChain, step: 2 });
+    expect(lastJumpShowing.lastComputerMove).toBeNull();
+    expect(play(lastJumpShowing, select(6, 1))).toEqual(lastJumpShowing);
+  });
+
   it("passes the turn to the person when the last jump has been shown, and marks the move (items 7 and 9)", () => {
-    const shown = play(oneJumpShown, stepShown);
+    const shown = play(oneJumpShown, stepShown, stepShown);
 
     expect(shown.board).toEqual(boardWith([4, 5, M2], [6, 1, M1]));
     expect(shown.capturedBy).toEqual({ 1: 0, 2: 2 });
@@ -439,7 +450,8 @@ describe("canUndo", () => {
     expect(play(personMoved, undo)).toEqual(personMoved);
     expect(canUndo(moving)).toBe(false);
     expect(play(moving, undo)).toEqual(moving);
-    expect(canUndo(play(moving, stepShown))).toBe(true);
+    expect(canUndo(play(moving, stepShown))).toBe(false);
+    expect(canUndo(play(moving, stepShown, stepShown))).toBe(true);
   });
 
   it("is false while a chain of the computer's is part-way shown", () => {

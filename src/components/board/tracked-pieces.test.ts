@@ -2,7 +2,14 @@ import { describe, expect, it } from "vitest";
 import { type Board, type Move, CELL } from "@/game/board";
 import { type Action, type GameState, type Settings, gameReducer, newGame } from "@/game/game-state";
 import { at, boardWith } from "@/game/test-boards";
-import { type Tracked, landed, startTracking, trackNext, withoutPiece } from "@/components/board/tracked-pieces";
+import {
+  type Tracked,
+  crowned,
+  landed,
+  startTracking,
+  trackNext,
+  withoutPiece,
+} from "@/components/board/tracked-pieces";
 
 const { player1Man: M1, player2Man: M2 } = CELL;
 const twoPlayers: Settings = { opponent: "twoPlayers", level: "easy", firstPlayer: 1 };
@@ -15,11 +22,16 @@ function gameOn(board: Board, settings: Settings = twoPlayers): GameState {
 
 // Tracks the pieces through each action, as the board does on each new state.
 function follow(start: GameState, ...actions: Action[]): { tracked: Tracked; state: GameState } {
+  return followWith(true, start, ...actions);
+}
+
+// The same, with the board's motion on (animates) or reduced.
+function followWith(animates: boolean, start: GameState, ...actions: Action[]): { tracked: Tracked; state: GameState } {
   let state = start;
   let tracked = startTracking(start);
   for (const action of actions) {
     state = gameReducer(state, action);
-    tracked = trackNext(tracked, state);
+    tracked = trackNext(tracked, state, animates);
   }
   return { tracked, state };
 }
@@ -112,12 +124,38 @@ describe("tracking the pieces", () => {
     expect(secondJump.tracked.pieces.filter((piece) => piece.leaving)).toHaveLength(2);
   });
 
-  it("carries a man's new crown with its id, so the board can crown it where it lands", () => {
+  it("carries a man's new crown with its id, marked crowning, until the board says the crown has appeared", () => {
     const start = gameOn(boardWith([1, 2, M1], [5, 6, M2]));
-    const id = idAt(startTracking(start), 1, 2);
+    const id = idAt(startTracking(start), 1, 2) ?? -1;
+
+    const { tracked } = follow(start, select(1, 2), target(0, 1));
+    const piece = tracked.pieces.find((each) => each.id === id);
+
+    expect(piece).toMatchObject({ cell: CELL.player1King, crowning: true });
+    expect(crowned(tracked, id).pieces.find((each) => each.id === id)?.crowning).toBe(false);
+  });
+
+  it("does not mark a king that moves as crowning", () => {
+    const start = gameOn(boardWith([1, 2, CELL.player1King], [5, 6, M2]));
 
     const { tracked } = follow(start, select(1, 2), target(0, 1));
 
-    expect(tracked.pieces.find((piece) => piece.id === id)?.cell).toBe(CELL.player1King);
+    expect(tracked.pieces.some((piece) => piece.crowning)).toBe(false);
+  });
+
+  it("with reduced motion, neither carries nor marks crowning, so nothing waits for an animation", () => {
+    const start = gameOn(boardWith([1, 2, M1], [5, 6, M2]));
+
+    const { tracked } = followWith(false, start, select(1, 2), target(0, 1));
+
+    expect(tracked.pieces.some((piece) => piece.carried || piece.crowning)).toBe(false);
+  });
+
+  it("gives back the same tracking when a piece lands or is crowned with nothing to change, so the board does not draw again", () => {
+    const tracked = startTracking(newGame(twoPlayers));
+    const id = tracked.pieces[0].id;
+
+    expect(landed(tracked, id)).toBe(tracked);
+    expect(crowned(tracked, id)).toBe(tracked);
   });
 });

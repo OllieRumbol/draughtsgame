@@ -48,6 +48,8 @@ test("steps the player's other pieces back by shrinking and fading them, for bot
   await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
   const player1 = await looks();
   await page.getByRole("gridcell", { name: "Row 5, column 4, empty, target" }).click();
+  // The board ignores clicks while the piece slides, as the design does.
+  await looks();
   await page.getByRole("gridcell", { name: "Row 3, column 6, player 2's man" }).click();
   const player2 = await looks();
 

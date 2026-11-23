@@ -9,7 +9,7 @@ import { CrownIcon } from "./CrownIcon";
 import { type PieceLook, Piece } from "./Piece";
 import { squareName } from "./square-name";
 import { timingsFor } from "./timings";
-import { landed, startTracking, trackNext, withoutPiece } from "./tracked-pieces";
+import { type TrackedPiece, crowned, landed, startTracking, trackNext, withoutPiece } from "./tracked-pieces";
 
 type BoardProps = {
   state: GameState;
@@ -30,7 +30,7 @@ export function Board({ state, dispatch, tips }: BoardProps) {
   const [tracked, setTracked] = useState(() => startTracking(state));
   let pieces = tracked.pieces;
   if (tracked.state !== state) {
-    const next = trackNext(tracked, state);
+    const next = trackNext(tracked, state, timings.personSlide > 0);
     setTracked(next);
     pieces = next.pieces;
   }
@@ -43,12 +43,16 @@ export function Board({ state, dispatch, tips }: BoardProps) {
     setTracked((current) => landed(current, id));
   }
 
-  // The person's piece stays lifted while it slides, as the design shows, unless the slide is instant.
-  function lookOf(piece: (typeof pieces)[number]): PieceLook {
+  function showCrown(id: number): void {
+    setTracked((current) => crowned(current, id));
+  }
+
+  // The person's piece stays lifted while it slides, as the design shows. With reduced motion it is never carried.
+  function lookOf(piece: TrackedPiece): PieceLook {
     if (piece.leaving) {
       return "resting";
     }
-    if (piece.carried && timings.personSlide > 0) {
+    if (piece.carried) {
       return "lifted";
     }
     return pieceLook(piece.position);
@@ -73,7 +77,11 @@ export function Board({ state, dispatch, tips }: BoardProps) {
   }
 
   // The reducer treats a square that is not a target as a plain click, so one action covers every square.
+  // A click while the person's piece slides is ignored, as in the design, so the next jump starts from where it lands.
   function choose(position: Position): void {
+    if (pieces.some((piece) => piece.carried)) {
+      return;
+    }
     dispatch({ type: "chooseTarget", at: position });
   }
 
@@ -125,12 +133,14 @@ export function Board({ state, dispatch, tips }: BoardProps) {
                 key={piece.id}
                 id={piece.id}
                 cell={piece.cell}
+                crowning={piece.crowning}
                 position={piece.position}
                 look={lookOf(piece)}
                 leaving={piece.leaving}
                 slide={piece.mover === "computer" ? timings.computerSlide : timings.personSlide}
                 timings={timings}
                 onLanded={putDown}
+                onCrowned={showCrown}
                 onFaded={removePiece}
               />
             ))}

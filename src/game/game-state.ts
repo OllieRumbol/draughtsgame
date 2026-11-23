@@ -25,7 +25,7 @@ export type Settings = {
 export type Phase =
   | { kind: "turn"; selected: Position | null; chain: ChainSoFar | null }
   | { kind: "computerThinking"; requestId: number }
-  | { kind: "computerMoving"; move: Move; step: number } // step: the number of jumps already shown
+  | { kind: "computerMoving"; move: Move; step: number } // step: the number of jumps already shown, up to all of them
   | { kind: "computerFailed"; requestId: number }
   | { kind: "over"; result: Result };
 
@@ -314,6 +314,7 @@ function isWaitingFor(state: GameState, requestId: number): boolean {
 }
 
 // Shows the next jump of the computer's move, so the board matches the screen (spec section 6.1.5, items 4 to 6).
+// After the last jump, one more step ends the turn.
 // Each captured piece is removed at its own jump. A man that lands on the far row becomes a king in applyMove.
 function showComputerStep(state: GameState): GameState {
   const phase = state.phase;
@@ -322,21 +323,21 @@ function showComputerStep(state: GameState): GameState {
   }
 
   const { move, step } = phase;
+
+  // Every jump has been shown, with its slide and any crowning, so the turn passes to the person
+  // (spec section 6.1.5, item 7, and plan section 3.3.3). The start and end squares stay marked until the person's
+  // next move or jump (spec section 6.1.5, item 9).
+  if (step === move.path.length) {
+    return endTurn({ ...state, lastComputerMove: { from: move.from, to: move.to } });
+  }
+
   const from = step === 0 ? move.from : move.path[step - 1];
   const to = move.path[step];
   const captured: Position | undefined = move.captured[step];
 
   const board = applyMove(state.board, { from, to, captured: captured ? [captured] : [], path: [to] });
   const capturedBy = captured ? addCapture(state.capturedBy, state.toMove) : state.capturedBy;
-  const shown: GameState = { ...state, board, capturedBy };
-
-  const isLastStep = step + 1 === move.path.length;
-  if (!isLastStep) {
-    return { ...shown, phase: { kind: "computerMoving", move, step: step + 1 } };
-  }
-
-  // The start and end squares stay marked until the person's next move or jump (spec section 6.1.5, item 9).
-  return endTurn({ ...shown, lastComputerMove: { from: move.from, to: move.to } });
+  return { ...state, board, capturedBy, phase: { kind: "computerMoving", move, step: step + 1 } };
 }
 
 // Spec section 6.1.9, item 2: the same request again. It gets a new id, as every request does.

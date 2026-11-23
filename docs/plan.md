@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *how will we build it?* It turns the approved requirements in spec.md into a design, and it is agreed before any code is written.
 
 Status: Approved
-Last updated: 2026-11-23 (section 3.6 "Selected piece" and section 9 risk 11: shrink and fade, approved in T11)
+Last updated: 2026-11-23 (sections 3.1 and 3.3.3: showing the computer's move, approved in T12)
 
 ---
 
@@ -84,6 +84,7 @@ src/
     useComputerTurn.ts      Asks the API, with time limit and cancel
     useTips.ts              Show tips
     useSavedGame.ts         Load on start, save after every turn
+    useComputerMoveSteps.ts Shows the computer's move one jump at a time, with the pause
     useTheme.ts             Light or dark, and the button
     usePrefersReducedMotion.ts
   components/
@@ -228,7 +229,7 @@ Rules that the reducer enforces:
   * During a chain, it restores `turnStart`.
   * `canUndo` is false while the phase is `computerThinking` or `computerMoving`, or after a player gives up.
   * In a computer game, `canUndo` is also false when `history` holds no snapshot for the person's turn. This happens in a game that the computer started, before the person's first turn ends. Undo never restores a snapshot for the computer's turn, so it never starts a new request.
-* **Computer moving.** In `computerMoving`, `board` changes at each `computerStepShown`, so the state matches what the screen shows.
+* **Computer moving.** In `computerMoving`, `board` changes at each `computerStepShown`, so the state matches what the screen shows. After the last jump, one more `computerStepShown` ends the turn, once the last slide and any crowning have been shown. So the turn passes only when the move has been shown (spec section 6.1.5, item 7). The owner approved this on 2026-11-23.
 * **Give up during the computer's turn.** In `computerThinking` or `computerMoving`, `giveUp` restores `turnStart`, which is the board before the computer's move. Then the phase becomes `over`, and the computer wins (spec section 6.1.6, item 4). The hook's cleanup cancels the request or the animation.
 * **Stale responses.** `requestCount` counts the requests in this game, and each new request gets `requestCount + 1`, so `requestId` goes up by one for every request. A `computerMoveReceived` or `computerMoveFailed` with an old `requestId` is ignored (spec section 6.6, item 5).
 * **Purity.** The reducer is pure. It never calls the API or storage. Hooks do that (section 3.3.4).

@@ -89,6 +89,7 @@ describe("parseSavedGame", () => {
       personMoved,
       { type: "computerMoveReceived", requestId: 1, move: reply },
       { type: "computerStepShown" },
+      { type: "computerStepShown" },
     );
   }
 

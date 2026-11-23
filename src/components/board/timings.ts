@@ -53,6 +53,11 @@ export function timingsFor(reducedMotion: boolean): Timings {
   return reducedMotion ? REDUCED_TIMINGS : NORMAL_TIMINGS;
 }
 
+// How long the whole crowning lasts: the rise, then the ripple and the settle, which run side by side.
+export function crowningLength(timings: Timings): number {
+  return timings.crownRise + Math.max(timings.crownRipple, timings.crownSettleStart + timings.crownSettle);
+}
+
 // The captured piece fades and shrinks to 50%, starting halfway through the jump, for 60% of the jump time.
 // With reduced motion there is no jump to follow, so it fades at once, for 100 ms.
 export function captureFade(timings: Timings, slide: number): { delay: number; duration: number } {

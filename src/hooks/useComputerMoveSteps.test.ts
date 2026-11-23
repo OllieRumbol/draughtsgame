@@ -56,6 +56,35 @@ describe("useComputerMoveSteps", () => {
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
+  it("ends the turn when the last jump has slid (380 ms), with no pause after it", () => {
+    const dispatch = vi.fn();
+    renderHook(() => useComputerMoveSteps(chainShown(2), dispatch));
+
+    vi.advanceTimersByTime(379);
+    expect(dispatch).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(1);
+    expect(dispatch).toHaveBeenCalledWith({ type: "computerStepShown" });
+  });
+
+  it("ends the turn after a crowning only when the crowning (600 ms) has been shown too", () => {
+    const game = newGame(againstComputer);
+    const board = boardWith([6, 3, CELL.player2Man], [7, 0, CELL.player1Man]);
+    let state: GameState = { ...game, board, turnStart: { ...game.turnStart, board } };
+    state = gameReducer(gameReducer(state, { type: "select", at: at(7, 0) }), { type: "chooseTarget", at: at(6, 1) });
+    const move: Move = { from: at(6, 3), to: at(7, 4), captured: [], path: [at(7, 4)] };
+    state = gameReducer(state, { type: "computerMoveReceived", requestId: 1, move });
+    const shown = gameReducer(state, { type: "computerStepShown" });
+    const dispatch = vi.fn();
+    renderHook(() => useComputerMoveSteps(shown, dispatch));
+
+    vi.advanceTimersByTime(979);
+    expect(dispatch).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(1);
+    expect(dispatch).toHaveBeenCalledTimes(1);
+  });
+
   it("keeps the pause between jumps when the device asks for reduced motion", () => {
     vi.stubGlobal("matchMedia", (query: string) => ({
       matches: query === "(prefers-reduced-motion: reduce)",

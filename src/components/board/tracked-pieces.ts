@@ -2,7 +2,7 @@
 // The game state holds only the board. So between two states, this works out whether one piece made one step:
 // the person's selected piece, or the computer's next jump. Anything else, such as Undo or a new game,
 // gives every piece a new id, so the board is redrawn at once (spec section 6.1.7, item 5).
-import { type Board, type Cell, type Position, BOARD_SIZE, cellAt, ownerOf, samePosition } from "@/game/board";
+import { type Board, type Cell, type Position, BOARD_SIZE, cellAt, isKing, ownerOf, samePosition } from "@/game/board";
 import type { GameState } from "@/game/game-state";
 
 export type TrackedPiece = {
@@ -12,6 +12,7 @@ export type TrackedPiece = {
   leaving: boolean; // a captured piece, still shown while it fades
   mover: "person" | "computer"; // who moved it last, or took it, for the length of the slide it follows
   carried: boolean; // the person's piece stays lifted while it slides, and is put down when it lands (the design)
+  crowning: boolean; // a man that became a king: drawn as a man until its crowning shows the crown (plan 3.6)
 };
 
 export type Tracked = {
@@ -27,8 +28,9 @@ export function startTracking(state: GameState): Tracked {
 }
 
 // The pieces for the next state. A piece that made the step keeps its id. A piece it captured stays, marked
-// leaving, until the board says it has faded.
-export function trackNext(tracked: Tracked, state: GameState): Tracked {
+// leaving, until the board says it has faded. When the board animates, the moved piece is also carried or crowning
+// until the board says its slide or crowning has shown. With reduced motion, neither is set, so nothing waits.
+export function trackNext(tracked: Tracked, state: GameState, animates: boolean): Tracked {
   if (sameBoard(tracked.state.board, state.board)) {
     return { ...tracked, state };
   }
@@ -44,7 +46,9 @@ export function trackNext(tracked: Tracked, state: GameState): Tracked {
       return piece;
     }
     if (samePosition(piece.position, step.from)) {
-      return { ...piece, position: step.to, cell: cellAt(state.board, step.to), mover, carried: mover === "person" };
+      const cell = cellAt(state.board, step.to);
+      const crowning = animates && !isKing(piece.cell) && isKing(cell);
+      return { ...piece, position: step.to, cell, mover, carried: animates && mover === "person", crowning };
     }
     if (step.captured !== null && samePosition(piece.position, step.captured)) {
       // It fades at the jump that took it, so it takes that jump's mover.
@@ -56,11 +60,25 @@ export function trackNext(tracked: Tracked, state: GameState): Tracked {
   return { state, pieces, nextId: tracked.nextId };
 }
 
-// The carried piece has landed, so it can be put down.
+// The carried piece has landed, so it can be put down. Nothing changes for a piece that was not carried.
 export function landed(tracked: Tracked, id: number): Tracked {
+  if (!tracked.pieces.some((piece) => piece.id === id && piece.carried)) {
+    return tracked;
+  }
   return {
     ...tracked,
     pieces: tracked.pieces.map((piece) => (piece.id === id ? { ...piece, carried: false } : piece)),
+  };
+}
+
+// The crowning has reached the moment the crown appears, so the piece is drawn as a king.
+export function crowned(tracked: Tracked, id: number): Tracked {
+  if (!tracked.pieces.some((piece) => piece.id === id && piece.crowning)) {
+    return tracked;
+  }
+  return {
+    ...tracked,
+    pieces: tracked.pieces.map((piece) => (piece.id === id ? { ...piece, crowning: false } : piece)),
   };
 }
 
@@ -75,7 +93,7 @@ function fresh(state: GameState, nextId: number): Tracked {
   forEachSquare((position) => {
     const cell = cellAt(state.board, position);
     if (ownerOf(cell) !== null) {
-      pieces.push({ id, cell, position, leaving: false, mover: "person", carried: false });
+      pieces.push({ id, cell, position, leaving: false, mover: "person", carried: false, crowning: false });
       id += 1;
     }
   });
@@ -135,14 +153,14 @@ function isComputersPiece(state: GameState, position: Position): boolean {
 }
 
 function sameBoard(a: Board, b: Board): boolean {
-  if (a === b) {
-    return true;
+  for (let row = 0; row < BOARD_SIZE; row++) {
+    for (let col = 0; col < BOARD_SIZE; col++) {
+      if (a[row][col] !== b[row][col]) {
+        return false;
+      }
+    }
   }
-  let same = true;
-  forEachSquare((position) => {
-    same = same && cellAt(a, position) === cellAt(b, position);
-  });
-  return same;
+  return true;
 }
 
 function forEachSquare(visit: (position: Position) => void): void {

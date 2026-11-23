@@ -1,4 +1,4 @@
-/* A turned piece, as in the design (docs/design/site.html). No motion yet: T12 adds it. */
+/* A turned piece, as in the design (docs/design/site.html). */
 .slot {
   position: absolute;
   display: flex;
