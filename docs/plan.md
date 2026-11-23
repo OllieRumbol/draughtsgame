@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *how will we build it?* It turns the approved requirements in spec.md into a design, and it is agreed before any code is written.
 
 Status: Approved
-Last updated: 2026-11-20 (sections 3.1, 3.4 and 7.2 test 27: the light and dark button, approved in T10)
+Last updated: 2026-11-23 (section 3.6 "Selected piece" and section 9 risk 11: shrink and fade, approved in T11)
 
 ---
 
@@ -377,7 +377,7 @@ The wood grain and the shadows use the `rgba` values in the design file. They ar
 | Mark | Look |
 | --- | --- |
 | King | Two men stacked, the top one offset, with a `--board-brass` band on the top man's edge. It differs from a man by shape and by the band, not by colour alone (spec section 6.4.2, item 6). |
-| Selected piece | Lifted: it rises a few pixels, grows to 110% and casts a soft shadow. The player's other pieces fade to 70%. The fade is the same during a chain. Light men at 70% are 3.31 to 1 on walnut. Dark men at 70% are 2.34 to 1, below 3 to 1: any fade of a dark man fails, because at full strength it is 3.10 to 1 (measured on 2026-11-15). The owner saw a shrink with no fade, and chose on 2026-11-15 to keep the fade for now. This is an open gap (risk 11). |
+| Selected piece | Lifted: it rises a few pixels, grows to 110% and casts a soft shadow. The player's other pieces step back: they shrink to 86% and fade to 70%, for both players. The step-back is the same during a chain. Light men at 70% are 3.31 to 1 on walnut. Dark men at 70% are 2.34 to 1, below 3 to 1 (measured on 2026-11-15); shrinking does not change that. The owner chose shrink and fade on 2026-11-23, with the exception in spec section 6.5, item 1. |
 | Target | A cream dot, 30% of the square, which fades in |
 | Computer's last move | A 2 px cream line inside the start and end squares |
 | Tip | A cream ring, 60% of the square, with no fill. A target is a solid dot, so the two look different. |
@@ -572,4 +572,4 @@ Steps 2.2 and 2.3 are minutes apart. The GitHub documentation ([configuring a pu
 | 8 | The dark pieces' contrast (3.10 to 1) is close to the limit | Low | Measured. Test 34 checks it in every state. A darker edge is the fallback. |
 | 9 | The owner's photo or tribute edits come late | Medium | The About page ships with a visible placeholder. The definition of done (spec section 9) lists the owner's sign-off. |
 | 10 | The API is stopped by its cost limit during the work | Low | The tests never call the live API. Only the owner's final games need it. |
-| 11 | Player 2's faded dark men (2.34 to 1) fail WCAG 1.4.11, which spec section 6.5, item 1 requires. axe does not check the contrast of graphics, so no test catches it. | Certain, while the fade stays | The owner decides in T11, when the real board is built, and before the sign-off in T20. The tested fallback is to shrink the other pieces to 86% with no fade (preview of 2026-11-15). Keeping the fade for dark men needs a spec change that the owner approves. |
+| 11 | Player 2's faded dark men (2.34 to 1) fail WCAG 1.4.11, which spec section 6.5, item 1 requires. axe does not check the contrast of graphics, so no test catches it. | Certain | Closed on 2026-11-23: the owner chose shrink and fade for both players in T11, and approved the exception in spec section 6.5, item 1. |

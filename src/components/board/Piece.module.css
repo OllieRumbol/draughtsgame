@@ -1,0 +1,73 @@
+/* A turned piece, as in the design (docs/design/site.html). No motion yet: T12 adds it. */
+.slot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12.5%;
+  height: 12.5%;
+}
+
+/* The lifted piece's slot, above the other pieces, as in the design. The focus ring is above this. */
+.raised {
+  z-index: 3;
+}
+
+/* Lathe rings: two thin rings turned into the face of the piece. */
+.piece {
+  box-sizing: border-box;
+  width: 78%;
+  height: 78%;
+  border: 2px solid var(--edge);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--body) 0 22%,
+    var(--ring) 23% 26%,
+    var(--body) 27% 46%,
+    var(--ring) 47% 50%,
+    var(--body) 51% 100%
+  );
+}
+
+.light {
+  --body: var(--man-light);
+  --edge: var(--man-light-edge);
+  --ring: var(--ring-light-man);
+}
+
+.dark {
+  --body: var(--man-dark);
+  --edge: var(--man-dark-edge);
+  --ring: var(--ring-dark-man);
+}
+
+/* A king: the top man carries the brass band, and the man under it shows above and to the right. */
+.king {
+  border: 3px solid var(--board-brass);
+  box-shadow:
+    4px -5px 0 -1px var(--edge),
+    4px -5px 0 1px var(--body);
+  transform: translate(-2px, 2px);
+}
+
+/* The selected piece rises, grows to 110% and casts a soft shadow (plan section 3.6). */
+.lifted {
+  filter: drop-shadow(0 7px 4px var(--lift-shadow));
+  transform: translateY(-7%) scale(1.1);
+}
+
+.king.lifted {
+  transform: translate(-2px, 2px) translateY(-7%) scale(1.1);
+}
+
+/* The player's other pieces step back while a piece is selected: they shrink to 86% and fade to 70%, for both
+   players. The owner chose this on 2026-11-23, with the exception for the dark men in spec section 6.5, item 1. */
+.steppedBack {
+  opacity: 0.7;
+  transform: scale(0.86);
+}
+
+.king.steppedBack {
+  transform: translate(-2px, 2px) scale(0.86);
+}

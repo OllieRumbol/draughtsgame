@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *what are we building, and why?* It is agreed before any design or code, and it is the source of truth for requirements.
 
 Status: Approved
-Last updated: 2026-11-20 (section 6.4.1 item 2 and section 6.6 item 13: the light and dark button, approved in T10)
+Last updated: 2026-11-23 (section 3 goal 6 and section 6.5 item 1: the exception for the stepped-back dark men, approved in T11)
 
 ---
 
@@ -121,7 +121,7 @@ These decisions were made with the owner before this document was written. They 
 3. **Correct play.** The web app follows the house rules in section 2.1. Every defect in section 4.1 is fixed, and each defect that changes play has a regression test.
 4. **Rules tested on their own.** Every rule in section 2.1, and every worked example in section 6.2, is checked by an automated test that does not draw the page.
 5. **A new look.** Every page uses the classic wood look (section 2.6), in light and dark mode, from a 320 px wide phone to a large desktop screen. The owner signs off the look.
-6. **Accessible.** Every page meets WCAG 2.2 AA (section 6.6, item 1).
+6. **Accessible.** Every page meets WCAG 2.2 AA (section 6.5, item 1), with the one exception that section names.
 7. **The final API contract.** The web app asks for the computer's move with `Difficulty` and `Board` only (section 5.1).
 
 ### Non-goals
@@ -526,7 +526,7 @@ The content is in section 6.1.11. Each board picture on How to play has a text a
 
 ### 6.5 Non-functional requirements
 
-1. **Accessibility.** Every page meets WCAG 2.2 AA:
+1. **Accessibility.** Every page meets WCAG 2.2 AA, with one exception that the owner approved on 2026-11-23. While a piece is selected, the player's other men step back: they shrink to 86% and fade to 70%. Player 2's dark men are then 2.34 to 1 against the walnut squares, below the 3 to 1 in success criterion 1.4.11. At rest, every man is at full strength. It is checked in two ways:
    * An automated accessibility check finds no violation on each page, in light and dark mode, at 320 px and 1280 px wide, and in each game state in section 6.3.
    * The owner, or a person they choose, plays a full game with the keyboard alone, and a full game with a screen reader.
 2. **Supported browsers.** The current and the previous major version of Chrome, Edge, Firefox and Safari, on desktop, and Chrome on Android and Safari on iOS.

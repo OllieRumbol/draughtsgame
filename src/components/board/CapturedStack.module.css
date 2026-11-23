@@ -1,0 +1,67 @@
+/* The captured men beside the board, as in the design (docs/design/site.html). */
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: var(--text-14);
+}
+
+/* One upright stack on desktop: men 30 px wide and 13 px tall, each 6 px above the one below. */
+.upright {
+  --width: 30px;
+  --height: 13px;
+  --step: 6px;
+}
+
+/* Towers of up to four on a phone: men 24 px wide and 9 px tall, each 5 px above the one below. */
+.towers {
+  --width: 24px;
+  --height: 9px;
+  --step: 5px;
+  display: none;
+  gap: 6px;
+  align-items: flex-end;
+  min-height: var(--height);
+}
+
+.tower {
+  position: relative;
+  width: var(--width);
+  height: calc(var(--height) + max(var(--men) - 1, 0) * var(--step));
+}
+
+.man {
+  position: absolute;
+  bottom: calc(var(--index) * var(--step));
+  left: 0;
+  box-sizing: border-box;
+  width: var(--width);
+  height: var(--height);
+  border-radius: 50%;
+}
+
+.light {
+  border: 1.5px solid var(--stack-light-edge);
+  background: var(--man-light);
+}
+
+.dark {
+  border: 1.5px solid var(--stack-dark-edge);
+  background: var(--man-dark);
+}
+
+@media (max-width: 640px) {
+  .stack {
+    flex-direction: row;
+  }
+
+  .upright {
+    display: none;
+  }
+
+  .towers {
+    display: flex;
+  }
+}

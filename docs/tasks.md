@@ -211,7 +211,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - Sizes follow plan 3.6, not the design: the wordmark is 24 px, the links and the button 16 px.
     - For T17: the "page not found" board picture. Placeholder headings: Play (T14), How to play (T17), About (T18).
 
-- [ ] **T11 — Draw the board, the pieces and the marks**
+- [x] **T11 — Draw the board, the pieces and the marks**
   - Refs: spec 4.1 items 5 and 6, spec 6.1.2, spec 6.4.2 items 3–7, spec 6.6 item 12, plan 3.3.6, plan 3.6 (signature, colour tokens, board marks, motion), design, tests 36 and 38, risk 11
   - Depends on: T6, T10
   - Done when:
@@ -224,6 +224,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - The board matches the design at 320 px and 1280 px, in light and dark mode. The pull request lists each difference and what was done about it.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the rendered board, and the owner's look at it
   - Notes:
+    - Owner approvals on 2026-11-23: shrink and fade for both players (spec 3 goal 6 and 6.5 item 1, plan 3.6 and risk 11), and the board's look.
+    - The Play page shows a two-player game. T14 adds setup, the status, the controls and saving where the placeholder is.
+    - For T12: pieces are keyed by their square, so the slide needs a stable id for each piece. `dev/board.html` (dev only) shows every state.
+    - For T13: square names add "target" and "selected", every square has `tabIndex={-1}`, and a click on a light square clears the selection.
+    - The phone layout is 640 px wide or narrower. Sizes follow plan 3.6. Evidence: pull request #74.
 
 - [ ] **T12 — Add the board's motion**
   - Refs: spec 6.1.5 item 4, plan 3.5 decision 6, plan 3.6 (motion), design
