@@ -82,3 +82,26 @@ test("draws the focus ring above the pieces, and keeps the focused square's piec
   expect(focus.ringLayer).toBe("5");
   expect(focus.ring).toContain("inset");
 });
+
+// Plan section 3.6, "Motion": selecting lifts the piece (180 ms), steps the others back (the design's 220 ms fade)
+// and fades the target dots in (180 ms). The board times these CSS transitions from timings.ts.
+test("times the lift, the step-back and the target dots as the plan sets out", async ({ page }) => {
+  await page.goto("./#/");
+
+  await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
+  const running = await page.evaluate(() =>
+    document.getAnimations().map((animation) => {
+      const name =
+        animation instanceof CSSTransition
+          ? `transition ${animation.transitionProperty}`
+          : animation instanceof CSSAnimation
+            ? `animation ${animation.animationName}`
+            : "script";
+      return `${name} ${animation.effect?.getTiming().duration}`;
+    }),
+  );
+
+  expect(running).toContain("transition transform 180");
+  expect(running).toContain("transition opacity 220");
+  expect(running.some((entry) => /^animation .*target-in.* 180$/.test(entry))).toBe(true);
+});
