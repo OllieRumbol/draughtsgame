@@ -117,7 +117,6 @@ export function Board({ state, dispatch, tips }: BoardProps) {
     if (event.key === "Escape") {
       // Choosing the selected piece again puts it down. During a chain the reducer ignores it.
       if (selected !== null) {
-        setChosen(selected);
         dispatch({ type: "select", at: selected });
       }
       return;

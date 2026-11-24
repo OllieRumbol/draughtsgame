@@ -20,8 +20,9 @@ import { nextSteps } from "@/game/rules";
 const FAILED = "The computer couldn't move. Check your connection and try again.";
 
 // The sentence for the change from one state of the game to the next, or null when there is nothing to say.
-// `chosen` is the square the player last chose on the board, or the selected piece for Escape. It tells putting
-// the piece down apart from choosing another square, which also clears the selection.
+// `chosen` is the square the player last chose on the board. It tells putting the piece down apart from choosing
+// another square, which also clears the selection. A piece is selected only by choosing its square, so for Escape
+// it is still the selected piece.
 export function announcement(previous: GameState, next: GameState, chosen: Position | null): string | null {
   if (previous === next) {
     return null;
