@@ -276,6 +276,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 21, 30 and 32 pass, and test 34 covers the setup screen and a two-player game.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the Play page
   - Notes:
+    - Owner approved on 2026-11-24: the welcome line as the design drafts it, and six differences from the design: the status note (who moves first, then the result's reason, not the last move), "The computer took" at every width, the focus to the setup heading after New game, the focus to the board after Start game, "Game started. The computer moves first.", and body-coloured setup options.
     - The Play page shows setup or a game (`play-state.ts`). Start game moves the focus to the board's first square, and the live region says "Game started."; New game moves it to the setup heading. A saved game opens with neither.
     - From the design, where the spec says nothing: the layout, the welcome line, the hints under "Who moves first", and the status card's mode, title and note. Sizes follow plan 3.6's type scale.
     - Setup's options that are not chosen use the body text colour, because the design's muted text is 4.34 to 1 on `--button` (spec 6.5 item 1).
