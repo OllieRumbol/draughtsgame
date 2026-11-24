@@ -17,10 +17,13 @@ function play(state: GameState, ...actions: Action[]): GameState {
   return actions.reduce(gameReducer, state);
 }
 
-// What the live region says for the last action, after the others.
+// What the live region says for the last action, after the others. The square chosen is the one a select or
+// chooseTarget acts on, as the board passes it.
 function said(start: GameState, ...actions: Action[]): string | null {
   const before = play(start, ...actions.slice(0, -1));
-  return announcement(before, gameReducer(before, actions[actions.length - 1]));
+  const last = actions[actions.length - 1];
+  const chosen = last.type === "select" || last.type === "chooseTarget" ? last.at : null;
+  return announcement(before, gameReducer(before, last), chosen);
 }
 
 const select = (row: number, col: number): Action => ({ type: "select", at: at(row, col) });
@@ -50,9 +53,10 @@ describe("announcement", () => {
       expect(said(gameOn(board), select(6, 7))).toBe("Selected row 7, column 8. No moves.");
     });
 
-    it("says 'Put down.' when the selection is cleared", () => {
+    it("says 'Put down.' when the selected piece is chosen again, and nothing when another square clears it", () => {
       expect(said(gameOn(board), select(5, 2), select(5, 2))).toBe("Put down.");
-      expect(said(gameOn(board), select(5, 2), target(3, 0))).toBe("Put down.");
+      expect(said(gameOn(board), select(5, 2), target(3, 0))).toBeNull();
+      expect(said(gameOn(board), select(5, 2), target(4, 3))).toBeNull();
     });
 
     it("says nothing for a click that changes nothing", () => {
@@ -135,6 +139,32 @@ describe("announcement", () => {
       const toFarRow: Move = { from: at(6, 3), to: at(7, 4), captured: [], path: [at(7, 4)] };
       expect(said(crowns, received(toFarRow), shown, shown)).toBe(
         "The computer moved row 7, column 4 to row 8, column 5. Its man becomes a king. Your turn.",
+      );
+    });
+
+    it("says a king's chain that ends where it began as 'and back again' (spec example 17)", () => {
+      const asked = computerAsked(
+        boardWith([1, 2, CELL.player2King], [2, 3, M1], [4, 3, M1], [4, 1, M1], [2, 1, M1], [7, 0, M1]),
+      );
+      const loop: Move = {
+        from: at(1, 2),
+        to: at(1, 2),
+        captured: [at(2, 3), at(4, 3), at(4, 1), at(2, 1)],
+        path: [at(3, 4), at(5, 2), at(3, 0), at(1, 2)],
+      };
+
+      expect(said(asked, received(loop), shown, shown, shown, shown, shown)).toBe(
+        "The computer jumped from row 2, column 3 and back again, taking 4 pieces. Your turn.",
+      );
+    });
+
+    it("says the computer's last move, then the result (approved on 2026-11-24)", () => {
+      const asked = computerAsked(boardWith([5, 2, M2], [7, 0, M1]));
+      const jump: Move = { from: at(5, 2), to: at(7, 0), captured: [at(6, 1)], path: [at(7, 0)] };
+
+      expect(said(asked, received(jump), shown, shown)).toBe(
+        "The computer jumped row 6, column 3 to row 8, column 1, taking your man. Its man becomes a king. " +
+          "The computer wins. You have no pieces left.",
       );
     });
 

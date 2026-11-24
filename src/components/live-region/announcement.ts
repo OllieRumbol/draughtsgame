@@ -2,7 +2,17 @@
 // including the computer's moves and captures, the start of each turn, a failure and the result. It also says
 // what a selection did, as the design does. The wording follows the design (docs/design/site.html). Squares are
 // named as the board names them (spec section 6.4.3, item 2), in lower case inside a sentence.
-import { type Board, type Player, type Position, BOARD_SIZE, cellAt, isKing, otherPlayer, ownerOf } from "@/game/board";
+import {
+  type Board,
+  type Player,
+  type Position,
+  BOARD_SIZE,
+  cellAt,
+  isKing,
+  otherPlayer,
+  ownerOf,
+  samePosition,
+} from "@/game/board";
 import type { GameState, Result, Settings } from "@/game/game-state";
 import { nextSteps } from "@/game/rules";
 
@@ -10,7 +20,9 @@ import { nextSteps } from "@/game/rules";
 const FAILED = "The computer couldn't move. Check your connection and try again.";
 
 // The sentence for the change from one state of the game to the next, or null when there is nothing to say.
-export function announcement(previous: GameState, next: GameState): string | null {
+// `chosen` is the square the player last chose on the board, or the selected piece for Escape. It tells putting
+// the piece down apart from choosing another square, which also clears the selection.
+export function announcement(previous: GameState, next: GameState, chosen: Position | null): string | null {
   if (previous === next) {
     return null;
   }
@@ -27,7 +39,7 @@ export function announcement(previous: GameState, next: GameState): string | nul
       return personStep(previous, next);
     }
     if (after.kind === "turn" && next.toMove === previous.toMove) {
-      return selectionChange(previous, next);
+      return selectionChange(previous, next, chosen);
     }
     // "End turn" during a chain, or Give up.
     return whatComesNext(next);
@@ -86,12 +98,14 @@ function isUndo(previous: GameState, next: GameState): boolean {
   );
 }
 
-// "Selected row 6, column 3. 2 targets." or "Put down." (the design).
-function selectionChange(previous: GameState, next: GameState): string | null {
+// "Selected row 6, column 3. 2 targets." The design says "Put down." only when the player chooses the selected
+// piece again or presses Escape, and nothing when another square clears the selection.
+function selectionChange(previous: GameState, next: GameState, chosen: Position | null): string | null {
   const before = previous.phase.kind === "turn" ? previous.phase.selected : null;
   const after = next.phase.kind === "turn" ? next.phase.selected : null;
   if (after === null) {
-    return before === null ? null : "Put down.";
+    const putDown = before !== null && chosen !== null && samePosition(before, chosen);
+    return putDown ? "Put down." : null;
   }
   if (before !== null && before.row === after.row && before.col === after.col) {
     return null;
@@ -129,7 +143,9 @@ function personStep(previous: GameState, next: GameState): string | null {
 }
 
 // The computer's whole move, once it has been shown: "The computer jumped row 1, column 2 to row 5, column 6,
-// taking 2 pieces. Your turn." The board from before the move is turnStart.
+// taking 2 pieces. Your turn." A king's chain can end where it began (spec section 6.6, item 2): "The computer
+// jumped from row 2, column 3 and back again, taking 4 pieces." The owner approved this on 2026-11-24.
+// The board from before the move is turnStart.
 function computerMove(previous: GameState, next: GameState): string | null {
   if (previous.phase.kind !== "computerMoving") {
     return null;
@@ -146,8 +162,11 @@ function computerMove(previous: GameState, next: GameState): string | null {
     taking = `, taking ${taken} pieces`;
   }
   const verbPart = taken === 0 ? "moved" : "jumped";
+  const route = samePosition(move.from, move.to)
+    ? `from ${place(move.from)} and back again`
+    : `${place(move.from)} to ${place(move.to)}`;
   const crowning = crowned ? ". Its man becomes a king." : ".";
-  return `The computer ${verbPart} ${place(move.from)} to ${place(move.to)}${taking}${crowning} ${whatComesNext(next)}`;
+  return `The computer ${verbPart} ${route}${taking}${crowning} ${whatComesNext(next)}`;
 }
 
 // The start of the next turn, the computer thinking, a failure, or the result.

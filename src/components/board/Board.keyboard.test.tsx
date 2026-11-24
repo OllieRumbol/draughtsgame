@@ -80,6 +80,17 @@ describe("playing the board with the keyboard", () => {
     expect(focusedName()).toBe("Row 1, column 8, player 2's man");
   });
 
+  it("leaves an arrow with Alt, Ctrl, Shift or the Windows key to the browser, such as Alt+Left to go back", async () => {
+    const user = userEvent.setup();
+    render(<PlayableBoard start={newGame(twoPlayers)} />);
+    await user.tab();
+
+    await user.keyboard("{Alt>}{ArrowRight}{/Alt}{Control>}{ArrowUp}{/Control}{Shift>}{ArrowRight}{/Shift}");
+    await user.keyboard("{Meta>}{ArrowUp}{/Meta}");
+
+    expect(focusedName()).toBe("Row 6, column 1, player 1's man");
+  });
+
   it("selects with Enter, and moves to a target with Space", async () => {
     const user = userEvent.setup();
     render(<PlayableBoard start={newGame(twoPlayers)} />);
@@ -186,6 +197,17 @@ describe("the board's live region", () => {
       />,
     );
     expect(said()).toBe("The computer couldn't move. Check your connection and try again.");
+  });
+
+  it("says nothing when a click on another square clears the selection, as in the design", async () => {
+    const user = userEvent.setup();
+    render(<PlayableBoard start={newGame(twoPlayers)} />);
+    await user.click(screen.getByRole("gridcell", { name: "Row 6, column 1, player 1's man" }));
+
+    await user.click(screen.getByRole("gridcell", { name: "Row 4, column 1, empty" }));
+
+    expect(screen.queryByRole("gridcell", { name: /selected/ })).toBeNull();
+    expect(said()).toBe("Selected row 6, column 1. 1 target.");
   });
 
   it("says the same words again as a new message, so a screen reader reads them again", async () => {

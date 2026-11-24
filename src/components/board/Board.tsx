@@ -43,6 +43,9 @@ export function Board({ state, dispatch, tips }: BoardProps) {
   // The one square that Tab reaches. It follows the focus, so Tab comes back to the last square used.
   const [focusAt, setFocusAt] = useState(FIRST_FOCUS);
 
+  // The square the player last chose, so the live region can tell putting the piece down from other clicks.
+  const [chosen, setChosen] = useState<Position | null>(null);
+
   // Each piece keeps its id while it moves, so it can slide (tracked-pieces.ts). When the game state changes,
   // the pieces are worked out again during this render, as React's guide on adjusting state to new props shows.
   const [tracked, setTracked] = useState(() => startTracking(state));
@@ -105,6 +108,7 @@ export function Board({ state, dispatch, tips }: BoardProps) {
     if (byKeyboard && !isDarkSquare(position)) {
       return;
     }
+    setChosen(position);
     dispatch({ type: "chooseTarget", at: position });
   }
 
@@ -113,13 +117,15 @@ export function Board({ state, dispatch, tips }: BoardProps) {
     if (event.key === "Escape") {
       // Choosing the selected piece again puts it down. During a chain the reducer ignores it.
       if (selected !== null) {
+        setChosen(selected);
         dispatch({ type: "select", at: selected });
       }
       return;
     }
 
+    // An arrow with Alt, Ctrl, Shift or the Windows key is left to the browser, such as Alt+Left to go back.
     const move = ARROWS[event.key];
-    if (move === undefined) {
+    if (move === undefined || event.altKey || event.ctrlKey || event.shiftKey || event.metaKey) {
       return;
     }
     // The arrow keys move the focus and not the page. They stop at the edge of the board.
@@ -203,7 +209,7 @@ export function Board({ state, dispatch, tips }: BoardProps) {
         <CrownIcon size={14} />
         For Ernest
       </p>
-      <LiveRegion state={state} />
+      <LiveRegion state={state} chosen={chosen} />
     </div>
   );
 }
