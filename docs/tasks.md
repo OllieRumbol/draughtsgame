@@ -248,7 +248,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - For T15: use `useComputerMoveSteps(state, dispatch)` with `useComputerTurn`. It shows one jump at a time and ends the turn.
     - Evidence: pull request #75.
 
-- [ ] **T13 — Add keyboard play and screen reader announcements**
+- [x] **T13 — Add keyboard play and screen reader announcements**
   - Refs: spec 6.4.3, spec 6.5 item 1, plan 3.3.6, tests 25 and 26
   - Depends on: T11
   - Done when:
@@ -258,6 +258,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 25 and 26 pass.
   - Verify: `npm run check`, then `npm run e2e`
   - Notes:
+    - Owner approvals on 2026-11-24: "target" and "selected" in square names (spec 6.4.3 item 2), and eight announcement wordings that differ from the design (listed in the pull request).
+    - Tab first reaches row 6, column 1, as in the design. Enter and Space are the buttons' own key press, and a light square ignores them (plan 3.3.6).
+    - For T14: use `resultTitle` and `resultSentence` for the status. Mount a new board for each new game, or the change reads as Undo. "Game started." is not said yet.
+    - For T15: the failure and the computer's whole move are said from the game state.
+    - Evidence: pull request #76.
 
 - [ ] **T14 — Build the Play page for a two-player game**
   - Refs: spec 4.1 items 13 and 14, spec 6.1.1, spec 6.1.6, spec 6.1.7, spec 6.1.8 item 7, spec 6.6 item 6, spec 6.1.11 items 1–3 and 7, spec 6.3, spec 6.4.2 items 1 and 2, plan 3.1, design, tests 21, 30 and 32
