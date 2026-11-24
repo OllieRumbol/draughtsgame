@@ -81,3 +81,8 @@
     transform: scale(0.4);
   }
 }
+
+/* A square in a still picture of a board (BoardPicture), which cannot be clicked. */
+.still {
+  cursor: default;
+}

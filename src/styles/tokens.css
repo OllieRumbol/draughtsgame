@@ -41,6 +41,8 @@
   --ring-light-man: rgba(140, 110, 70, 0.32);
   --ring-dark-man: rgba(255, 230, 200, 0.12);
   --lift-shadow: rgba(40, 20, 5, 0.45);
+  /* The chosen option of a segmented control on game setup (the design). */
+  --segment-shadow: rgba(40, 20, 5, 0.2);
 
   /* Type (plan section 3.6): Fraunces for the wordmark and headings, Source Sans 3 for everything else. */
   --font-heading: "Fraunces Variable", Georgia, serif;

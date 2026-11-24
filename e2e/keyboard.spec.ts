@@ -1,4 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
+import { startTwoPlayerGame } from "./play.ts";
 
 // The accessible name of the focused element.
 function focusedName(page: Page): Promise<string | null> {
@@ -11,13 +12,22 @@ function focusedName(page: Page): Promise<string | null> {
 test("plays a move with the keyboard alone, and the live region says it", async ({ page }) => {
   await page.goto("./#/");
 
-  // Tab moves through the page's controls and then into the board.
+  // Tab moves through the page's controls to Start game. Starting the game moves the focus into the board.
   let name: string | null = null;
-  for (let press = 0; press < 20 && name?.startsWith("Row") !== true; press++) {
+  for (let press = 0; press < 30 && name !== "Start game"; press++) {
     await page.keyboard.press("Tab");
-    name = await focusedName(page);
+    name = await page.evaluate(() => document.activeElement?.textContent ?? null);
   }
-  expect(name).toBe("Row 6, column 1, player 1's man");
+  expect(name).toBe("Start game");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("status")).toHaveText("Game started. Player 1 moves first.");
+  expect(await focusedName(page)).toBe("Row 6, column 1, player 1's man");
+
+  // Tab leaves the board for the controls, and Shift+Tab comes back to the same square.
+  await page.keyboard.press("Tab");
+  expect(await page.evaluate(() => document.activeElement?.textContent)).toBe("Undo");
+  await page.keyboard.press("Shift+Tab");
+  expect(await focusedName(page)).toBe("Row 6, column 1, player 1's man");
 
   await page.keyboard.press("ArrowRight");
   await page.keyboard.press("ArrowRight");
@@ -41,7 +51,7 @@ test("plays a move with the keyboard alone, and the live region says it", async 
 });
 
 test("puts the piece down with Escape", async ({ page }) => {
-  await page.goto("./#/");
+  await startTwoPlayerGame(page);
   await page.getByRole("gridcell", { name: "Row 6, column 1, player 1's man" }).focus();
 
   await page.keyboard.press("Enter");
@@ -54,7 +64,7 @@ test("puts the piece down with Escape", async ({ page }) => {
 // An arrow key at the edge of the board moves nothing: not the focus, and not the page.
 test("the arrow keys do not scroll the page", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 400 });
-  await page.goto("./#/");
+  await startTwoPlayerGame(page);
   await page.getByRole("gridcell", { name: "Row 1, column 2, player 2's man" }).focus();
   // The page is scrolled part-way, so an arrow key could scroll it either way.
   const scrolled = await page.evaluate(() => {
