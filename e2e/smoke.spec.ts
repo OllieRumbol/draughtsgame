@@ -13,7 +13,8 @@ test("the Play page opens with no errors", async ({ page }) => {
 
   await page.goto("./");
 
-  await expect(page.getByRole("heading", { level: 1, name: "Play" })).toBeVisible();
+  // With no saved game, the Play page opens on game setup.
+  await expect(page.getByRole("heading", { level: 1, name: "New game" })).toBeVisible();
   // Wait until nothing else is loading, so a font or style blocked after the heading appears is caught too.
   await page.waitForLoadState("networkidle");
   expect(errors).toEqual([]);

@@ -16,6 +16,7 @@ type BoardProps = {
   state: GameState;
   dispatch: (action: Action) => void;
   tips: Position[]; // from useTips (T16)
+  opening?: string; // what the live region says once the board shows, such as "Game started." (LiveRegion)
 };
 
 const INDEXES = Array.from({ length: BOARD_SIZE }, (_, index) => index);
@@ -36,7 +37,7 @@ const FIRST_FOCUS: Position = { row: 5, col: 0 };
 // The board follows the ARIA grid pattern (plan section 3.3.6): one square at a time can be reached with Tab,
 // the arrow keys move between all 64 squares, Enter or Space act on a square, and Escape puts the piece down.
 // A live region says what each change in the game did (spec section 6.4.3, item 3).
-export function Board({ state, dispatch, tips }: BoardProps) {
+export function Board({ state, dispatch, tips, opening }: BoardProps) {
   const timings = timingsFor(usePrefersReducedMotion());
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -208,7 +209,7 @@ export function Board({ state, dispatch, tips }: BoardProps) {
         <CrownIcon size={14} />
         For Ernest
       </p>
-      <LiveRegion state={state} chosen={chosen} />
+      <LiveRegion state={state} chosen={chosen} opening={opening} />
     </div>
   );
 }

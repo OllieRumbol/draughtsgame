@@ -1,0 +1,16 @@
+/* The controls, two to a row, as in the design (docs/design/site.html). */
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.control {
+  padding: 9px 10px;
+  text-align: center;
+}
+
+/* End turn takes the whole row during a chain. */
+.wide {
+  grid-column: 1 / -1;
+}

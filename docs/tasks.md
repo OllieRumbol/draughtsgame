@@ -276,6 +276,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 21, 30 and 32 pass, and test 34 covers the setup screen and a two-player game.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the Play page
   - Notes:
+    - The Play page shows setup or a game (`play-state.ts`). Start game moves the focus to the board's first square, and the live region says "Game started."; New game moves it to the setup heading. A saved game opens with neither.
+    - From the design, where the spec says nothing: the layout, the welcome line, the hints under "Who moves first", and the status card's mode, title and note. Sizes follow plan 3.6's type scale.
+    - Setup's options that are not chosen use the body text colour, because the design's muted text is 4.34 to 1 on `--button` (spec 6.5 item 1).
+    - For T15: the status has "The computer is thinking…", "The computer is moving" and "The computer couldn't move" with its note; "Try again" is not built yet. A game the computer starts waits at "The computer is thinking…" until T15.
+    - For T16: Show tips goes before Undo in `GameControls`, as in the design. For T17: `BoardPicture` draws a still board with a text alternative.
 
 - [ ] **T15 — Add the computer's turn**
   - Refs: spec 3 goal 7, spec 4.1 items 2, 4, 7, 8 and 10, spec 6.1.5, spec 6.1.6 item 4, spec 6.1.8 item 3, spec 6.1.9, spec 6.2.2, spec 6.2.3 examples 20 and 23–26, spec 6.6 items 5, 7 and 8, plan 3.3.3, plan 3.3.4, plan 4, plan 3.6 (motion), tests 23, 24, 31, 33 and 39

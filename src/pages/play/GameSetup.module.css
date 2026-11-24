@@ -1,0 +1,118 @@
+/* Game setup, as in the design (docs/design/site.html): the starting board, then the card, on desktop; the card,
+   then the board, on a phone. The sizes follow the type scale in plan section 3.6. */
+.setup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+  grid-template-areas: "picture card";
+  gap: 22px;
+  align-items: start;
+}
+
+.picture {
+  grid-area: picture;
+}
+
+.card {
+  grid-area: card;
+  padding: 18px 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.heading {
+  margin: 0 0 12px;
+}
+
+.welcome {
+  margin: 0 0 18px;
+}
+
+.link {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--brass);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.choice {
+  min-width: 0;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin: 0 0 6px;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: var(--text-14);
+}
+
+/* The radio buttons of one choice, drawn as one segmented control. Each radio button covers its option, so the
+   whole option can be clicked, and the keyboard moves between the options as with any radio group. */
+.segments {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--button);
+}
+
+.segment {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.segment input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* The options not chosen use the body text colour: the design's muted text is 4.34 to 1 on --button in light
+   mode, below the 4.5 to 1 for text (spec section 6.5, item 1). The chosen one stands out by its raised, bold look. */
+.segment span {
+  display: block;
+  padding: 9px 6px;
+  border-radius: 6px;
+  color: var(--text);
+  text-align: center;
+}
+
+.segment input:checked + span {
+  background: var(--surface);
+  box-shadow: 0 1px 2px var(--segment-shadow);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.segment input:focus-visible + span {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
+
+.hint {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: var(--text-14);
+}
+
+.start {
+  width: 100%;
+  padding: 12px;
+}
+
+@media (max-width: 640px) {
+  .setup {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "card"
+      "picture";
+    gap: 14px;
+  }
+}

@@ -1,0 +1,29 @@
+/* The status card, as in the design (docs/design/site.html). The sizes follow the type scale in plan section 3.6. */
+.status {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.mode {
+  margin: 0 0 2px;
+  color: var(--text-muted);
+  font-size: var(--text-14);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-20);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* It keeps its height when it is empty, so the card does not change size between turns. */
+.note {
+  min-height: 21px;
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: var(--text-14);
+}

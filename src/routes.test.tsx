@@ -8,14 +8,15 @@ import { renderApp } from "@/test-app";
 
 // Plan section 7.2, test 28: the routes, including the old addresses (spec section 6.1.10).
 describe("the routes", () => {
+  // With no saved game, Play opens on game setup, whose heading is "New game".
   it.each([
-    ["#/", "Play"],
-    ["#/howtoplay", "How to play"],
-    ["#/about", "About"],
-  ])("%s opens %s, and marks it as the current page", async (hash, name) => {
+    ["#/", "Play", "New game"],
+    ["#/howtoplay", "How to play", "How to play"],
+    ["#/about", "About", "About"],
+  ])("%s opens %s, and marks it as the current page", async (hash, name, heading) => {
     renderApp(hash);
 
-    expect(await screen.findByRole("heading", { level: 1, name })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: heading })).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main" });
     expect(within(nav).getByRole("link", { name })).toHaveAttribute("aria-current", "page");
     expect(within(nav).getAllByRole("link", { current: "page" })).toHaveLength(1);
@@ -41,7 +42,7 @@ describe("the routes", () => {
     expect(await screen.findByRole("heading", { level: 1, name: "About" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("link", { name: "Draughts" }));
-    expect(await screen.findByRole("heading", { level: 1, name: "Play" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: "New game" })).toBeInTheDocument();
   });
 
   it("wraps every page in its own error boundary, so the header stays when a page fails (plan section 4)", () => {

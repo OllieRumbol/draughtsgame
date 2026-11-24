@@ -1,35 +1,27 @@
 import { useReducer } from "react";
-import { Board } from "@/components/board/Board";
-import { CapturedStack } from "@/components/board/CapturedStack";
-import { type Settings, gameReducer, newGame } from "@/game/game-state";
-import styles from "./PlayPage.module.css";
+import { loadSavedGame, useSavedGame } from "@/hooks/useSavedGame";
+import { GameScreen } from "./GameScreen";
+import { GameSetup } from "./GameSetup";
+import { openPlay, playReducer } from "./play-state";
 
-// The old web app's defaults (spec section 6.1.1, item 2).
-const DEFAULT_SETTINGS: Settings = { opponent: "twoPlayers", level: "easy", firstPlayer: 1 };
-
-// The game screen, laid out as the design shows. T14 adds game setup, the status, the controls and saving.
-// Until then a two-player game starts here, so the board can be played and seen.
+// The Play page (spec section 6.4.2): game setup, or the game. It opens the saved game when there is one, so a
+// refresh or a visit to another page keeps the game (spec section 6.1.8, items 2 and 7). The game is saved at each
+// save point, and New game clears it (plan section 3.4).
 export function PlayPage() {
-  const [game, dispatch] = useReducer(gameReducer, DEFAULT_SETTINGS, newGame);
+  const [play, dispatch] = useReducer(playReducer, null, () => openPlay(loadSavedGame()));
+  useSavedGame(play.game);
 
   return (
     <>
       <title>Draughts</title>
-      <h1 className="visually-hidden">Play</h1>
-      <div className={styles.game}>
-        <div className={styles.topStack}>
-          <CapturedStack count={game.capturedBy[2]} menOf={1} label="Player 2 took" />
-        </div>
-        <div className={styles.board}>
-          <Board state={game} dispatch={dispatch} tips={[]} />
-        </div>
-        <div className={styles.bottomStack}>
-          <CapturedStack count={game.capturedBy[1]} menOf={2} label="Player 1 took" />
-        </div>
-        <div className={styles.panel}>
-          <p className={styles.placeholder}>The game status and the controls go here.</p>
-        </div>
-      </div>
+      {play.game === null ? (
+        <GameSetup
+          onStart={(settings) => dispatch({ type: "start", settings })}
+          focusHeading={play.arrival === "closed"}
+        />
+      ) : (
+        <GameScreen game={play.game} dispatch={dispatch} arrival={play.arrival} />
+      )}
     </>
   );
 }

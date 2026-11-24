@@ -68,18 +68,38 @@ export function resultTitle(settings: Settings, result: Result): string {
   return `${playerName(settings, result.winner)} ${verb(settings, result.winner, "win", "wins")}`;
 }
 
-// The result and its reason (spec section 6.3).
-export function resultSentence(settings: Settings, result: Result): string {
-  const title = resultTitle(settings, result);
-  const loser = playerName(settings, otherPlayer(result.winner));
+// Why the game ended: "Player 2 can't move.", "You have no pieces left." or "Player 1 gave up." (spec section 6.3).
+export function resultReason(settings: Settings, result: Result): string {
+  const loser = otherPlayer(result.winner);
+  const name = playerName(settings, loser);
   switch (result.reason) {
     case "gaveUp":
-      return `${loser} gave up. ${title}.`;
+      return `${name} gave up.`;
     case "noMoves":
-      return `${title}. ${loser} can't move.`;
+      return `${name} can't move.`;
     case "noPieces":
-      return `${title}. ${loser} ${verb(settings, otherPlayer(result.winner), "have", "has")} no pieces left.`;
+      return `${name} ${verb(settings, loser, "have", "has")} no pieces left.`;
   }
+}
+
+// The result and its reason (spec section 6.3). The design says who gave up before who wins.
+export function resultSentence(settings: Settings, result: Result): string {
+  const title = resultTitle(settings, result);
+  const reason = resultReason(settings, result);
+  return result.reason === "gaveUp" ? `${reason} ${title}.` : `${title}. ${reason}`;
+}
+
+// Who moves first, as the design says it when a game starts: "Player 1 moves first." or "You move first."
+export function firstMove(settings: Settings, player: Player): string {
+  if (settings.opponent === "computer") {
+    return player === 1 ? "You move first." : "The computer moves first.";
+  }
+  return `Player ${player} moves first.`;
+}
+
+// What the live region says when a game starts (the design).
+export function gameStarted(game: GameState): string {
+  return `Game started. ${firstMove(game.settings, game.toMove)}`;
 }
 
 // Undo removes one or more finished turns, or, during a chain, goes back to the start of the turn.

@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { startTwoPlayerGame } from "./play.ts";
 
 // Plan section 7.2, test 36: clicking a piece and a square leaves no text selection and no caret
 // (spec section 6.4.2, item 7, and section 4.1, item 6).
 test("clicking and double-clicking on the board selects no text and shows no caret", async ({ page }) => {
-  await page.goto("./#/");
+  await startTwoPlayerGame(page);
   const piece = page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" });
 
   await piece.click();
@@ -31,7 +32,7 @@ test("clicking and double-clicking on the board selects no text and shows no car
 // Plan section 3.6, "Selected piece", as the owner chose on 2026-11-23 (risk 11): the player's other pieces
 // shrink to 86% and fade to 70%, for both players. The other player's pieces stay as they are.
 test("steps the player's other pieces back by shrinking and fading them, for both players", async ({ page }) => {
-  await page.goto("./#/");
+  await startTwoPlayerGame(page);
   // The look once the lift and the step-back transitions (T12) have finished.
   const looks = () =>
     page.evaluate(async () => {
@@ -65,9 +66,11 @@ test("draws the focus ring above the pieces, and keeps the focused square's piec
   await page.goto("./#/");
   const square = page.getByRole("gridcell", { name: "Row 6, column 1, player 1's man" });
 
-  // Focus after a key press, as keyboard play will, so the square matches :focus-visible.
-  await page.keyboard.press("Shift");
-  await square.focus();
+  // Start the game from the keyboard, as keyboard play does. Start game puts the focus on this square, and after
+  // a key press the square matches :focus-visible.
+  await page.getByRole("button", { name: "Start game" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(square).toBeFocused();
 
   const focus = await square.evaluate((element) => {
     const ring = getComputedStyle(element, "::after");
@@ -88,7 +91,7 @@ test("draws the focus ring above the pieces, and keeps the focused square's piec
 // Plan section 3.6, "Motion": selecting lifts the piece (180 ms), steps the others back (the design's 220 ms fade)
 // and fades the target dots in (180 ms). The board times these CSS transitions from timings.ts.
 test("times the lift, the step-back and the target dots as the plan sets out", async ({ page }) => {
-  await page.goto("./#/");
+  await startTwoPlayerGame(page);
 
   await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
   const running = await page.evaluate(() =>
