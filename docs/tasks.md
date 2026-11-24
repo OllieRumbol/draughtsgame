@@ -258,6 +258,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 25 and 26 pass.
   - Verify: `npm run check`, then `npm run e2e`
   - Notes:
+    - From the design, where the spec and plan say nothing: Tab first reaches row 6, column 1; a square's name adds "target" or "selected" after what stands on it; the live region also says a selection ("Selected row 6, column 3. 2 targets.", "Put down.") and Undo. The wording follows the design's messages.
+    - Enter and Space reach a square as the browser's own button press. A press from a key has a click count of 0, which is how a light square tells it from a click.
+    - The live region is part of the board. `announcement(previous, next)` works out what to say from two game states.
+    - For T14: `resultTitle` and `resultSentence` give the result's wording for the status. The design also says "Game started." and "Choose the settings for a new game."; these are not said yet. A new game must mount a new board, or the change from the old game reads as Undo.
+    - For T15: the failure is said when the phase becomes `computerFailed`, and the computer's move once its last step has been shown.
 
 - [ ] **T14 — Build the Play page for a two-player game**
   - Refs: spec 4.1 items 13 and 14, spec 6.1.1, spec 6.1.6, spec 6.1.7, spec 6.1.8 item 7, spec 6.6 item 6, spec 6.1.11 items 1–3 and 7, spec 6.3, spec 6.4.2 items 1 and 2, plan 3.1, design, tests 21, 30 and 32
