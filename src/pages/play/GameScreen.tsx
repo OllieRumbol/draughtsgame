@@ -25,7 +25,7 @@ export function GameScreen({ game, dispatch, arrival }: GameScreenProps) {
   // Start game removes the setup screen, so the focus goes to the board's first square, ready to play.
   useEffect(() => {
     if (started) {
-      boardRef.current?.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]')?.focus();
+      focusTabStop(boardRef.current);
     }
   }, [started]);
 
@@ -40,7 +40,7 @@ export function GameScreen({ game, dispatch, arrival }: GameScreenProps) {
         />
       </div>
       <div className={styles.board} ref={boardRef}>
-        <Board state={game} dispatch={dispatch} tips={[]} opening={started ? gameStarted(game) : undefined} />
+        <Board state={game} dispatch={dispatch} tips={[]} opening={started ? gameStarted(game.settings) : undefined} />
       </div>
       <div className={styles.bottomStack}>
         <CapturedStack count={game.capturedBy[1]} menOf={2} label={againstComputer ? "You took" : "Player 1 took"} />
@@ -50,9 +50,14 @@ export function GameScreen({ game, dispatch, arrival }: GameScreenProps) {
           <GameStatus game={game} />
         </div>
         <div className={styles.controls}>
-          <GameControls game={game} dispatch={dispatch} />
+          <GameControls game={game} dispatch={dispatch} onFocusBoard={() => focusTabStop(boardRef.current)} />
         </div>
       </div>
     </div>
   );
+}
+
+// Puts the focus on the board's one square that Tab reaches (plan section 3.3.6).
+function focusTabStop(board: HTMLElement | null): void {
+  board?.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]')?.focus();
 }

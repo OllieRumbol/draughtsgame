@@ -1,7 +1,8 @@
-/* The controls, two to a row, as in the design (docs/design/site.html). */
+/* The controls, two to a row, as in the design (docs/design/site.html). When the side column is too narrow for two,
+   such as just above the phone layout, they take one row each, so no label wraps. */
 .controls {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 8px;
 }
 

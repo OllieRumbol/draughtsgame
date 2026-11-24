@@ -104,6 +104,19 @@ describe("game setup", () => {
     expect(await within(screen.getByRole("status")).findByText("Game started. Player 1 moves first.")).toBeVisible();
   });
 
+  it("keeps the default level in a two-player game, whatever was chosen for the computer", async () => {
+    const user = userEvent.setup();
+    await openPlay();
+
+    await user.click(screen.getByRole("radio", { name: "The computer" }));
+    await user.click(screen.getByRole("radio", { name: "Hard" }));
+    await user.click(screen.getByRole("radio", { name: "Two players" }));
+    await user.click(button("Start game"));
+
+    const saved = JSON.parse(window.localStorage.getItem(SAVED_GAME_KEY) ?? "{}") as { settings: Settings };
+    expect(saved.settings).toEqual(twoPlayers);
+  });
+
   it("shows the mode and the level, and names the players, in a computer game", async () => {
     const user = userEvent.setup();
     await openPlay();
@@ -150,6 +163,8 @@ describe("the game screen", () => {
     await user.click(button("End turn"));
 
     expect(screen.getByText("Player 2's turn")).toBeInTheDocument();
+    // End turn goes away, so the focus moves back to the board, on the square the player last used.
+    expect(square("Row 5, column 4, player 1's man")).toHaveFocus();
     expect(screen.getByText("Player 1 took 1")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "End turn" })).toBeNull();
   });
@@ -162,6 +177,8 @@ describe("the game screen", () => {
     await user.click(button("Give up"));
 
     expect(screen.getByText("Player 2 wins")).toBeInTheDocument();
+    // Give up goes away, so the focus moves to New game, the main action of the result.
+    expect(button("New game")).toHaveFocus();
     expect(screen.getByText("Player 1 gave up.")).toBeInTheDocument();
     expect(button("Undo")).toHaveAttribute("aria-disabled", "true");
     expect(screen.queryByRole("button", { name: "Give up" })).toBeNull();
@@ -205,6 +222,8 @@ describe("the saved game", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Play" })).toBeInTheDocument();
     expect(square("Row 6, column 3, player 1's man")).toBeInTheDocument();
     expect(document.body).toHaveFocus();
+    // The opening words wait 100 ms after the board shows (LiveRegion), so wait longer before checking for silence.
+    await new Promise((resolve) => setTimeout(resolve, 200));
     expect(screen.getByRole("status")).toHaveTextContent("");
   });
 

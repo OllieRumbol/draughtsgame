@@ -15,6 +15,9 @@ type GameSetupProps = {
 
 const LEVELS: Settings["level"][] = ["easy", "normal", "hard"];
 
+// The first player as an option value, and back.
+const FIRST_PLAYERS: Record<"1" | "2", Settings["firstPlayer"]> = { "1": 1, "2": 2 };
+
 // Game setup (spec sections 6.1.1 and 6.4.2, item 1), laid out as the design shows: the choices and Start game in a
 // card, beside the starting board on desktop and above it on a phone.
 export function GameSetup({ onStart, focusHeading }: GameSetupProps) {
@@ -33,6 +36,12 @@ export function GameSetup({ onStart, focusHeading }: GameSetupProps) {
     setSettings((current) => ({ ...current, ...update }));
   }
 
+  // The level is for the computer only, so a two-player game keeps the default level, whatever was chosen
+  // while the computer was the opponent.
+  function start(): void {
+    onStart(againstComputer ? settings : { ...settings, level: DEFAULT_SETTINGS.level });
+  }
+
   return (
     <div className={styles.setup}>
       <section className={styles.card} aria-labelledby="setup-heading">
@@ -45,7 +54,7 @@ export function GameSetup({ onStart, focusHeading }: GameSetupProps) {
             Why this game exists
           </Link>
         </p>
-        <form action={() => onStart(settings)}>
+        <form action={start}>
           <Choice
             legend="Opponent"
             name="opponent"
@@ -54,7 +63,7 @@ export function GameSetup({ onStart, focusHeading }: GameSetupProps) {
               { value: "twoPlayers", label: "Two players" },
               { value: "computer", label: "The computer" },
             ]}
-            onChange={(opponent) => change({ opponent: opponent as Settings["opponent"] })}
+            onChange={(opponent) => change({ opponent })}
           />
           {againstComputer && (
             <Choice
@@ -62,19 +71,19 @@ export function GameSetup({ onStart, focusHeading }: GameSetupProps) {
               name="level"
               value={settings.level}
               options={LEVELS.map((level) => ({ value: level, label: levelName(level) }))}
-              onChange={(level) => change({ level: level as Settings["level"] })}
+              onChange={(level) => change({ level })}
             />
           )}
           <Choice
             legend="Who moves first"
             name="firstPlayer"
-            value={String(settings.firstPlayer)}
+            value={settings.firstPlayer === 1 ? "1" : "2"}
             options={[
               { value: "1", label: againstComputer ? "You" : "Player 1" },
               { value: "2", label: againstComputer ? "The computer" : "Player 2" },
             ]}
             hint={againstComputer ? "You have the light men." : "Player 1 has the light men."}
-            onChange={(first) => change({ firstPlayer: first === "1" ? 1 : 2 })}
+            onChange={(first) => change({ firstPlayer: FIRST_PLAYERS[first] })}
           />
           <button type="submit" className={`${buttons.primary} ${styles.start}`}>
             Start game
@@ -91,17 +100,18 @@ export function GameSetup({ onStart, focusHeading }: GameSetupProps) {
   );
 }
 
-type ChoiceProps = {
+// One choice's values are a fixed set, such as the opponents, so a value is checked when the code is compiled.
+type ChoiceProps<Value extends string> = {
   legend: string;
   name: string;
-  value: string;
-  options: { value: string; label: string }[];
+  value: Value;
+  options: { value: Value; label: string }[];
   hint?: string;
-  onChange: (value: string) => void;
+  onChange: (value: Value) => void;
 };
 
 // One choice as a row of radio buttons, drawn as one segmented control, as in the design.
-function Choice({ legend, name, value, options, hint, onChange }: ChoiceProps) {
+function Choice<Value extends string>({ legend, name, value, options, hint, onChange }: ChoiceProps<Value>) {
   return (
     <fieldset className={styles.choice}>
       <legend className={styles.legend}>{legend}</legend>

@@ -97,9 +97,10 @@ export function firstMove(settings: Settings, player: Player): string {
   return `Player ${player} moves first.`;
 }
 
-// What the live region says when a game starts (the design).
-export function gameStarted(game: GameState): string {
-  return `Game started. ${firstMove(game.settings, game.toMove)}`;
+// What the live region says when a game starts (the design). It depends only on the settings, so it stays the
+// same while the game goes on.
+export function gameStarted(settings: Settings): string {
+  return `Game started. ${firstMove(settings, settings.firstPlayer)}`;
 }
 
 // Undo removes one or more finished turns, or, during a chain, goes back to the start of the turn.
