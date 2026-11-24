@@ -40,19 +40,31 @@ test("plays a move with the keyboard alone, and the live region says it", async 
   expect(await focusedName(page)).toBe("Row 5, column 4, player 1's man");
 });
 
-test("puts the piece down with Escape, and the arrow keys do not scroll the page", async ({ page }) => {
+test("puts the piece down with Escape", async ({ page }) => {
   await page.goto("./#/");
-  const square = page.getByRole("gridcell", { name: "Row 6, column 1, player 1's man" });
-  await square.focus();
-  const scrolled = () => page.evaluate(() => window.scrollY);
-  const before = await scrolled();
+  await page.getByRole("gridcell", { name: "Row 6, column 1, player 1's man" }).focus();
 
   await page.keyboard.press("Enter");
   await page.keyboard.press("Escape");
-  await page.keyboard.press("ArrowDown");
-  await page.keyboard.press("ArrowDown");
 
   await expect(page.getByRole("status")).toHaveText("Put down.");
-  expect(await focusedName(page)).toBe("Row 8, column 1, player 1's man");
-  expect(await scrolled()).toBe(before);
+  expect(await focusedName(page)).toBe("Row 6, column 1, player 1's man");
+});
+
+// An arrow key at the edge of the board moves nothing: not the focus, and not the page.
+test("the arrow keys do not scroll the page", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 400 });
+  await page.goto("./#/");
+  await page.getByRole("gridcell", { name: "Row 1, column 2, player 2's man" }).focus();
+  // The page is scrolled part-way, so an arrow key could scroll it either way.
+  const scrolled = await page.evaluate(() => {
+    window.scrollTo(0, 100);
+    return window.scrollY;
+  });
+  expect(scrolled).toBe(100);
+
+  await page.keyboard.press("ArrowUp");
+
+  expect(await focusedName(page)).toBe("Row 1, column 2, player 2's man");
+  expect(await page.evaluate(() => window.scrollY)).toBe(100);
 });
