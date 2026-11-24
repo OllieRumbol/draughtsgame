@@ -258,7 +258,8 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 25 and 26 pass.
   - Verify: `npm run check`, then `npm run e2e`
   - Notes:
-    - From the design, where the spec and plan say nothing: Tab first reaches row 6, column 1; a square's name adds "target" or "selected" after what stands on it; the live region also says a selection ("Selected row 6, column 3. 2 targets.", "Put down.") and Undo. The wording follows the design's messages.
+    - Owner approved on 2026-11-24: spec 6.4.3 item 2 adds "target" or "selected" to a square's name, as the design does. Also the wording that is new or differs from the design: "… has no pieces left", End turn says only whose turn it is, a crowning is said once, "taking your king", the failure message from spec 6.1.9, and "The computer is thinking." after Try again.
+    - From the design, where the spec and plan say nothing: Tab first reaches row 6, column 1; the live region also says a selection ("Selected row 6, column 3. 2 targets.", "Put down.") and Undo. The wording follows the design's messages.
     - Enter and Space reach a square as the browser's own button press. A press from a key has a click count of 0, which is how a light square tells it from a click.
     - The live region is part of the board. `announcement(previous, next)` works out what to say from two game states.
     - For T14: `resultTitle` and `resultSentence` give the result's wording for the status. The design also says "Game started." and "Choose the settings for a new game."; these are not said yet. A new game must mount a new board, or the change from the old game reads as Undo.
