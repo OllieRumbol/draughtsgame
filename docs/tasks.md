@@ -248,7 +248,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - For T15: use `useComputerMoveSteps(state, dispatch)` with `useComputerTurn`. It shows one jump at a time and ends the turn.
     - Evidence: pull request #75.
 
-- [ ] **T13 — Add keyboard play and screen reader announcements**
+- [x] **T13 — Add keyboard play and screen reader announcements**
   - Refs: spec 6.4.3, spec 6.5 item 1, plan 3.3.6, tests 25 and 26
   - Depends on: T11
   - Done when:
@@ -258,12 +258,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Tests 25 and 26 pass.
   - Verify: `npm run check`, then `npm run e2e`
   - Notes:
-    - Owner approved on 2026-11-24: spec 6.4.3 item 2 adds "target" or "selected" to a square's name, as the design does. Also the wording that is new or differs from the design: "… has no pieces left", End turn says only whose turn it is, a crowning is said once, "taking your king", the failure message from spec 6.1.9, and "The computer is thinking." after Try again. After the reviews: the move that ends the game is said before the result, and a king's chain back to its start square is "jumped from row 2, column 3 and back again".
-    - From the design, where the spec and plan say nothing: Tab first reaches row 6, column 1; the live region also says a selection ("Selected row 6, column 3. 2 targets."), "Put down." for Escape or the selected piece chosen again, and Undo. The wording follows the design's messages.
-    - Enter and Space reach a square as the browser's own button press. A press from a key has a click count of 0, which is how a light square tells it from a click.
-    - The live region is part of the board. `announcement(previous, next, chosen)` works out what to say from two game states and the square last chosen.
-    - For T14: `resultTitle` and `resultSentence` give the result's wording for the status. The design also says "Game started." and "Choose the settings for a new game."; these are not said yet. A new game must mount a new board, or the change from the old game reads as Undo.
-    - For T15: the failure is said when the phase becomes `computerFailed`, and the computer's move once its last step has been shown.
+    - Owner approvals on 2026-11-24: "target" and "selected" in square names (spec 6.4.3 item 2), and eight announcement wordings that differ from the design (listed in the pull request).
+    - Tab first reaches row 6, column 1, as in the design. Enter and Space are the buttons' own key press, and a light square ignores them (plan 3.3.6).
+    - For T14: use `resultTitle` and `resultSentence` for the status. Mount a new board for each new game, or the change reads as Undo. "Game started." is not said yet.
+    - For T15: the failure and the computer's whole move are said from the game state.
+    - Evidence: pull request #76.
 
 - [ ] **T14 — Build the Play page for a two-player game**
   - Refs: spec 4.1 items 13 and 14, spec 6.1.1, spec 6.1.6, spec 6.1.7, spec 6.1.8 item 7, spec 6.6 item 6, spec 6.1.11 items 1–3 and 7, spec 6.3, spec 6.4.2 items 1 and 2, plan 3.1, design, tests 21, 30 and 32
