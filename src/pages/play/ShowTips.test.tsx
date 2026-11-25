@@ -95,6 +95,8 @@ describe("Show tips", () => {
     const shown = screen.getAllByText("Tips aren't available right now.").filter((note) => note !== said);
     expect(shown).toHaveLength(1);
     expect(shown[0]).toBeVisible();
+    // Directly under Show tips (plan section 4).
+    expect(showTips().nextElementSibling).toBe(shown[0]);
     expect(showTips()).toHaveAttribute("aria-pressed", "false");
     await user.click(screen.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }));
     await user.click(screen.getByRole("gridcell", { name: "Row 5, column 4, empty, target" }));

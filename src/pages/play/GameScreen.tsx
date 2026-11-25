@@ -6,10 +6,11 @@ import type { GameState } from "@/game/game-state";
 import { useComputerMoveSteps } from "@/hooks/useComputerMoveSteps";
 import { useComputerTurn } from "@/hooks/useComputerTurn";
 import { useTips } from "@/hooks/useTips";
-import { GameControls, TIPS_FAILED } from "./GameControls";
+import { GameControls } from "./GameControls";
 import styles from "./GameScreen.module.css";
 import { GameStatus } from "./GameStatus";
 import type { Arrival, PlayAction } from "./play-state";
+import { TIPS_FAILED } from "./status-text";
 
 type GameScreenProps = {
   game: GameState;

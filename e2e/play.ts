@@ -5,6 +5,9 @@ export async function startTwoPlayerGame(page: Page): Promise<void> {
   await page.goto("./#/");
   await page.getByRole("button", { name: "Start game" }).click();
   await expect(page.getByRole("grid", { name: "Draughts board" })).toBeVisible();
+  // Start game moves the focus to the board in an effect just after drawing. Wait for it, so a test that moves the
+  // focus itself is not overtaken by it.
+  await expect(page.getByRole("gridcell", { name: "Row 6, column 1, player 1's man" })).toBeFocused();
 }
 
 // The API's answer for a move, in its own shape (spec section 5.1). Squares are [row, column].

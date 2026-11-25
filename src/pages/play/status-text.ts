@@ -3,6 +3,9 @@
 import { firstMove, resultReason, resultTitle } from "@/components/live-region/announcement";
 import type { GameState, Settings } from "@/game/game-state";
 
+// When Show tips fails (spec section 6.1.4, item 4, and plan section 4).
+export const TIPS_FAILED = "Tips aren't available right now.";
+
 const LEVEL_NAMES: Record<Settings["level"], string> = { easy: "Easy", normal: "Normal", hard: "Hard" };
 
 // "Two players", or "Against the computer · Hard" (spec section 6.4.2, item 2: the mode, and the level).

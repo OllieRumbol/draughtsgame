@@ -82,3 +82,36 @@ test("the arrow keys do not scroll the page", async ({ page }) => {
   expect(await focusedName(page)).toBe("Row 1, column 2, player 2's man");
   expect(await page.evaluate(() => window.scrollY)).toBe(scrolled);
 });
+
+// Spec section 6.4.3, item 4: the focus is always visible, also on Show tips while it is pressed. The pressed look is a
+// brass line inside the button, so it does not hide the focus ring.
+test("keeps the focus ring on Show tips while it is pressed", async ({ page, isMobile }) => {
+  // The focus ring is for a hardware keyboard; the emulated phones do not press a button with Enter after focus().
+  test.skip(isMobile, "desktop keyboards only");
+  await page.route("**/GetPotentialMoves", () => {});
+  await startTwoPlayerGame(page);
+  // Focus after a key press, as keyboard use does, so the button matches :focus-visible.
+  await page.keyboard.press("Shift");
+  await page.getByRole("button", { name: "Show tips" }).focus();
+
+  await page.keyboard.press("Enter");
+  const tips = page.getByRole("button", { name: "Loading tips…" });
+  await expect(tips).toHaveAttribute("aria-pressed", "true");
+
+  const look = await tips.evaluate((button) => {
+    const style = getComputedStyle(button);
+    const text = getComputedStyle(document.body).color;
+    return {
+      focusVisible: button.matches(":focus-visible"),
+      outlineStyle: style.outlineStyle,
+      outlineIsText: style.outlineColor === text,
+      outlineOffset: style.outlineOffset,
+      pressedLine: style.boxShadow,
+    };
+  });
+  expect(look.focusVisible).toBe(true);
+  expect(look.outlineStyle).toBe("solid");
+  expect(look.outlineIsText).toBe(true);
+  expect(look.outlineOffset).toBe("2px");
+  expect(look.pressedLine).toContain("inset");
+});

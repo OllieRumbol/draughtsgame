@@ -2,6 +2,9 @@
    such as just above the phone layout, they take one row each, so no label wraps. */
 .controls {
   display: grid;
+  /* The tips note comes straight after Show tips and takes a whole row, so the next control fills the space beside
+     Show tips. */
+  grid-auto-flow: row dense;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 8px;
 }
@@ -16,7 +19,7 @@
   grid-column: 1 / -1;
 }
 
-/* The note when tips are not available (plan section 4), under the controls. */
+/* The note when tips are not available, directly under Show tips (plan section 4). */
 .note {
   grid-column: 1 / -1;
   margin: 0;

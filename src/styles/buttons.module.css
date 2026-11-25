@@ -32,8 +32,8 @@
   cursor: default;
 }
 
-/* A toggle that is on, such as Show tips while the tips show: a brass line inside the button, as in the design. */
+/* A toggle that is on, such as Show tips while the tips show: a brass line inside the button, as in the design. It is
+   a shadow, not an outline, so the focus ring still shows on a pressed button (spec section 6.4.3, item 4). */
 .secondary[aria-pressed="true"] {
-  outline: 2px solid var(--brass);
-  outline-offset: -2px;
+  box-shadow: inset 0 0 0 2px var(--brass);
 }

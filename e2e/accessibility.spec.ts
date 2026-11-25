@@ -15,7 +15,7 @@ type State = {
   address: string;
   heading: string;
   setup?: "computer";
-  game?: "pieceSelected" | "inChain" | "over" | "tipsShown";
+  game?: "pieceSelected" | "inChain" | "over" | "tipsShown" | "tipsLoading";
   computer?: "thinking" | "moving" | "failed";
 };
 
@@ -26,6 +26,7 @@ const states: State[] = [
   { name: "A two-player game, in a chain", address: "./#/", heading: "Play", game: "inChain" },
   { name: "A two-player game, over", address: "./#/", heading: "Play", game: "over" },
   { name: "A two-player game, tips shown with a piece selected", address: "./#/", heading: "Play", game: "tipsShown" },
+  { name: "A two-player game, tips loading", address: "./#/", heading: "Play", game: "tipsLoading" },
   { name: "The computer thinking", address: "./#/", heading: "Play", computer: "thinking" },
   { name: "The computer moving", address: "./#/", heading: "Play", computer: "moving" },
   { name: "The computer's move failed", address: "./#/", heading: "Play", computer: "failed" },
@@ -143,6 +144,12 @@ async function openState(page: Page, state: State): Promise<void> {
     await page.getByRole("button", { name: "Show tips" }).click();
     await expect(page.getByRole("gridcell", { name: "Row 5, column 2, empty, tip" })).toBeVisible();
     await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
+  }
+  if (state.game === "tipsLoading") {
+    // The mocked API never answers, so the tips stay loading (spec section 6.3, "Tips loading").
+    await page.route("**/GetPotentialMoves", () => {});
+    await page.getByRole("button", { name: "Show tips" }).click();
+    await expect(page.getByRole("button", { name: "Loading tips…" })).toBeVisible();
   }
   if (state.game === "over") {
     await page.getByRole("button", { name: "Give up" }).click();

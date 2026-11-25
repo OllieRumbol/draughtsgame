@@ -4,6 +4,7 @@ import type { Tips } from "@/hooks/useTips";
 import buttons from "@/styles/buttons.module.css";
 import styles from "./GameControls.module.css";
 import type { PlayAction } from "./play-state";
+import { TIPS_FAILED } from "./status-text";
 
 type GameControlsProps = {
   game: GameState;
@@ -12,15 +13,12 @@ type GameControlsProps = {
   tips: Tips;
 };
 
-// Spec section 6.1.4, item 4, and plan section 4.
-export const TIPS_FAILED = "Tips aren't available right now.";
-
 // The controls (spec section 6.4.2, item 2), as the design shows them. During a chain, End turn comes first and is
 // the main action (spec section 6.1.3). When the computer's move has failed, Try again comes first and is the main
 // action (spec section 6.1.9); Undo, Give up and New game still work. When the game is over, only Undo and New game
 // are left (spec section 6.1.6, item 3).
 // Show tips comes before Undo, as in the design. It is pressed while the tips load or show, and not available outside
-// the person's turn or during a chain (spec section 6.1.4). A failure shows a note under the controls.
+// the person's turn or during a chain (spec section 6.1.4). A failure shows a note directly under it (plan section 4).
 export function GameControls({ game, dispatch, onFocusBoard, tips }: GameControlsProps) {
   const isOver = game.phase.kind === "over";
   const isInChain = game.phase.kind === "turn" && game.phase.chain !== null;
@@ -79,6 +77,7 @@ export function GameControls({ game, dispatch, onFocusBoard, tips }: GameControl
           {tips.status === "loading" ? "Loading tips…" : "Show tips"}
         </button>
       )}
+      {!isOver && tips.status === "failed" && <p className={styles.note}>{TIPS_FAILED}</p>}
       <button
         type="button"
         className={`${buttons.secondary} ${styles.control}`}
@@ -100,7 +99,6 @@ export function GameControls({ game, dispatch, onFocusBoard, tips }: GameControl
       >
         New game
       </button>
-      {tips.status === "failed" && <p className={styles.note}>{TIPS_FAILED}</p>}
     </div>
   );
 }
