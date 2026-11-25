@@ -294,6 +294,10 @@ Goal: a full game can be played in the new look, against another person or the c
     - Against the live API through the dev proxy, a computer game at each level plays to the end with no failure.
   - Verify: `npm run check`, then `npm run e2e`; then `npm run dev`, and one game at each level against the live API, with the result in the pull request
   - Notes:
+    - `GameScreen` runs `useComputerTurn` and `useComputerMoveSteps`. The request starts in an effect, after the board is drawn, and the effect's cleanup aborts it when the phase changes or the page closes.
+    - A failure shows the status card's title and note from T14, and "Try again" as the main action; Undo, Give up and New game stay. Try again moves the focus to the board. The design has no failure state, so the wording is spec 6.1.9's example.
+    - Test 34 holds the "moving" state with the page's clock stopped, and moves the clock on 1 ms at a time while axe runs.
+    - Live API, 2026-11-25, through the dev proxy, one game at each level played to the end by a script: Easy 17 moves, Normal 30, Hard 23; the computer won each; every response was 200, with no failure.
 
 - [ ] **T16 — Add Show tips**
   - Refs: spec 6.1.4, spec 6.6 items 12 and 15, plan 3.6 (board marks), plan 4, test 22
