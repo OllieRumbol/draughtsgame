@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *what are we building, and why?* It is agreed before any design or code, and it is the source of truth for requirements.
 
 Status: Approved
-Last updated: 2026-11-24 (section 6.4.3 item 2: "target" and "selected" in square names, approved in T13)
+Last updated: 2026-11-25 (section 6.4.3 item 2: "tip" in square names, approved in T16)
 
 ---
 
@@ -516,7 +516,7 @@ The exact wording of each message is drafted with the design and approved by the
    * The arrow keys move the focus from square to square inside the board.
    * Enter or Space selects a piece, or chooses a target.
    * Escape clears the selection.
-2. Each square has a name that a screen reader reads: its row and column, counted from 1 at the top left, then what stands on it, then "target" or "selected" when the square is one. For example, "Row 5, column 4, empty, target". The owner approved the marks on 2026-11-24. Square (7,0) in section 2.3 is "Row 8, column 1, your man". Moves are announced with the same names. The owner chose this on 2026-11-13.
+2. Each square has a name that a screen reader reads: its row and column, counted from 1 at the top left, then what stands on it, then "target", "selected" or "tip" when the square is one. For example, "Row 5, column 4, empty, target". The owner approved the marks on 2026-11-24, and "tip" on 2026-11-25. Square (7,0) in section 2.3 is "Row 8, column 1, your man". Moves are announced with the same names. The owner chose this on 2026-11-13.
 3. A screen reader announces each move, including the computer's moves and captures, the start of each turn, a failure, and the result.
 4. The focus is always visible.
 
