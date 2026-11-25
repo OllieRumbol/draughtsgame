@@ -6,9 +6,11 @@
 // person's at once. A failure is shown as soon as it is known.
 // When the phase changes, for example on Give up or New game, the effect's cleanup aborts the request and the wait,
 // and nothing it gives back reaches the game (spec section 6.6, item 5).
-// When the page closes, for example on a refresh, the request is aborted too. Some browsers cancel a request as the
-// page closes, and that must not count as a failure: the page would save the failure, and the refreshed page would
-// show it instead of asking again (spec section 6.1.8, item 3).
+// When the page starts to close, for example on a refresh, the request is aborted too. Firefox and WebKit cancel a
+// request as the page closes, and that must not count as a failure: the page would save the failure, and the
+// refreshed page would show it instead of asking again (spec section 6.1.8, item 3). They cancel it before
+// pagehide, so beforeunload, which comes first, aborts it; pagehide covers Safari on iOS, which may not send
+// beforeunload.
 import { useEffect } from "react";
 import { timingsFor } from "@/components/board/timings";
 import { type Action, type GameState, COMPUTER } from "@/game/game-state";
@@ -33,13 +35,26 @@ export function useComputerTurn(state: GameState, dispatch: (action: Action) => 
     const controller = new AbortController();
     const thinkingTimeOver = wait(leastWait, controller.signal);
 
-    // A page kept in the browser's back-forward cache may come back, so only a page that is really closing aborts.
+    let leftThePage = false;
+    function onLeave(): void {
+      leftThePage = true;
+      controller.abort();
+    }
     function onPageHide(event: PageTransitionEvent): void {
       if (!event.persisted) {
-        controller.abort();
+        onLeave();
       }
     }
+    // A page kept in the browser's back-forward cache can come back after its request was aborted. Then nothing would
+    // answer, so it shows the failure, and Try again asks once more (spec section 6.1.9).
+    function onPageShow(event: PageTransitionEvent): void {
+      if (event.persisted && leftThePage && requestId !== null) {
+        dispatch({ type: "computerMoveFailed", requestId });
+      }
+    }
+    window.addEventListener("beforeunload", onLeave);
     window.addEventListener("pagehide", onPageHide);
+    window.addEventListener("pageshow", onPageShow);
 
     async function ask(id: number): Promise<void> {
       const result = await getNextMove(board, level, controller.signal);
@@ -63,7 +78,9 @@ export function useComputerTurn(state: GameState, dispatch: (action: Action) => 
 
     void ask(requestId);
     return () => {
+      window.removeEventListener("beforeunload", onLeave);
       window.removeEventListener("pagehide", onPageHide);
+      window.removeEventListener("pageshow", onPageShow);
       controller.abort();
     };
   }, [requestId, board, level, leastWait, dispatch]);

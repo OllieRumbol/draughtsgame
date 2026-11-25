@@ -76,6 +76,43 @@ describe("useComputerTurn", () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
+  it("does not report a failure when a refresh starts, before the page closes (beforeunload)", async () => {
+    // As in Firefox and WebKit on CI: the refresh starts, and the browser cancels the request before pagehide.
+    const request: { cancel?: () => void } = {};
+    server.use(
+      http.post(
+        `${API_BASE_URL}/GetNextMove`,
+        () => new Promise<Response>((resolve) => (request.cancel = () => resolve(HttpResponse.error()))),
+      ),
+    );
+    const dispatch = vi.fn();
+    renderHook(() => useComputerTurn(waitingForTheComputer(), dispatch));
+    await vi.waitFor(() => expect(request.cancel).toBeDefined());
+
+    window.dispatchEvent(new Event("beforeunload"));
+    request.cancel?.();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("shows the failure when the page comes back from the back-forward cache after its request was aborted", async () => {
+    server.use(http.post(`${API_BASE_URL}/GetNextMove`, () => new Promise<Response>(() => {})));
+    let requests = 0;
+    server.events.on("request:start", () => (requests += 1));
+    const dispatch = vi.fn();
+    renderHook(() => useComputerTurn(waitingForTheComputer(), dispatch));
+    await vi.waitFor(() => expect(requests).toBe(1));
+
+    window.dispatchEvent(new Event("beforeunload"));
+    const shown = new Event("pageshow") as PageTransitionEvent;
+    Object.defineProperty(shown, "persisted", { value: true });
+    window.dispatchEvent(shown);
+
+    expect(dispatch).toHaveBeenCalledWith({ type: "computerMoveFailed", requestId: 1 });
+    server.events.removeAllListeners();
+  });
+
   it("sends the move once the answer has been checked and the thinking time has passed", async () => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     server.use(http.post(`${API_BASE_URL}/GetNextMove`, () => HttpResponse.json(answer)));
