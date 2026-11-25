@@ -1,8 +1,13 @@
-/* The width of every page. Works from 320 px wide (spec section 6.4.1, item 3). The design's pages are 860 px wide;
-   the Play page is wider, so the board can fill the window's height on a large screen (owner's choice, 2026-11-25). */
+/* The width of every page, as in the design (docs/design/site.html). Works from 320 px wide (spec section 6.4.1, item 3). */
 .layout {
   box-sizing: border-box;
-  max-width: 1320px;
+  max-width: 860px;
   margin: 0 auto;
   padding: 16px 16px 24px;
+}
+
+/* The Play page grows to fit its board, which fills the window's height on a large screen, so the header keeps the
+   same edges as the game below it (plan section 3.6, "Page size"). */
+.layout:has([data-page="play"]) {
+  max-width: max(860px, var(--play-frame-width));
 }

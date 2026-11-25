@@ -2,12 +2,18 @@
    status and the controls. On a phone: one column, with the status first and the controls last. */
 .game {
   display: grid;
-  grid-template-columns: auto minmax(0, var(--play-board-width)) minmax(260px, 320px);
+  grid-template-columns: auto minmax(0, var(--play-board-width)) minmax(260px, 1fr);
   grid-template-areas:
     "top board side"
     "bottom board side";
-  justify-content: center;
   gap: 14px;
+}
+
+/* A narrower window keeps the design's columns, so the board is never smaller than in the design. */
+@media (max-width: 999px) {
+  .game {
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 0.62fr);
+  }
 }
 
 .topStack {

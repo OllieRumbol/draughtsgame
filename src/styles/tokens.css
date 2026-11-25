@@ -58,6 +58,9 @@
      page's margins (about 130 px), from 320 px to 840 px (owner's choice, 2026-11-25). A narrower window makes it
      smaller still, because the columns beside it keep their width. */
   --play-board-width: clamp(320px, calc(100dvh - 130px), 840px);
+  /* The Play page's frame: the board, plus about 520 px for the captured men, the side column, the gaps and the
+     page's margins. */
+  --play-frame-width: calc(var(--play-board-width) + 520px);
 }
 
 /* The player's choice from the light and dark button wins over the device's setting. */

@@ -20,7 +20,7 @@ export function BoardPicture({ board, label }: BoardPictureProps) {
   );
 
   return (
-    <div className={styles.frame} role="img" aria-label={label}>
+    <div className={styles.frame} role="img" aria-label={label} data-testid="board-frame">
       <div className={styles.inlay}>
         <div className={styles.board}>
           <div className={styles.grid}>
