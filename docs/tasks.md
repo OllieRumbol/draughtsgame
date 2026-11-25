@@ -300,7 +300,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - Owner approved on 2026-11-25, after a play test: plan 3.6 adds a 700 ms thinking time before the computer's move.
     - Evidence: pull request #80.
 
-- [ ] **T16 — Add Show tips**
+- [x] **T16 — Add Show tips**
   - Refs: spec 6.1.4, spec 6.6 items 12 and 15, plan 3.6 (board marks), plan 4, test 22
   - Depends on: T8, T14
   - Done when:
@@ -309,6 +309,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Test 22 passes, and test 34 covers the tips state.
   - Verify: `npm run check`, then `npm run e2e`
   - Notes:
+    - `useTips` ties the tips to the board and the player to move; when either changes they are gone, and the request is aborted.
+    - Owner approvals on 2026-11-25: "tip" in square names (spec 6.4.3 item 2), "Loading tips…", and the failure note directly under Show tips.
+    - The failure is said through the board's one live region (a `notice`).
+    - Outside the task: fixed the T15 axe test's fixed-date clock, and the e2e helper now waits for Start game's focus.
+    - Evidence: pull request #82.
 
 ## Phase 4 — Pages
 

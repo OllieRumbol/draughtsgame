@@ -25,7 +25,7 @@ test("plays a move with the keyboard alone, and the live region says it", async 
 
   // Tab leaves the board for the controls, and Shift+Tab comes back to the same square.
   await page.keyboard.press("Tab");
-  expect(await page.evaluate(() => document.activeElement?.textContent)).toBe("Undo");
+  expect(await page.evaluate(() => document.activeElement?.textContent)).toBe("Show tips");
   await page.keyboard.press("Shift+Tab");
   expect(await focusedName(page)).toBe("Row 6, column 1, player 1's man");
 
@@ -81,4 +81,38 @@ test("the arrow keys do not scroll the page", async ({ page }) => {
 
   expect(await focusedName(page)).toBe("Row 1, column 2, player 2's man");
   expect(await page.evaluate(() => window.scrollY)).toBe(scrolled);
+});
+
+// Spec section 6.4.3, item 4: the focus is always visible, also on Show tips while it is pressed. The pressed look is a
+// brass line inside the button, so it does not hide the focus ring.
+test("keeps the focus ring on Show tips while it is pressed", async ({ page, isMobile }) => {
+  // The focus ring is for a hardware keyboard; the emulated phones do not press a button with Enter after focus().
+  test.skip(isMobile, "desktop keyboards only");
+  await page.route("**/GetPotentialMoves", () => {});
+  await startTwoPlayerGame(page);
+  // Reach Show tips as a keyboard user does: Tab from the board, which has the focus after Start game. Firefox does
+  // not show a focus ring for a button focused from code after only a Shift press.
+  await page.keyboard.press("Tab");
+  expect(await page.evaluate(() => document.activeElement?.textContent)).toBe("Show tips");
+
+  await page.keyboard.press("Enter");
+  const tips = page.getByRole("button", { name: "Loading tips…" });
+  await expect(tips).toHaveAttribute("aria-pressed", "true");
+
+  const look = await tips.evaluate((button) => {
+    const style = getComputedStyle(button);
+    const text = getComputedStyle(document.body).color;
+    return {
+      focusVisible: button.matches(":focus-visible"),
+      outlineStyle: style.outlineStyle,
+      outlineIsText: style.outlineColor === text,
+      outlineOffset: style.outlineOffset,
+      pressedLine: style.boxShadow,
+    };
+  });
+  expect(look.focusVisible).toBe(true);
+  expect(look.outlineStyle).toBe("solid");
+  expect(look.outlineIsText).toBe(true);
+  expect(look.outlineOffset).toBe("2px");
+  expect(look.pressedLine).toContain("inset");
 });

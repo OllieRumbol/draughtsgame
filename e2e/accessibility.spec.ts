@@ -9,13 +9,13 @@ const WIDTHS = [320, 1280];
 const MODES = ["light", "dark"] as const;
 
 // Each state is an address, the main heading that shows it is ready, and for a game, what is done in it. Later
-// tasks add their states here: tips (T16), How to play (T17) and About (T18).
+// tasks add their states here: How to play (T17) and About (T18).
 type State = {
   name: string;
   address: string;
   heading: string;
   setup?: "computer";
-  game?: "pieceSelected" | "inChain" | "over";
+  game?: "pieceSelected" | "inChain" | "over" | "tipsShown" | "tipsLoading";
   computer?: "thinking" | "moving" | "failed";
 };
 
@@ -25,6 +25,8 @@ const states: State[] = [
   { name: "A two-player game, a piece selected", address: "./#/", heading: "Play", game: "pieceSelected" },
   { name: "A two-player game, in a chain", address: "./#/", heading: "Play", game: "inChain" },
   { name: "A two-player game, over", address: "./#/", heading: "Play", game: "over" },
+  { name: "A two-player game, tips shown with a piece selected", address: "./#/", heading: "Play", game: "tipsShown" },
+  { name: "A two-player game, tips loading", address: "./#/", heading: "Play", game: "tipsLoading" },
   { name: "The computer thinking", address: "./#/", heading: "Play", computer: "thinking" },
   { name: "The computer moving", address: "./#/", heading: "Play", computer: "moving" },
   { name: "The computer's move failed", address: "./#/", heading: "Play", computer: "failed" },
@@ -69,7 +71,8 @@ async function openChainGame(page: Page): Promise<void> {
 async function openComputerState(page: Page, state: "thinking" | "moving" | "failed"): Promise<void> {
   if (state === "moving") {
     await page.clock.install();
-    await page.clock.pauseAt(new Date("2026-11-25T12:00:00Z"));
+    // Stop the clock a minute from now: a fixed date would be in the past once that day has gone.
+    await page.clock.pauseAt(new Date(Date.now() + 60_000));
   }
   let answered = false;
   await page.route("**/GetNextMove", async (route) => {
@@ -133,6 +136,20 @@ async function openState(page: Page, state: State): Promise<void> {
   }
   if (state.game === "pieceSelected") {
     await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
+  }
+  if (state.game === "tipsShown") {
+    // Row 5's dark squares, which player 1 can finish a move on from the starting board (spec section 5.2).
+    const potentialMoves = [1, 3, 5, 7].map((width) => ({ height: 4, width }));
+    await page.route("**/GetPotentialMoves", (route) => route.fulfill({ json: { successful: true, potentialMoves } }));
+    await page.getByRole("button", { name: "Show tips" }).click();
+    await expect(page.getByRole("gridcell", { name: "Row 5, column 2, empty, tip" })).toBeVisible();
+    await page.getByRole("gridcell", { name: "Row 6, column 3, player 1's man" }).click();
+  }
+  if (state.game === "tipsLoading") {
+    // The mocked API never answers, so the tips stay loading (spec section 6.3, "Tips loading").
+    await page.route("**/GetPotentialMoves", () => {});
+    await page.getByRole("button", { name: "Show tips" }).click();
+    await expect(page.getByRole("button", { name: "Loading tips…" })).toBeVisible();
   }
   if (state.game === "over") {
     await page.getByRole("button", { name: "Give up" }).click();

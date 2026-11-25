@@ -5,10 +5,12 @@ import { gameStarted } from "@/components/live-region/announcement";
 import type { GameState } from "@/game/game-state";
 import { useComputerMoveSteps } from "@/hooks/useComputerMoveSteps";
 import { useComputerTurn } from "@/hooks/useComputerTurn";
+import { useTips } from "@/hooks/useTips";
 import { GameControls } from "./GameControls";
 import styles from "./GameScreen.module.css";
 import { GameStatus } from "./GameStatus";
 import type { Arrival, PlayAction } from "./play-state";
+import { TIPS_FAILED } from "./status-text";
 
 type GameScreenProps = {
   game: GameState;
@@ -27,6 +29,7 @@ export function GameScreen({ game, dispatch, arrival }: GameScreenProps) {
   // The computer's turn: ask the API for its move, then show the move one jump at a time (spec section 6.1.5).
   useComputerTurn(game, dispatch);
   useComputerMoveSteps(game, dispatch);
+  const tips = useTips(game);
 
   // Start game removes the setup screen, so the focus goes to the board's first square, ready to play.
   useEffect(() => {
@@ -46,7 +49,13 @@ export function GameScreen({ game, dispatch, arrival }: GameScreenProps) {
         />
       </div>
       <div className={styles.board} ref={boardRef}>
-        <Board state={game} dispatch={dispatch} tips={[]} opening={started ? gameStarted(game.settings) : undefined} />
+        <Board
+          state={game}
+          dispatch={dispatch}
+          tips={tips.squares}
+          opening={started ? gameStarted(game.settings) : undefined}
+          notice={tips.status === "failed" ? TIPS_FAILED : undefined}
+        />
       </div>
       <div className={styles.bottomStack}>
         <CapturedStack count={game.capturedBy[1]} menOf={2} label={againstComputer ? "You took" : "Player 1 took"} />
@@ -56,7 +65,12 @@ export function GameScreen({ game, dispatch, arrival }: GameScreenProps) {
           <GameStatus game={game} />
         </div>
         <div className={styles.controls}>
-          <GameControls game={game} dispatch={dispatch} onFocusBoard={() => focusTabStop(boardRef.current)} />
+          <GameControls
+            game={game}
+            dispatch={dispatch}
+            onFocusBoard={() => focusTabStop(boardRef.current)}
+            tips={tips}
+          />
         </div>
       </div>
     </div>
