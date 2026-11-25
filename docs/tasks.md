@@ -320,6 +320,7 @@ Goal: How to play and About have their new content, approved by the owner.
     - Test 34 covers the page.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the page; then the owner's approval of the text in the pull request
   - Notes:
+    - The page frame is up to 1,320 px wide since 2026-11-25 (plan 3.6, "Page size"), so the text needs its own reading width, as the design's 640 px `.prose` gives it.
 
 - [ ] **T18 — Write the About page**
   - Refs: spec 4.1 item 15, spec 6.1.11 items 5–7, spec 6.4.4, plan 3.6 (content), test 29
@@ -331,7 +332,7 @@ Goal: How to play and About have their new content, approved by the owner.
     - "How it's built" links to both repositories.
     - Test 29 passes, and test 34 covers the page.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the page; then the owner's approval of the text in the pull request
-  - Notes: The owner is asked for the photo, and for a photo of the family board if there is one, at the start of this task.
+  - Notes: The owner is asked for the photo, and for a photo of the family board if there is one, at the start of this task. The page frame is up to 1,320 px wide since 2026-11-25 (plan 3.6, "Page size"), so the text needs its own reading width, as the design gives it.
 
 ## Phase 5 — Release
 
