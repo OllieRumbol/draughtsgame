@@ -6,6 +6,9 @@
 // person's at once. A failure is shown as soon as it is known.
 // When the phase changes, for example on Give up or New game, the effect's cleanup aborts the request and the wait,
 // and nothing it gives back reaches the game (spec section 6.6, item 5).
+// When the page closes, for example on a refresh, the request is aborted too. Some browsers cancel a request as the
+// page closes, and that must not count as a failure: the page would save the failure, and the refreshed page would
+// show it instead of asking again (spec section 6.1.8, item 3).
 import { useEffect } from "react";
 import { timingsFor } from "@/components/board/timings";
 import { type Action, type GameState, COMPUTER } from "@/game/game-state";
@@ -30,6 +33,14 @@ export function useComputerTurn(state: GameState, dispatch: (action: Action) => 
     const controller = new AbortController();
     const thinkingTimeOver = wait(leastWait, controller.signal);
 
+    // A page kept in the browser's back-forward cache may come back, so only a page that is really closing aborts.
+    function onPageHide(event: PageTransitionEvent): void {
+      if (!event.persisted) {
+        controller.abort();
+      }
+    }
+    window.addEventListener("pagehide", onPageHide);
+
     async function ask(id: number): Promise<void> {
       const result = await getNextMove(board, level, controller.signal);
       if (controller.signal.aborted) {
@@ -51,7 +62,10 @@ export function useComputerTurn(state: GameState, dispatch: (action: Action) => 
     }
 
     void ask(requestId);
-    return () => controller.abort();
+    return () => {
+      window.removeEventListener("pagehide", onPageHide);
+      controller.abort();
+    };
   }, [requestId, board, level, leastWait, dispatch]);
 }
 

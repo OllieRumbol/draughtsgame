@@ -56,6 +56,26 @@ describe("useComputerTurn", () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
+  it("does not report a failure when the page closes, so a refresh asks again (spec section 6.1.8, item 3)", async () => {
+    // As in Firefox and WebKit: the page starts to close, then the browser cancels the request.
+    const request: { cancel?: () => void } = {};
+    server.use(
+      http.post(
+        `${API_BASE_URL}/GetNextMove`,
+        () => new Promise<Response>((resolve) => (request.cancel = () => resolve(HttpResponse.error()))),
+      ),
+    );
+    const dispatch = vi.fn();
+    renderHook(() => useComputerTurn(waitingForTheComputer(), dispatch));
+    await vi.waitFor(() => expect(request.cancel).toBeDefined());
+
+    window.dispatchEvent(new Event("pagehide"));
+    request.cancel?.();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
   it("sends the move once the answer has been checked and the thinking time has passed", async () => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     server.use(http.post(`${API_BASE_URL}/GetNextMove`, () => HttpResponse.json(answer)));
