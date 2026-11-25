@@ -44,9 +44,7 @@ export function useTips(game: GameState): Tips {
 
     async function ask(): Promise<void> {
       const result = await getTips(board, player, controller.signal);
-      if (controller.signal.aborted) {
-        return;
-      }
+      // An answer counts only for the position it was asked for, so the answer to an aborted request is dropped.
       setRequest((now) => {
         if (now === null || now.position !== loadingFor) {
           return now;
