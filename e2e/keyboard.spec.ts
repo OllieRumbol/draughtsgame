@@ -76,6 +76,8 @@ test("the arrow keys do not scroll the page", async ({ page }) => {
   expect(scrolled).toBeGreaterThanOrEqual(20);
 
   await page.keyboard.press("ArrowUp");
+  // A browser scrolls smoothly after an arrow key, over a few hundred milliseconds, so wait before checking.
+  await page.waitForTimeout(400);
 
   expect(await focusedName(page)).toBe("Row 1, column 2, player 2's man");
   expect(await page.evaluate(() => window.scrollY)).toBe(scrolled);
