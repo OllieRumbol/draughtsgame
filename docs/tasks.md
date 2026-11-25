@@ -297,6 +297,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - `GameScreen` runs `useComputerTurn` and `useComputerMoveSteps`. The request starts in an effect, after the board is drawn, and the effect's cleanup aborts it when the phase changes or the page closes.
     - A failure shows the status card's title and note from T14, and "Try again" as the main action; Undo, Give up and New game stay. Try again moves the focus to the board. The design has no failure state, so the wording is spec 6.1.9's example.
     - Test 34 holds the "moving" state with the page's clock stopped, and moves the clock on 1 ms at a time while axe runs.
+    - On desktop the status title keeps room for two lines, so the controls do not move when "The computer is thinking…" wraps. The e2e tests that refresh wait for the page's save first, because the page saves in an effect just after it draws.
     - Live API, 2026-11-25, through the dev proxy, one game at each level played to the end by a script: Easy 17 moves, Normal 30, Hard 23; the computer won each; every response was 200, with no failure.
 
 - [ ] **T16 — Add Show tips**

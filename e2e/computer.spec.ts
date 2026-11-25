@@ -5,6 +5,19 @@ function square(page: Page, name: string) {
   return page.getByRole("gridcell", { name, exact: true });
 }
 
+// The saved game's history length and phase, as the page last wrote them. The page saves in an effect just after it
+// draws, so a test that refreshes waits for the save first (plan section 3.4).
+function savedGame(page: Page): Promise<{ turns: number; phase: string } | null> {
+  return page.evaluate(() => {
+    const text = localStorage.getItem("draughts.game.v1");
+    if (text === null) {
+      return null;
+    }
+    const game = JSON.parse(text) as { history: unknown[]; phase: { kind: string } };
+    return { turns: game.history.length, phase: game.phase.kind };
+  });
+}
+
 async function move(page: Page, from: string, to: string): Promise<void> {
   await square(page, from).click();
   await square(page, to).click();
@@ -15,15 +28,23 @@ test.describe("a computer game across a refresh", () => {
   test("keeps the board, the turn, the level, the captured counts and Undo after a refresh (example 23)", async ({
     page,
   }) => {
-    await answerNextMove(page, apiMove([2, 1], [3, 0]));
+    // The computer's two replies: (2,1) to (3,2), which the person then jumps, and (2,5) to (3,4).
+    const replies = [apiMove([2, 1], [3, 2]), apiMove([2, 5], [3, 4])];
+    await page.route("**/GetNextMove", (route) => route.fulfill({ json: replies.shift() }));
     await startComputerGame(page, "You");
     await move(page, "Row 6, column 3, your man", "Row 5, column 4, empty, target");
     await expect(page.getByText("Your turn", { exact: true })).toBeVisible();
+    await move(page, "Row 5, column 4, your man", "Row 3, column 2, empty, target");
+    await expect(square(page, "Row 4, column 5, the computer's man")).toBeVisible();
+    await expect(page.getByText("Your turn", { exact: true })).toBeVisible();
+    await expect.poll(() => savedGame(page)).toEqual({ turns: 4, phase: "turn" });
 
     await page.reload();
 
-    await expect(square(page, "Row 5, column 4, your man")).toBeVisible();
-    await expect(square(page, "Row 4, column 1, the computer's man")).toBeVisible();
+    await expect(square(page, "Row 3, column 2, your man")).toBeVisible();
+    await expect(square(page, "Row 4, column 5, the computer's man")).toBeVisible();
+    await expect(page.getByText("You took 1", { exact: true })).toBeVisible();
+    await expect(page.getByText("The computer took 0", { exact: true })).toBeVisible();
     await expect(page.getByText("Your turn", { exact: true })).toBeVisible();
     await expect(page.getByText("Against the computer · Easy")).toBeVisible();
     await expect(page.getByRole("button", { name: "Undo" })).toHaveAttribute("aria-disabled", "false");
@@ -36,6 +57,7 @@ test.describe("a computer game across a refresh", () => {
     await expect(page.getByText("Your turn", { exact: true })).toBeVisible();
 
     await page.getByRole("button", { name: "Undo" }).click();
+    await expect.poll(() => savedGame(page)).toEqual({ turns: 0, phase: "turn" });
     await page.reload();
 
     await expect(square(page, "Row 6, column 3, your man")).toBeVisible();
@@ -56,6 +78,8 @@ test.describe("a computer game across a refresh", () => {
     });
     await startComputerGame(page, "The computer");
     await expect(page.getByText("The computer is thinking…")).toBeVisible();
+    // The request is sent from an effect, just after "thinking" shows, so wait until it has gone out.
+    await expect.poll(() => requests).toBe(1);
 
     await page.reload();
 
@@ -71,6 +95,7 @@ test.describe("a computer game across a refresh", () => {
     await expect(page.getByText("Your turn", { exact: true })).toBeVisible();
 
     await page.getByRole("button", { name: "New game" }).click();
+    await expect.poll(() => savedGame(page)).toBeNull();
     await page.reload();
 
     await expect(page.getByRole("heading", { level: 1, name: "New game" })).toBeVisible();

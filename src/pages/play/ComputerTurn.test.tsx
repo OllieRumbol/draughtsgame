@@ -16,6 +16,7 @@ const NEXT_MOVE_URL = `${API_BASE_URL}/GetNextMove`;
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.restoreAllMocks();
   window.localStorage.clear();
 });
 
@@ -63,13 +64,15 @@ function said(): string {
 // (spec section 6.1.5, item 8, and section 4.1, item 8).
 describe("a game the computer starts", () => {
   it("asks for the computer's move only once the board is on screen", async () => {
+    // Whether the board is on the page at the moment the request is sent. The mock API's handler runs later, after
+    // React has drawn, so the check is made in fetch itself.
     const boardShownAtRequest: boolean[] = [];
-    server.use(
-      http.post(NEXT_MOVE_URL, () => {
-        boardShownAtRequest.push(document.querySelector('[role="grid"]') !== null);
-        return HttpResponse.json(apiMove(at(2, 1), at(3, 0)));
-      }),
-    );
+    const realFetch = globalThis.fetch;
+    vi.spyOn(globalThis, "fetch").mockImplementation((input, init) => {
+      boardShownAtRequest.push(document.querySelector('[role="grid"]') !== null);
+      return realFetch(input, init);
+    });
+    answerWith(apiMove(at(2, 1), at(3, 0)));
     const user = userEvent.setup();
     renderApp("#/");
 

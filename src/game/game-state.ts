@@ -59,7 +59,8 @@ export type Action =
 
 // In a computer game, the person is player 1, and the computer is always player 2 (spec section 2.4).
 const PERSON: Player = 1;
-const COMPUTER: Player = 2;
+// The computer always plays player 2 (spec section 2.3). useComputerTurn checks its moves for this player.
+export const COMPUTER: Player = 2;
 
 // Spec section 6.1.1, item 4: the starting board, and the chosen first player moves first.
 export function newGame(settings: Settings): GameState {

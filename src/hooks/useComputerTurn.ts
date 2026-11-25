@@ -5,13 +5,9 @@
 // When the phase changes, for example on Give up or New game, the effect's cleanup aborts the request, and a late
 // answer is ignored (spec section 6.6, item 5).
 import { useEffect } from "react";
-import type { Player } from "@/game/board";
-import type { Action, GameState } from "@/game/game-state";
+import { type Action, type GameState, COMPUTER } from "@/game/game-state";
 import { findPath } from "@/game/path";
 import { getNextMove } from "@/services/api";
-
-// The computer always plays player 2 (spec section 2.3).
-const COMPUTER: Player = 2;
 
 export function useComputerTurn(state: GameState, dispatch: (action: Action) => void): void {
   const requestId = state.phase.kind === "computerThinking" ? state.phase.requestId : null;

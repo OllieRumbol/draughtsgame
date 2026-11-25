@@ -100,6 +100,9 @@ async function analyzeOnStoppedClock(page: Page, axe: AxeBuilder): Promise<Await
     await page.clock.runFor(1);
     elapsed += 1;
   }
+  if (!finished) {
+    throw new Error("axe did not finish within 300 ms of the page's time, so the computer's move would have ended.");
+  }
   const results = await analysis;
   await expect(page.getByText("The computer is moving", { exact: true })).toBeVisible();
   return results;
