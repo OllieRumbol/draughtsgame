@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *how will we build it?* It turns the approved requirements in spec.md into a design, and it is agreed before any code is written.
 
 Status: Approved
-Last updated: 2026-11-25 (section 3.6, motion: the computer's thinking time, approved in T15)
+Last updated: 2026-11-25 (section 3.6: the computer's thinking time, approved in T15, and the Play page's size, chosen after a play test)
 
 ---
 
@@ -344,6 +344,7 @@ The owner made these choices between 2026-11-10 and 2026-11-14, from the mockups
 | Colour | See the table below. |
 | Motion | See the motion table below. |
 | Avoid | Childish colours (bright primaries, mustard, hot pink, sky blue); flashy effects (glows, confetti, sparkles, bouncing banners); the default Bootstrap look (dark badges, big blue buttons, every block in a card); glossy plastic pieces. |
+| Page size | The design's pages are 860 px wide, and the other pages keep that. On a window 1,000 px or wider, the Play page's board fills the window's height, less the header and the margins, from 320 px to 840 px (`--play-board-width` in `tokens.css`). The Play page's frame grows to fit it, and the side column and the setup card fill the rest, so the header keeps the same edges as the game. Narrower windows keep the design's columns, and phones are unchanged. The owner chose this on 2026-11-25, because the board left much empty space on a large screen. |
 | Approved design | `docs/design/site.html`, an interactive mockup of the whole site: the header, game setup, the game in both modes, How to play, About and "page not found". The owner approved the game screen on 2026-11-14, and the whole site on 2026-11-15. It shows the board, the pieces, every mark, the motion, light and dark mode, and the desktop and phone layouts. The comment at the top of the file lists where it differs from the real site. Where it and this plan differ, this plan wins. |
 | Content | Spec section 6.1.11. The How to play text is drafted from spec section 2.1 and approved by the owner. The About tribute starts from `About.js` on `main`, with edits the owner accepts one by one. The owner supplies the photo. |
 

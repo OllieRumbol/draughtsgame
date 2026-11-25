@@ -5,3 +5,9 @@
   margin: 0 auto;
   padding: 16px 16px 24px;
 }
+
+/* The Play page grows to fit its board, which fills the window's height on a large screen, so the header keeps the
+   same edges as the game below it (plan section 3.6, "Page size"). */
+.layout:has([data-page="play"]) {
+  max-width: max(860px, var(--play-frame-width));
+}

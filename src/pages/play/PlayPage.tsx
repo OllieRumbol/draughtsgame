@@ -11,8 +11,9 @@ export function PlayPage() {
   const [play, dispatch] = useReducer(playReducer, null, () => openPlay(loadSavedGame()));
   useSavedGame(play.game);
 
+  // data-page lets the page frame grow to fit the board (Layout.module.css, plan section 3.6, "Page size").
   return (
-    <>
+    <div data-page="play">
       <title>Draughts</title>
       {play.game === null ? (
         <GameSetup
@@ -22,6 +23,6 @@ export function PlayPage() {
       ) : (
         <GameScreen game={play.game} dispatch={dispatch} arrival={play.arrival} />
       )}
-    </>
+    </div>
   );
 }

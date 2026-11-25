@@ -63,18 +63,22 @@ test("puts the piece down with Escape", async ({ page }) => {
 
 // An arrow key at the edge of the board moves nothing: not the focus, and not the page.
 test("the arrow keys do not scroll the page", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 400 });
+  await page.setViewportSize({ width: 1280, height: 300 });
   await startTwoPlayerGame(page);
   await page.getByRole("gridcell", { name: "Row 1, column 2, player 2's man" }).focus();
-  // The page is scrolled part-way, so an arrow key could scroll it either way.
+  // The page is scrolled halfway down its room to scroll, so an arrow key could scroll it either way. The board
+  // shrinks with a short window (plan section 3.6, "Page size"), so the room depends on the layout.
   const scrolled = await page.evaluate(() => {
-    window.scrollTo(0, 100);
+    const room = document.documentElement.scrollHeight - window.innerHeight;
+    window.scrollTo(0, Math.floor(room / 2));
     return window.scrollY;
   });
-  expect(scrolled).toBe(100);
+  expect(scrolled).toBeGreaterThanOrEqual(20);
 
   await page.keyboard.press("ArrowUp");
+  // A browser scrolls smoothly after an arrow key, over a few hundred milliseconds, so wait before checking.
+  await page.waitForTimeout(400);
 
   expect(await focusedName(page)).toBe("Row 1, column 2, player 2's man");
-  expect(await page.evaluate(() => window.scrollY)).toBe(100);
+  expect(await page.evaluate(() => window.scrollY)).toBe(scrolled);
 });

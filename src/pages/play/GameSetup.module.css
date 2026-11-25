@@ -2,10 +2,17 @@
    then the board, on a phone. The sizes follow the type scale in plan section 3.6. */
 .setup {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+  grid-template-columns: minmax(0, var(--play-board-width)) minmax(300px, 1fr);
   grid-template-areas: "picture card";
   gap: 22px;
   align-items: start;
+}
+
+/* A narrower window keeps the design's columns, so the board is never smaller than in the design. */
+@media (max-width: 999px) {
+  .setup {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+  }
 }
 
 .picture {

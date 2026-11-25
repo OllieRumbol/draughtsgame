@@ -152,7 +152,7 @@ export function Board({ state, dispatch, tips, opening }: BoardProps) {
   }
 
   return (
-    <div className={styles.frame} style={motion}>
+    <div className={styles.frame} style={motion} data-testid="board-frame">
       <div className={styles.inlay}>
         <div className={styles.board}>
           <div ref={gridRef} role="grid" aria-label="Draughts board" className={styles.grid} onKeyDown={onGridKey}>
