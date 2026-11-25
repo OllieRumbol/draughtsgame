@@ -25,7 +25,7 @@ test("plays a move with the keyboard alone, and the live region says it", async 
 
   // Tab leaves the board for the controls, and Shift+Tab comes back to the same square.
   await page.keyboard.press("Tab");
-  expect(await page.evaluate(() => document.activeElement?.textContent)).toBe("Undo");
+  expect(await page.evaluate(() => document.activeElement?.textContent)).toBe("Show tips");
   await page.keyboard.press("Shift+Tab");
   expect(await focusedName(page)).toBe("Row 6, column 1, player 1's man");
 

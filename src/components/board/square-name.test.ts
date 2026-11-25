@@ -51,4 +51,11 @@ describe("squareName", () => {
       }),
     ).toBe("Row 6, column 3, player 1's man, selected");
   });
+
+  it("adds 'tip' after any other mark, so a tip ring is named as well as seen", () => {
+    const base = { position: at(4, 3), cell: CELL.empty, opponent: "twoPlayers" as const, isSelected: false };
+
+    expect(squareName({ ...base, isTarget: false, isTip: true })).toBe("Row 5, column 4, empty, tip");
+    expect(squareName({ ...base, isTarget: true, isTip: true })).toBe("Row 5, column 4, empty, target, tip");
+  });
 });

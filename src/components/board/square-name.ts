@@ -1,6 +1,6 @@
 // The name a screen reader reads for a square (spec section 6.4.3, item 2): its row and column, counted from 1 at
 // the top left, then what stands on it. For example, "Row 8, column 1, your man". A target or the selected piece
-// is said after it, as in the design.
+// is said after it, as in the design, and then a tip (Show tips), so the rings are not seen only.
 import { type Cell, type Position, CELL, isDarkSquare, isKing, ownerOf } from "@/game/board";
 import type { Settings } from "@/game/game-state";
 
@@ -10,16 +10,19 @@ type SquareNameInput = {
   opponent: Settings["opponent"];
   isTarget: boolean;
   isSelected: boolean;
+  isTip?: boolean;
 };
 
-export function squareName({ position, cell, opponent, isTarget, isSelected }: SquareNameInput): string {
+export function squareName({ position, cell, opponent, isTarget, isSelected, isTip = false }: SquareNameInput): string {
   const where = `Row ${position.row + 1}, column ${position.col + 1}`;
   if (!isDarkSquare(position)) {
     return `${where}, light square`;
   }
 
   const what = cell === CELL.empty ? "empty" : pieceName(cell, opponent);
-  const marks = [isTarget ? "target" : null, isSelected ? "selected" : null].filter((mark) => mark !== null);
+  const marks = [isTarget ? "target" : null, isSelected ? "selected" : null, isTip ? "tip" : null].filter(
+    (mark) => mark !== null,
+  );
 
   return [where, what, ...marks].join(", ");
 }

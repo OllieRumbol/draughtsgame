@@ -31,3 +31,9 @@
   opacity: 0.45;
   cursor: default;
 }
+
+/* A toggle that is on, such as Show tips while the tips show: a brass line inside the button, as in the design. */
+.secondary[aria-pressed="true"] {
+  outline: 2px solid var(--brass);
+  outline-offset: -2px;
+}

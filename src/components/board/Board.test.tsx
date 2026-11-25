@@ -135,10 +135,11 @@ describe("the board's marks", () => {
     expect(screen.getAllByTestId("last-move")).toHaveLength(2);
   });
 
-  it("marks each tip with a ring", () => {
+  it("marks each tip with a ring, and names it, so the tips are not seen only", () => {
     render(<PlayableBoard start={newGame(twoPlayers)} tips={[at(4, 1), at(4, 3)]} />);
 
-    expect(within(square("Row 5, column 2, empty")).getByTestId("tip")).toBeInTheDocument();
+    expect(within(square("Row 5, column 2, empty, tip")).getByTestId("tip")).toBeInTheDocument();
+    expect(square("Row 5, column 6, empty")).toBeInTheDocument();
     expect(screen.getAllByTestId("tip")).toHaveLength(2);
   });
 
@@ -148,7 +149,7 @@ describe("the board's marks", () => {
 
     await user.click(square("Row 6, column 3, player 1's man"));
 
-    const both = square("Row 5, column 4, empty, target");
+    const both = square("Row 5, column 4, empty, target, tip");
     expect(within(both).getByTestId("tip")).toBeInTheDocument();
     expect(within(both).getByTestId("target")).toBeInTheDocument();
   });

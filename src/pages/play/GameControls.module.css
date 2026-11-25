@@ -15,3 +15,11 @@
 .wide {
   grid-column: 1 / -1;
 }
+
+/* The note when tips are not available (plan section 4), under the controls. */
+.note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-14);
+}
