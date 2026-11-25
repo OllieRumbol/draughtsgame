@@ -11,11 +11,13 @@ type GameControlsProps = {
 };
 
 // The controls (spec section 6.4.2, item 2), as the design shows them. During a chain, End turn comes first and is
-// the main action (spec section 6.1.3). When the game is over, only Undo and New game are left (spec section 6.1.6,
-// item 3). Show tips comes in T16.
+// the main action (spec section 6.1.3). When the computer's move has failed, Try again comes first and is the main
+// action (spec section 6.1.9); Undo, Give up and New game still work. When the game is over, only Undo and New game
+// are left (spec section 6.1.6, item 3). Show tips comes in T16.
 export function GameControls({ game, dispatch, onFocusBoard }: GameControlsProps) {
   const isOver = game.phase.kind === "over";
   const isInChain = game.phase.kind === "turn" && game.phase.chain !== null;
+  const hasFailed = game.phase.kind === "computerFailed";
   const undoAvailable = canUndo(game);
   const newGameRef = useRef<HTMLButtonElement>(null);
 
@@ -34,6 +36,13 @@ export function GameControls({ game, dispatch, onFocusBoard }: GameControlsProps
     onFocusBoard();
   }
 
+  // Try again sends the same request again (spec section 6.1.9, item 2). It goes away, so the focus goes to the
+  // board, where the person plays once the computer has moved.
+  function tryAgain(): void {
+    dispatch({ type: "retry" });
+    onFocusBoard();
+  }
+
   function giveUp(): void {
     dispatch({ type: "giveUp" });
     newGameRef.current?.focus();
@@ -41,6 +50,11 @@ export function GameControls({ game, dispatch, onFocusBoard }: GameControlsProps
 
   return (
     <div className={styles.controls}>
+      {hasFailed && (
+        <button type="button" className={`${buttons.primary} ${styles.control} ${styles.wide}`} onClick={tryAgain}>
+          Try again
+        </button>
+      )}
       {isInChain && (
         <button type="button" className={`${buttons.primary} ${styles.control} ${styles.wide}`} onClick={endTurn}>
           End turn
@@ -62,7 +76,7 @@ export function GameControls({ game, dispatch, onFocusBoard }: GameControlsProps
       <button
         ref={newGameRef}
         type="button"
-        className={`${isInChain ? buttons.secondary : buttons.primary} ${styles.control}`}
+        className={`${isInChain || hasFailed ? buttons.secondary : buttons.primary} ${styles.control}`}
         onClick={() => dispatch({ type: "newGame" })}
       >
         New game

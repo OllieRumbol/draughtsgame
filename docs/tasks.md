@@ -282,7 +282,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - For T16: Show tips goes before Undo in `GameControls`. For T17: `BoardPicture` draws a still board with a text alternative.
     - Evidence: pull request #77.
 
-- [ ] **T15 — Add the computer's turn**
+- [x] **T15 — Add the computer's turn**
   - Refs: spec 3 goal 7, spec 4.1 items 2, 4, 7, 8 and 10, spec 6.1.5, spec 6.1.6 item 4, spec 6.1.8 item 3, spec 6.1.9, spec 6.2.2, spec 6.2.3 examples 20 and 23–26, spec 6.6 items 5, 7 and 8, plan 3.3.3, plan 3.3.4, plan 4, plan 3.6 (motion), tests 23, 24, 31, 33 and 39
   - Depends on: T8, T14
   - Done when:
@@ -294,6 +294,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Against the live API through the dev proxy, a computer game at each level plays to the end with no failure.
   - Verify: `npm run check`, then `npm run e2e`; then `npm run dev`, and one game at each level against the live API, with the result in the pull request
   - Notes:
+    - `GameScreen` runs `useComputerTurn` and `useComputerMoveSteps`. The request starts in an effect, and its cleanup cancels it.
+    - A failure shows spec 6.1.9's wording, with Try again as the main action; the design has no failure state.
+    - Live API, 2026-11-25: one game at each level played to the end by a script, with no failure (details in the pull request).
+    - Owner approved on 2026-11-25, after a play test: plan 3.6 adds a 700 ms thinking time before the computer's move.
+    - Evidence: pull request #80.
 
 - [ ] **T16 — Add Show tips**
   - Refs: spec 6.1.4, spec 6.6 items 12 and 15, plan 3.6 (board marks), plan 4, test 22
