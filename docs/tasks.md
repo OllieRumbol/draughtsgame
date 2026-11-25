@@ -300,7 +300,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - Owner approved on 2026-11-25, after a play test: plan 3.6 adds a 700 ms thinking time before the computer's move.
     - Evidence: pull request #80.
 
-- [ ] **T16 — Add Show tips**
+- [x] **T16 — Add Show tips**
   - Refs: spec 6.1.4, spec 6.6 items 12 and 15, plan 3.6 (board marks), plan 4, test 22
   - Depends on: T8, T14
   - Done when:
@@ -309,10 +309,11 @@ Goal: a full game can be played in the new look, against another person or the c
     - Test 22 passes, and test 34 covers the tips state.
   - Verify: `npm run check`, then `npm run e2e`
   - Notes:
-    - `useTips` ties the tips to the board and the player to move, worked out during render: when either changes, the tips are gone, and its effect's cleanup aborts the request.
-    - Show tips sits before Undo, as in the design. It is pressed while the tips load or show; while loading it reads "Loading tips…" (spec 6.1.4 item 2), wording the owner approved on 2026-11-25. A square with a tip adds "tip" to its name, so the rings are not seen only; the owner approved this spec 6.4.3 item 2 change on 2026-11-25.
-    - The failure note shows directly under Show tips, as plan 4 says and the owner chose on 2026-11-25, and the board's live region says it (a `notice`), so there is still one live region.
-    - Outside the Done when list: the T15 axe test stopped the page's clock at a fixed time on 2026-11-25, which fails once that time has passed. It now stops the clock a minute from now.
+    - `useTips` ties the tips to the board and the player to move; when either changes they are gone, and the request is aborted.
+    - Owner approvals on 2026-11-25: "tip" in square names (spec 6.4.3 item 2), "Loading tips…", and the failure note directly under Show tips.
+    - The failure is said through the board's one live region (a `notice`).
+    - Outside the task: fixed the T15 axe test's fixed-date clock, and the e2e helper now waits for Start game's focus.
+    - Evidence: pull request #82.
 
 ## Phase 4 — Pages
 
