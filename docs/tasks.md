@@ -297,7 +297,7 @@ Goal: a full game can be played in the new look, against another person or the c
     - `GameScreen` runs `useComputerTurn` and `useComputerMoveSteps`. The request starts in an effect, and its cleanup cancels it.
     - A failure shows spec 6.1.9's wording, with Try again as the main action; the design has no failure state.
     - Live API, 2026-11-25: one game at each level played to the end by a script, with no failure (details in the pull request).
-    - E2E tests that refresh wait for the page's save, which happens in an effect just after drawing.
+    - Owner approved on 2026-11-25, after a play test: plan 3.6 adds a 700 ms thinking time before the computer's move.
     - Evidence: pull request #80.
 
 - [ ] **T16 — Add Show tips**
