@@ -1,7 +1,8 @@
-/* The width of every page, as in the design (docs/design/site.html). Works from 320 px wide (spec section 6.4.1, item 3). */
+/* The width of every page. Works from 320 px wide (spec section 6.4.1, item 3). The design's pages are 860 px wide;
+   the Play page is wider, so the board can fill the window's height on a large screen (owner's choice, 2026-11-25). */
 .layout {
   box-sizing: border-box;
-  max-width: 860px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 16px 16px 24px;
 }

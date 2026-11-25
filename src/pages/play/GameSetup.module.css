@@ -2,8 +2,9 @@
    then the board, on a phone. The sizes follow the type scale in plan section 3.6. */
 .setup {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+  grid-template-columns: minmax(0, var(--play-board-width)) minmax(300px, 380px);
   grid-template-areas: "picture card";
+  justify-content: center;
   gap: 22px;
   align-items: start;
 }

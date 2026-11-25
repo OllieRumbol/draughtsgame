@@ -53,6 +53,11 @@
   --text-24: 24px;
   --text-32: 32px;
   --line-height: 1.5;
+
+  /* The board's width on the Play page on a large screen: it fills the window's height, less the header and the
+     page's margins (about 130 px), from 320 px to 840 px (owner's choice, 2026-11-25). A narrower window makes it
+     smaller still, because the columns beside it keep their width. */
+  --play-board-width: clamp(320px, calc(100dvh - 130px), 840px);
 }
 
 /* The player's choice from the light and dark button wins over the device's setting. */
