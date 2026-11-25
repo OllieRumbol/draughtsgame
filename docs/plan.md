@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *how will we build it?* It turns the approved requirements in spec.md into a design, and it is agreed before any code is written.
 
 Status: Approved
-Last updated: 2026-11-23 (sections 3.1 and 3.3.3: showing the computer's move, approved in T12)
+Last updated: 2026-11-25 (section 3.6, motion: the computer's thinking time, approved in T15)
 
 ---
 
@@ -391,6 +391,7 @@ The wood grain and the shadows use the `rgba` values in the design file. They ar
 | Lift on select | Rises and grows, with a small overshoot (`cubic-bezier(.2,.9,.3,1.25)`) | 180 ms |
 | Put down | Reverses the lift | 180 ms |
 | Target dots | Fade and grow in | 180 ms |
+| The computer's thinking | Its move starts at least 700 ms after the person's move has landed, as the design does. A slower answer adds no wait. The same with reduced motion. The owner chose this on 2026-11-25, because the computer's move came too soon after the person's on Easy and Normal. | 700 ms at least |
 | The computer's jump | Slides to the landing square and grows to 116% halfway | 380 ms each, then a 180 ms pause |
 | The person's move or jump | The same slide | 200 ms |
 | Captured piece | Fades and shrinks to 50%, starting halfway through the jump | 60% of the jump time |

@@ -82,7 +82,8 @@ describe("a game the computer starts", () => {
     await user.click(within(first).getByRole("radio", { name: "The computer" }));
     await user.click(screen.getByRole("button", { name: "Start game" }));
 
-    expect(await screen.findByText("Your turn")).toBeInTheDocument();
+    // The move waits for the computer's thinking time (plan section 3.6).
+    expect(await screen.findByText("Your turn", {}, { timeout: 3000 })).toBeInTheDocument();
     expect(boardShownAtRequest).toEqual([true]);
   });
 });
@@ -97,8 +98,15 @@ describe("showing the computer's move", () => {
     renderApp("#/");
     expect(screen.getByText("The computer is thinking…")).toBeInTheDocument();
 
-    // The answer arrives, and the first jump is shown at once: (0,1) to (2,3), taking (1,2).
-    await vi.waitFor(() => expect(square("Row 3, column 4, the computer's man")).toBeInTheDocument());
+    // The answer arrives at once, but the move waits for the person's slide (200 ms) and the thinking time (700 ms).
+    await act(() => vi.advanceTimersByTimeAsync(899));
+    expect(screen.getByText("The computer is thinking…")).toBeInTheDocument();
+    expect(square("Row 1, column 2, the computer's man")).toBeInTheDocument();
+
+    // Then the first jump is shown: (0,1) to (2,3), taking (1,2).
+    await act(() => vi.advanceTimersByTimeAsync(1));
+    await act(() => vi.advanceTimersByTimeAsync(0));
+    expect(square("Row 3, column 4, the computer's man")).toBeInTheDocument();
     expect(screen.getByText("The computer is moving")).toBeInTheDocument();
     expect(square("Row 2, column 3, empty")).toBeInTheDocument();
     expect(square("Row 4, column 5, your man")).toBeInTheDocument();
@@ -149,7 +157,7 @@ describe("when the computer's move fails", () => {
     answerWith(apiMove(at(2, 1), at(3, 0)));
     await user.click(screen.getByRole("button", { name: "Try again" }));
 
-    expect(await screen.findByText("Your turn")).toBeInTheDocument();
+    expect(await screen.findByText("Your turn", {}, { timeout: 3000 })).toBeInTheDocument();
     expect(square("Row 4, column 1, the computer's man")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
   });

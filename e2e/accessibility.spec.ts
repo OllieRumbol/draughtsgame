@@ -71,15 +71,22 @@ async function openComputerState(page: Page, state: "thinking" | "moving" | "fai
     await page.clock.install();
     await page.clock.pauseAt(new Date("2026-11-25T12:00:00Z"));
   }
+  let answered = false;
   await page.route("**/GetNextMove", async (route) => {
     if (state === "moving") {
       await route.fulfill({ json: apiMove([2, 1], [3, 0]) });
+      answered = true;
     }
     if (state === "failed") {
       await route.fulfill({ status: 500, json: {} });
     }
   });
   await startComputerGame(page, "The computer");
+  if (state === "moving") {
+    // The move waits 900 ms of the page's time: the person's slide and the computer's thinking time (plan 3.6).
+    await expect.poll(() => answered).toBe(true);
+    await page.clock.runFor(900);
+  }
   const titles = {
     thinking: "The computer is thinking…",
     moving: "The computer is moving",
