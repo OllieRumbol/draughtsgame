@@ -7,6 +7,7 @@ export type Timings = {
   stepBack: number; // the player's other pieces fade: the design's 220 ms, as plan 3.6 gives no time
   targetFade: number; // target dots fade and grow in
   personSlide: number; // the person's move or jump
+  computerThink: number; // the least time from the person's move landing to the computer's move starting
   computerSlide: number; // each of the computer's jumps
   computerPause: number; // the pause between the computer's jumps
   captureStart: number; // when a captured piece starts to fade, as a share of its jump
@@ -23,6 +24,7 @@ export const NORMAL_TIMINGS: Timings = {
   stepBack: 220,
   targetFade: 180,
   personSlide: 200,
+  computerThink: 700,
   computerSlide: 380,
   computerPause: 180,
   captureStart: 0.5,
@@ -36,6 +38,7 @@ export const NORMAL_TIMINGS: Timings = {
 
 // When the device asks for reduced motion, slides, lifts and the crowning are instant. Fades stay, shortened to
 // 100 ms. The computer's jumps are still shown one at a time, with the pause, so captures can still be counted.
+// The computer's thinking time stays too, so its move does not follow the person's at once.
 export const REDUCED_TIMINGS: Timings = {
   ...NORMAL_TIMINGS,
   lift: 0,

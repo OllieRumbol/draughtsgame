@@ -3,6 +3,8 @@ import { Board } from "@/components/board/Board";
 import { CapturedStack } from "@/components/board/CapturedStack";
 import { gameStarted } from "@/components/live-region/announcement";
 import type { GameState } from "@/game/game-state";
+import { useComputerMoveSteps } from "@/hooks/useComputerMoveSteps";
+import { useComputerTurn } from "@/hooks/useComputerTurn";
 import { GameControls } from "./GameControls";
 import styles from "./GameScreen.module.css";
 import { GameStatus } from "./GameStatus";
@@ -21,6 +23,10 @@ export function GameScreen({ game, dispatch, arrival }: GameScreenProps) {
   const boardRef = useRef<HTMLDivElement>(null);
   const started = arrival === "started";
   const againstComputer = game.settings.opponent === "computer";
+
+  // The computer's turn: ask the API for its move, then show the move one jump at a time (spec section 6.1.5).
+  useComputerTurn(game, dispatch);
+  useComputerMoveSteps(game, dispatch);
 
   // Start game removes the setup screen, so the focus goes to the board's first square, ready to play.
   useEffect(() => {
