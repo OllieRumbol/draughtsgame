@@ -26,6 +26,12 @@ export function useTips(game: GameState): Tips {
 
   // The board and the player to move, as one text. Tips for any other position do not apply.
   const position = `${player}:${board.flat().join("")}`;
+
+  // When the position changes, the tips are forgotten, so Undo back to the same board does not bring them back
+  // (spec section 6.1.4, item 3). This is worked out during render, as React's guide on adjusting state shows.
+  if (request !== null && request.position !== position) {
+    setRequest(null);
+  }
   const current = request !== null && request.position === position && available ? request : null;
   const loadingFor = current?.status === "loading" ? position : null;
 

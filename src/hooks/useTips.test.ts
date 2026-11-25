@@ -120,6 +120,38 @@ describe("useTips", () => {
     await vi.waitFor(() => expect(result.current.status).toBe("shown"));
   });
 
+  it("does not bring the tips back after Undo returns to the same board (spec section 6.1.4, item 3)", async () => {
+    server.use(http.post(TIPS_URL, () => HttpResponse.json(tipsBody)));
+    const start = newGame(twoPlayers);
+    const { result, rerender } = renderTips(start);
+    act(() => result.current.toggle());
+    await vi.waitFor(() => expect(result.current.status).toBe("shown"));
+    const moved = play(start, { type: "select", at: at(5, 2) }, { type: "chooseTarget", at: at(4, 3) });
+
+    rerender({ game: moved });
+    rerender({ game: play(moved, { type: "undo" }) });
+
+    expect(result.current.status).toBe("off");
+    expect(result.current.squares).toEqual([]);
+  });
+
+  it("asks for the tips of the player whose turn it is, player 2 after player 1 has moved", async () => {
+    const asked: { TipFor: number }[] = [];
+    server.use(
+      http.post(TIPS_URL, async ({ request }) => {
+        asked.push((await request.json()) as { TipFor: number });
+        return HttpResponse.json(tipsBody);
+      }),
+    );
+    const moved = play(newGame(twoPlayers), { type: "select", at: at(5, 2) }, { type: "chooseTarget", at: at(4, 3) });
+    const { result } = renderTips(moved);
+
+    act(() => result.current.toggle());
+
+    await vi.waitFor(() => expect(asked).toHaveLength(1));
+    expect(asked[0].TipFor).toBe(2);
+  });
+
   it("is not available during a chain, or when it is not a person's turn (spec section 6.1.4, items 1 and 6)", () => {
     const chainBoard = newGame(twoPlayers);
     const inChain: GameState = {
