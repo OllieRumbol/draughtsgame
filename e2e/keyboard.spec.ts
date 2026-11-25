@@ -90,9 +90,10 @@ test("keeps the focus ring on Show tips while it is pressed", async ({ page, isM
   test.skip(isMobile, "desktop keyboards only");
   await page.route("**/GetPotentialMoves", () => {});
   await startTwoPlayerGame(page);
-  // Focus after a key press, as keyboard use does, so the button matches :focus-visible.
-  await page.keyboard.press("Shift");
-  await page.getByRole("button", { name: "Show tips" }).focus();
+  // Reach Show tips as a keyboard user does: Tab from the board, which has the focus after Start game. Firefox does
+  // not show a focus ring for a button focused from code after only a Shift press.
+  await page.keyboard.press("Tab");
+  expect(await page.evaluate(() => document.activeElement?.textContent)).toBe("Show tips");
 
   await page.keyboard.press("Enter");
   const tips = page.getByRole("button", { name: "Loading tips…" });
