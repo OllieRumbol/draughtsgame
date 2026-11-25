@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *how will we build it?* It turns the approved requirements in spec.md into a design, and it is agreed before any code is written.
 
 Status: Approved
-Last updated: 2026-11-25 (section 3.6, motion: the computer's thinking time, approved in T15)
+Last updated: 2026-11-25 (section 3.6: the computer's thinking time, approved in T15, and the Play page's size, chosen after a play test)
 
 ---
 
