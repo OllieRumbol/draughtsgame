@@ -346,7 +346,12 @@ Goal: How to play and About have their new content, approved by the owner.
     - "How it's built" links to both repositories.
     - Test 29 passes, and test 34 covers the page.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the page; then the owner's approval of the text in the pull request
-  - Notes: The owner is asked for the photo, and for a photo of the family board if there is one, at the start of this task.
+  - Notes:
+    - Owner answers on 2026-11-26, at the start of the task: no photo of Ernest yet, and no photo of the family board yet. Both show the design's placeholder, and the photo's caption shows a dashed "Caption to come" box.
+    - Owner accepted all five tribute edits on 2026-11-26, one line at a time. The before and after table is in the pull request.
+    - Carried forward: the photo of Ernest, its caption and the family board photo. No task adds them. Plan risk 9 lets the page ship with the placeholders. They go in a small change when the owner supplies them, at the latest before the sign-off in T20.
+    - New tokens `--placeholder` and `--placeholder-stripe`: the design's placeholder colours, because `tokens.css` allows no hex colour in a component. The owner approved them, and the two new rows in plan 3.6, on 2026-11-26.
+    - Type scale (plan 3.6) wins over the design: tribute 20 px (design 18), 16 px on a phone (17), captions 14 px (13), placeholder title 20 px (18).
 
 ## Phase 5 — Release
 

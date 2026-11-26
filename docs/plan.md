@@ -369,6 +369,8 @@ The owner made these choices between 2026-11-10 and 2026-11-14, from the mockups
 | `--man-light` | `#F4EBDD`, edge `#BFA884` | same | Player 1 pieces | 4.94 on walnut |
 | `--man-dark` | `#1E140E`, edge `#0A0604` | same | Player 2 pieces | 3.10 on walnut |
 | `--cream` | `#FFF6E2` | same | Target dots, last-move line | 5.43 on walnut |
+| `--placeholder` | `#3B2A1A` | same | A photo on About that the owner has not supplied yet (the design's placeholder). The owner approved it on 2026-11-26. | `--maple` text 9.35, `--cream` text 12.75 |
+| `--placeholder-stripe` | `rgba(255, 246, 226, 0.05)` | same | Faint stripes on that placeholder. Decoration. | — |
 | `--stack-light-edge` | `#8A7458` | `#BFA884` | Edge of the captured ivory men stacked beside the board | 3.89 on the light page |
 | `--stack-dark-edge` | `#8A7458` | `#8A7A68` | Edge of the captured dark men stacked beside the board, and the line between one man and the next | 3.89 on the light page, 4.26 on the dark page. A near-black edge made a row of dark men merge into one dark shape on a phone. |
 
