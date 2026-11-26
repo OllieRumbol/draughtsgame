@@ -1,0 +1,170 @@
+/* How to play, as in the design (docs/design/site.html, howtoHTML). Sizes follow the type scale in plan section 3.6,
+   which wins over the design's 13, 15 and 18 px. */
+.page {
+  max-width: 720px;
+}
+
+.page p {
+  margin: 0 0 12px;
+}
+
+.link {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--brass);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* The contents links at the top. */
+.contents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0 0 14px;
+}
+
+.lead {
+  font-size: var(--text-20);
+}
+
+.part {
+  margin: 32px 0 10px;
+  font-size: var(--text-24);
+}
+
+/* One rule: its picture and "Show me" on the left, the words on the right. */
+.rule {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  padding: 18px 0;
+  border-top: 1px solid var(--border);
+}
+
+.page .ruleText {
+  margin: 0;
+}
+
+.ruleTitle {
+  margin: 0 0 4px;
+  font-size: var(--text-20);
+}
+
+.page .caption {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: var(--text-14);
+  text-align: center;
+}
+
+.showMe {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px 10px;
+  font-size: var(--text-14);
+}
+
+/* How our house rules differ from standard English draughts. */
+.compare {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.compare th,
+.compare td {
+  padding: 9px 10px 9px 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.compare thead th {
+  color: var(--text-muted);
+  font-size: var(--text-14);
+  font-weight: 600;
+}
+
+.compare tbody th {
+  font-weight: 600;
+}
+
+.ruleColumn {
+  width: 26%;
+}
+
+.ours {
+  font-weight: 600;
+}
+
+/* Why taking is a choice: a brass line on the left. */
+.aside {
+  margin: 16px 0 0;
+  padding: 2px 0 2px 14px;
+  border-left: 3px solid var(--brass);
+}
+
+.page .aside p {
+  margin: 0;
+}
+
+/* Mouse or touch, and keyboard, side by side. */
+.ways {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.card {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: var(--text-20);
+}
+
+.list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.list li {
+  margin: 0 0 8px;
+}
+
+.key {
+  padding: 0 5px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--button);
+  font: inherit;
+  font-size: var(--text-14);
+}
+
+.page .end {
+  margin: 28px 0 0;
+}
+
+.start {
+  padding: 12px 22px;
+}
+
+/* A phone: a smaller picture beside each rule, and one card under the other (the design's phone layout). */
+@media (max-width: 640px) {
+  .rule {
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .ways {
+    grid-template-columns: 1fr;
+  }
+}

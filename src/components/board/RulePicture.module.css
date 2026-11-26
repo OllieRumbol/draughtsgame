@@ -1,0 +1,84 @@
+/* A small board picture on How to play (docs/design/site.html, "mini"): a thinner frame and inlay, and no
+   "For Ernest" in the frame. Its board, squares and pieces are the played board's own (Board.module.css). */
+.frame {
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.inlay {
+  padding: 1px;
+  border-width: 1.5px;
+}
+
+/* The squares, a corner of the board. The picture sets --squares. */
+.grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--squares), 1fr);
+  grid-template-rows: repeat(var(--squares), 1fr);
+}
+
+/* A mark: a target dot, or the layer of taken rings and arrows. Each fades out while "Show me" plays the move, and in
+   again after it, as fast as the target dots fade in (timings.ts). */
+.mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--target-fade-ms) ease-out;
+  pointer-events: none;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+/* The taken rings and the arrows, above the pieces. */
+.marks {
+  width: 100%;
+  height: 100%;
+}
+
+/* A taken man: a dashed cream ring, over a dark line so it shows on any piece (the design). Fading the man would
+   fail contrast for a dark man. */
+.takenUnder {
+  fill: none;
+  stroke: var(--man-dark);
+  stroke-opacity: 0.5;
+  stroke-width: 0.1;
+}
+
+.takenRing {
+  fill: none;
+  stroke: var(--cream);
+  stroke-width: 0.05;
+  stroke-dasharray: 0.12 0.08;
+}
+
+/* An arrow: a cream line over a dark line, with a head. A blocked arrow is dashed and ends in a bar. */
+.arrowUnder {
+  stroke: var(--man-dark);
+  stroke-opacity: 0.5;
+  stroke-width: 0.15;
+  stroke-linecap: round;
+}
+
+.arrow {
+  stroke: var(--cream);
+  stroke-width: 0.07;
+}
+
+.blocked {
+  stroke-dasharray: 0.14 0.1;
+}
+
+.headShape {
+  fill: var(--cream);
+}
+
+.barShape {
+  stroke: var(--cream);
+  stroke-width: 2.5;
+}

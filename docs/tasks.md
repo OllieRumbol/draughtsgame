@@ -330,6 +330,12 @@ Goal: How to play and About have their new content, approved by the owner.
     - Test 34 covers the page.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the page; then the owner's approval of the text in the pull request
   - Notes:
+    - Checkpoint: the page, its tests and `e2e/how-to-play.spec.ts` are done, and Verify's tests pass. Next: the reviews, then the owner's approval of the text in the pull request.
+    - `RulePicture` (`src/components/board/`) draws a corner of the board with the board's frame, squares and `Piece`. `Piece` has a new `squares` prop, so it sets its slot's size inline instead of in CSS.
+    - "Show me" plays the computer's slide, capture fade and crowning from `timings.ts`, then returns after 1 s. A second press starts it again. The design disables the button instead, which would lose the keyboard focus.
+    - The contents links scroll to a part and move the focus there, because the hash router owns the address's hash.
+    - Text sizes follow the type scale in plan 3.6, which wins over the design's 13, 15 and 18 px.
+    - Draft text edits for the owner are listed in the pull request. The house rules table was checked against Wikipedia's "English draughts" on 2026-11-26.
 
 - [ ] **T18 — Write the About page**
   - Refs: spec 4.1 item 15, spec 6.1.11 items 5–7, spec 6.4.4, plan 3.6 (content), test 29

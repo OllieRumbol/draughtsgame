@@ -1,5 +1,5 @@
 import { type RefObject, useEffect, useLayoutEffect, useRef } from "react";
-import { type Cell, type Position, CELL, isKing, ownerOf, samePosition } from "@/game/board";
+import { type Cell, type Position, BOARD_SIZE, CELL, isKing, ownerOf, samePosition } from "@/game/board";
 import styles from "./Piece.module.css";
 import { type Timings, captureFade, crowningLength } from "./timings";
 
@@ -18,6 +18,7 @@ type PieceProps = {
   onLanded: (id: number) => void; // its slide has ended
   onCrowned: (id: number) => void; // its crown has appeared
   onFaded: (id: number) => void; // its capture fade has ended
+  squares?: number; // the squares on each side of the board it stands on: 8, or fewer for a rule picture
 };
 
 // The slide's easing, as in the design (docs/design/site.html).
@@ -34,6 +35,7 @@ const CROWNING_LAYER = 6;
 // `transform`, so a king's offset and a lift stay as they are.
 export function Piece(props: PieceProps) {
   const { id, cell, crowning, position, look, leaving, slide, timings, onLanded, onCrowned, onFaded } = props;
+  const { squares = BOARD_SIZE } = props;
   const slotRef = useRef<HTMLDivElement>(null);
   const pieceRef = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<HTMLSpanElement>(null);
@@ -63,8 +65,8 @@ export function Piece(props: PieceProps) {
 
     const sliding = slot.animate(
       [
-        { left: percent(before.col), top: percent(before.row), zIndex: SLIDING_LAYER },
-        { left: percent(col), top: percent(row), zIndex: SLIDING_LAYER },
+        { left: percent(before.col, squares), top: percent(before.row, squares), zIndex: SLIDING_LAYER },
+        { left: percent(col, squares), top: percent(row, squares), zIndex: SLIDING_LAYER },
       ],
       { duration: slide, easing: SLIDE_EASING },
     );
@@ -97,7 +99,7 @@ export function Piece(props: PieceProps) {
       () => land(false),
     );
     return () => sliding.cancel();
-  }, [row, col, crowning, slide, timings, id, onLanded, onCrowned]);
+  }, [row, col, squares, crowning, slide, timings, id, onLanded, onCrowned]);
 
   // A captured piece fades and shrinks to 50% at its own jump, then the board removes it. It starts once, even if
   // the board draws the piece again while it fades.
@@ -130,7 +132,16 @@ export function Piece(props: PieceProps) {
   const slotClass = look === "lifted" ? `${styles.slot} ${styles.raised}` : styles.slot;
 
   return (
-    <div ref={slotRef} className={slotClass} style={{ left: percent(col), top: percent(row) }}>
+    <div
+      ref={slotRef}
+      className={slotClass}
+      style={{
+        left: percent(col, squares),
+        top: percent(row, squares),
+        width: percent(1, squares),
+        height: percent(1, squares),
+      }}
+    >
       <div
         ref={pieceRef}
         className={`${styles.piece} ${colour} ${kind} ${lookClass}`}
@@ -142,8 +153,9 @@ export function Piece(props: PieceProps) {
   );
 }
 
-function percent(index: number): string {
-  return `${index * 12.5}%`;
+// How far across the board a square is, or with an index of 1, how wide a square is.
+function percent(index: number, squares: number): string {
+  return `${(index * 100) / squares}%`;
 }
 
 // A king drawn as the man it was, until its crowning shows the crown.

@@ -1,11 +1,9 @@
-/* A turned piece, as in the design (docs/design/site.html). */
+/* A turned piece, as in the design (docs/design/site.html). The piece sets its slot's size and place, one square. */
 .slot {
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 12.5%;
-  height: 12.5%;
 }
 
 /* The lifted piece's slot, above the other pieces, as in the design. The focus ring is above this. */
