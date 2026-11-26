@@ -3,12 +3,24 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
+    # A fixed time puts the week's pull requests ready on Monday morning. The default is a random time in UTC.
     schedule:
       interval: weekly
-    # Minor and patch updates come as one pull request a week. Each major update has its own.
+      day: monday
+      time: "07:00"
+      timezone: Europe/London
+    # A release must be 7 days old before it is proposed. A compromised release is usually withdrawn within that
+    # time. Security updates ignore the cooldown, so fixes are not delayed.
+    cooldown:
+      default-days: 7
     groups:
+      # Minor and patch updates come as one pull request a week. Each major update has its own.
       minor-and-patch:
         update-types: [minor, patch]
+      # One vulnerability often touches several packages. This gives one pull request for all of them.
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
     ignore:
       # typescript-eslint supports TypeScript below 6.1 only, so a newer TypeScript cannot install
       # (plan section 3.5, decisions 1 and 14). Change this range when typescript-eslint supports one.
@@ -20,5 +32,16 @@ updates:
 
   - package-ecosystem: github-actions
     directory: /
+    # The same fixed time as npm, so all the week's pull requests are ready together.
     schedule:
       interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/London
+    # The same 7-day wait as npm, for the same reason.
+    cooldown:
+      default-days: 7
+    # All action updates come as one pull request a week.
+    groups:
+      actions:
+        patterns: ["*"]
