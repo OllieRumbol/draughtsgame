@@ -70,6 +70,19 @@ describe("the How to play page", () => {
     expect(window.location.hash).toBe("#/howtoplay");
   });
 
+  it("leaves a Ctrl click on a contents link to the browser, such as to open a new tab", async () => {
+    const user = userEvent.setup();
+    const main = await openPage();
+
+    await user.keyboard("{Control>}");
+    await user.click(within(main).getByRole("link", { name: "Our house rules" }));
+    await user.keyboard("{/Control}");
+
+    const heading = within(main).getByRole("heading", { level: 2, name: "Our house rules" });
+    expect(heading).not.toHaveFocus();
+    expect(heading.scrollIntoView).not.toHaveBeenCalled();
+  });
+
   it("gives each rule a board picture with a text alternative, and Show me for each but the end of the game", async () => {
     const main = await openPage();
 

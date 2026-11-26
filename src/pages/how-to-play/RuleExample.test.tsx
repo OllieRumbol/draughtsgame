@@ -153,6 +153,24 @@ describe("Show me", () => {
     expect(pieces(5)).toEqual(["man (2,3)", "man (3,2)", "man (1,2)"]);
   });
 
+  it("restarts its wait when pressed again before the first step", async () => {
+    render(
+      <RuleExample title="Jumping again" picture={JUMPING_AGAIN}>
+        Text
+      </RuleExample>,
+    );
+    const showMe = screen.getByRole("button", { name: "Show me: Jumping again" });
+
+    click(showMe);
+    await wait(200);
+    click(showMe);
+    // The first press's 250 ms have passed, but the second press started the wait again.
+    await wait(249);
+    expect(pieces(5)).toEqual(["man (4,1)", "man (3,2)", "man (1,2)"]);
+    await wait(1);
+    expect(pieces(5)).toEqual(["man (2,3)", "man (3,2)", "man (1,2)"]);
+  });
+
   it("with reduced motion, does not slide or crown, but still shows the jumps one at a time", async () => {
     reduceMotion();
     render(
