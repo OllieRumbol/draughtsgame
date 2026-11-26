@@ -32,6 +32,10 @@
   --man-dark: #1e140e;
   --man-dark-edge: #0a0604;
   --cream: #fff6e2;
+  /* A photo that the owner has not supplied yet on About: the design's dark brown, with faint cream stripes as
+     decoration. Its text is --maple and --cream. */
+  --placeholder: #3b2a1a;
+  --placeholder-stripe: rgba(255, 246, 226, 0.05);
 
   /* The wood grain, the lathe rings and the lift shadow: decoration from the design file, the same in both modes.
      Plan section 3.6 says they need no contrast. */

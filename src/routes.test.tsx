@@ -12,7 +12,7 @@ describe("the routes", () => {
   it.each([
     ["#/", "Play", "New game"],
     ["#/howtoplay", "How to play", "How to play"],
-    ["#/about", "About", "About"],
+    ["#/about", "About", "Ernest Rumbol"],
   ])("%s opens %s, and marks it as the current page", async (hash, name, heading) => {
     renderApp(hash);
 
@@ -41,7 +41,7 @@ describe("the routes", () => {
     expect(within(nav).getByRole("link", { name: "About" })).toHaveAttribute("href", "#/about");
 
     await user.click(within(nav).getByRole("link", { name: "About" }));
-    expect(await screen.findByRole("heading", { level: 1, name: "About" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: "Ernest Rumbol" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("link", { name: "Draughts" }));
     expect(await screen.findByRole("heading", { level: 1, name: "New game" })).toBeInTheDocument();
