@@ -62,7 +62,7 @@ type OutsideLinkProps = {
 // is decoration: the link's words say where it goes.
 function OutsideLink({ href, children }: OutsideLinkProps) {
   return (
-    <a className={links.link} href={href}>
+    <a className={`${links.link} ${links.outside}`} href={href}>
       {children}
       <svg className={links.external} viewBox="0 0 12 12" aria-hidden="true">
         <path d="M3 9L9 3M4 3H9V8" fill="none" stroke="currentColor" strokeWidth="1.6" />

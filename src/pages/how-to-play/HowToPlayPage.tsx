@@ -38,7 +38,8 @@ export function HowToPlayPage() {
       <title>How to play – Draughts</title>
       <h1>How to play</h1>
       <nav className={styles.contents} aria-label="On this page">
-        <span>On this page:</span>
+        {/* The nav already has this name, so a screen reader skips the visible label rather than say it twice. */}
+        <span aria-hidden="true">On this page:</span>
         {PARTS.map((part) => (
           <a key={part.id} href="#/howtoplay" className={links.link} onClick={(event) => goToPart(event, part.id)}>
             {part.title}

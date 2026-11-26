@@ -26,6 +26,17 @@ async function expectLinkLook(link: Locator, mode: "light" | "dark"): Promise<vo
   await expect(link).toHaveCSS("text-decoration-thickness", "3px");
 }
 
+// At 395 px, "the API" ends a line. Its arrow must stay on that line, not start the next one alone (design review).
+test("keeps the arrow of a link that leaves the site on the same line as the link's words", async ({ page }) => {
+  await page.setViewportSize({ width: 395, height: 800 });
+  await page.goto("./#/about");
+
+  for (const name of ["the web app", "the API"]) {
+    const link = page.getByRole("main").getByRole("link", { name, exact: true });
+    expect(await link.evaluate((element) => element.getClientRects().length)).toBe(1);
+  }
+});
+
 for (const mode of ["light", "dark"] as const) {
   for (const { address, links } of PAGES) {
     test(`text links on ${address} look like links in ${mode} mode`, async ({ page }) => {

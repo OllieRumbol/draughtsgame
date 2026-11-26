@@ -13,6 +13,11 @@
   text-decoration-thickness: 3px;
 }
 
+/* A link that leaves the site. Its words and its arrow stay on one line, so the arrow never starts a line alone. */
+.outside {
+  white-space: nowrap;
+}
+
 /* The small arrow after a link that leaves the site. */
 .external {
   width: 0.7em;
