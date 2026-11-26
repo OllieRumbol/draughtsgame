@@ -1,4 +1,5 @@
 import boardStyles from "@/components/board/Board.module.css";
+import links from "@/styles/links.module.css";
 import styles from "./AboutPage.module.css";
 
 // The tribute from `About.js` on `main` at commit da953ce, in three paragraphs (spec section 6.1.11, item 5).
@@ -43,18 +44,30 @@ export function AboutPage() {
           <p>
             The game is a React and TypeScript web app, hosted on GitHub Pages. The computer's moves come from a
             separate API, built with .NET and Azure Functions. The code for both is on GitHub:{" "}
-            <a className={styles.link} href="https://github.com/OllieRumbol/draughtsgame">
-              the web app
-            </a>{" "}
-            and{" "}
-            <a className={styles.link} href="https://github.com/OllieRumbol/DraughtsGameFunction">
-              the API
-            </a>
-            .
+            <OutsideLink href="https://github.com/OllieRumbol/draughtsgame">the web app</OutsideLink> and{" "}
+            <OutsideLink href="https://github.com/OllieRumbol/DraughtsGameFunction">the API</OutsideLink>.
           </p>
         </div>
       </div>
     </>
+  );
+}
+
+type OutsideLinkProps = {
+  href: string;
+  children: string;
+};
+
+// A link that leaves the site, with a small arrow after it (the owner's choice of link look, 2026-11-26). The arrow
+// is decoration: the link's words say where it goes.
+function OutsideLink({ href, children }: OutsideLinkProps) {
+  return (
+    <a className={links.link} href={href}>
+      {children}
+      <svg className={links.external} viewBox="0 0 12 12" aria-hidden="true">
+        <path d="M3 9L9 3M4 3H9V8" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      </svg>
+    </a>
   );
 }
 

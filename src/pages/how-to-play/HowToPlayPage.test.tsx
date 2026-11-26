@@ -46,6 +46,8 @@ describe("the How to play page", () => {
     const main = await openPage();
 
     const contents = within(main).getByRole("navigation", { name: "On this page" });
+    // A visible label, so the links read as a list of the page's parts (the owner's choice, 2026-11-26).
+    expect(contents).toHaveTextContent(/^On this page:/);
     expect(
       within(contents)
         .getAllByRole("link")

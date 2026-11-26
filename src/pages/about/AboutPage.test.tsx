@@ -72,6 +72,15 @@ describe("the About page", () => {
     );
   });
 
+  it("marks each link that leaves the site with a small arrow, which a screen reader skips", async () => {
+    const main = await openPage();
+
+    for (const name of ["the web app", "the API"]) {
+      const link = within(main).getByRole("link", { name });
+      expect(link.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    }
+  });
+
   it("has no project plan cards and no old list of tools (item 6)", async () => {
     const main = await openPage();
 

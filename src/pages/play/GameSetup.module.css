@@ -35,14 +35,6 @@
   margin: 0 0 18px;
 }
 
-.link {
-  color: var(--text);
-  text-decoration: underline;
-  text-decoration-color: var(--brass);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
-}
-
 .choice {
   min-width: 0;
   margin: 0 0 16px;

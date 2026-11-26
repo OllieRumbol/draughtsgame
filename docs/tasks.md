@@ -350,6 +350,7 @@ Goal: How to play and About have their new content, approved by the owner.
     - No photos yet (owner, 2026-11-26): both photos and the photo's caption are visible placeholders. T20's Notes carry them forward (plan risk 9).
     - Owner approvals on 2026-11-26: all five tribute edits, one line at a time; the page text as drafted; the tokens `--placeholder` and `--placeholder-stripe`, with two rows in plan 3.6.
     - The type scale (plan 3.6) wins over the design's sizes: the tribute is 20 px, and 16 px on a phone.
+    - Outside the Done when list, owner's choice on 2026-11-26: one shared link look (`links.module.css`, `--link` in plan 3.6) on every page.
     - Evidence: pull request #84.
 
 ## Phase 5 — Release

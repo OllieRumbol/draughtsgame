@@ -8,14 +8,6 @@
   margin: 0 0 12px;
 }
 
-.link {
-  color: var(--text);
-  text-decoration: underline;
-  text-decoration-color: var(--brass);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
-}
-
 /* The contents links at the top. */
 .contents {
   display: flex;

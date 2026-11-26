@@ -51,14 +51,6 @@
   font-size: var(--text-24);
 }
 
-.link {
-  color: var(--text);
-  text-decoration: underline;
-  text-decoration-color: var(--brass);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
-}
-
 /* The board's walnut frame (Board.module.css), with an even edge round a photo. "div" makes this win over that
    file's padding, whatever the order of the CSS. */
 div.frame {
