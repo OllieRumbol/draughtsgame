@@ -17,6 +17,8 @@ export type Timings = {
   crownRipple: number; // one soft brass ripple spreads out
   crownSettleStart: number; // the piece starts to settle, this long after the ripple starts
   crownSettle: number; // the piece settles back down with a small dip
+  showMeStart: number; // How to play's "Show me": the pause before the first step, once the marks have faded (design)
+  showMeReturn: number; // "Show me" returns to the still picture this long after its last step (plan 3.6: about 1 s)
 };
 
 export const NORMAL_TIMINGS: Timings = {
@@ -34,6 +36,8 @@ export const NORMAL_TIMINGS: Timings = {
   crownRipple: 420,
   crownSettleStart: 160,
   crownSettle: 260,
+  showMeStart: 250,
+  showMeReturn: 1000,
 };
 
 // When the device asks for reduced motion, slides, lifts and the crowning are instant. Fades stay, shortened to

@@ -319,7 +319,7 @@ Goal: a full game can be played in the new look, against another person or the c
 
 Goal: How to play and About have their new content, approved by the owner.
 
-- [ ] **T17 — Write the How to play page**
+- [x] **T17 — Write the How to play page**
   - Refs: spec 2.1, spec 4.1 item 12, spec 6.1.11 items 1, 3, 4 and 7, spec 6.4.4, plan 3.6, design
   - Depends on: T11, T12, T13, T16
   - Done when:
@@ -330,6 +330,11 @@ Goal: How to play and About have their new content, approved by the owner.
     - Test 34 covers the page.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the page; then the owner's approval of the text in the pull request
   - Notes:
+    - `CornerPicture` draws a corner of the board with the board's frame, squares and `Piece` (new `squares` prop). `BoardPicture` stays separate: the Play layout tests measure it.
+    - Owner approvals on 2026-11-26: "Show me" stays active and restarts on a second press, and the page's wording as drafted.
+    - Outside the Done when list: the "page not found" corner picture from the T10 Notes.
+    - `RuleExample.test.tsx` clicks with `fireEvent`: a `user-event` click never ends under Vitest's fake timers.
+    - Evidence: pull request #83.
 
 - [ ] **T18 — Write the About page**
   - Refs: spec 4.1 item 15, spec 6.1.11 items 5–7, spec 6.4.4, plan 3.6 (content), test 29

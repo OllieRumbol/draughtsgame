@@ -14,6 +14,8 @@ describe("the board's timings", () => {
       crownRise: 180,
       crownRipple: 420,
       crownSettle: 260,
+      showMeStart: 250,
+      showMeReturn: 1000,
     });
   });
 

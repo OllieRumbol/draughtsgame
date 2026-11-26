@@ -1,0 +1,5 @@
+/* The small empty corner of a board above the heading, as in the design (docs/design/site.html, "page not found"). */
+.picture {
+  width: 96px;
+  margin: 0 0 18px;
+}
