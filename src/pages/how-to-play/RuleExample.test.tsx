@@ -64,6 +64,13 @@ beforeEach(() => {
   vi.useFakeTimers();
 });
 
+// A click with fireEvent, not user-event. A user-event click awaits React Testing Library's async wrapper, which waits
+// on a setTimeout of 0 and moves a fake clock on only under Jest (asyncWrapper in @testing-library/react's
+// dist/pure.js). Under Vitest's fake clock the click never ends (probe, 2026-11-26). These tests need the fake clock.
+function click(element: HTMLElement): void {
+  fireEvent.click(element);
+}
+
 afterEach(() => {
   vi.useRealTimers();
 });
@@ -81,7 +88,7 @@ describe("Show me", () => {
     expect(marksShown()).toBe(true);
     expect(pieces(5)).toEqual(["man (4,1)", "man (3,2)", "man (1,2)"]);
 
-    fireEvent.click(screen.getByRole("button", { name: "Show me: Jumping again" }));
+    click(screen.getByRole("button", { name: "Show me: Jumping again" }));
 
     // The marks fade out while it plays, as in the design.
     expect(marksShown()).toBe(false);
@@ -118,7 +125,7 @@ describe("Show me", () => {
       </RuleExample>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Show me: Kings" }));
+    click(screen.getByRole("button", { name: "Show me: Kings" }));
     await wait(250);
     // Drawn as a man until the crowning shows the crown.
     expect(pieces(5)).toEqual(["man (0,1)", "king (3,2)"]);
@@ -136,11 +143,11 @@ describe("Show me", () => {
     );
     const showMe = screen.getByRole("button", { name: "Show me: Jumping again" });
 
-    fireEvent.click(showMe);
+    click(showMe);
     await wait(250);
     expect(pieces(5)).toEqual(["man (2,3)", "man (3,2)", "man (1,2)"]);
 
-    fireEvent.click(showMe);
+    click(showMe);
     expect(pieces(5)).toEqual(["man (4,1)", "man (3,2)", "man (1,2)"]);
     await wait(250);
     expect(pieces(5)).toEqual(["man (2,3)", "man (3,2)", "man (1,2)"]);
@@ -154,7 +161,7 @@ describe("Show me", () => {
       </RuleExample>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Show me: Jumping again" }));
+    click(screen.getByRole("button", { name: "Show me: Jumping again" }));
     await wait(250);
     expect(pieces(5)).toEqual(["man (2,3)", "man (3,2)", "man (1,2)"]);
     // The computer's pause stays, so each jump can be seen.

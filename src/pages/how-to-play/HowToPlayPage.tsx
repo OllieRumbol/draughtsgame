@@ -20,8 +20,12 @@ export function HowToPlayPage() {
   const reducedMotion = usePrefersReducedMotion();
 
   // The site uses the address's hash for its pages, so a contents link cannot use it to jump to a part. It scrolls to
-  // the part's heading instead, and moves the focus there, so the keyboard and a screen reader follow.
+  // the part's heading instead, and moves the focus there, so the keyboard and a screen reader follow. A click with a
+  // modifier key, such as Ctrl to open a new tab, is left to the browser, which opens How to play at the top.
   function goToPart(event: MouseEvent<HTMLAnchorElement>, id: string): void {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+      return;
+    }
     event.preventDefault();
     const heading = document.getElementById(id);
     heading?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
@@ -126,7 +130,7 @@ export function HowToPlayPage() {
           </h3>
           <ul className={styles.list}>
             <li>Click or tap one of your pieces to pick it up. Cream dots show where it can go.</li>
-            <li>Click a dot to move there. Click the piece again to put it down.</li>
+            <li>Click a dot to move there. Click the piece again to put it down, unless it has just jumped.</li>
             <li>
               After a jump, the piece stays up if it can jump again. Click the next dot, or press{" "}
               <strong>End turn</strong>.
@@ -157,7 +161,7 @@ export function HowToPlayPage() {
               moves it to the square you are on.
             </li>
             <li>
-              <kbd className={styles.key}>Escape</kbd> puts the piece down.
+              <kbd className={styles.key}>Escape</kbd> puts the piece down, unless it has just jumped.
             </li>
             <li>A screen reader reads each square's row and column, and what stands on it. Every move is read out.</li>
           </ul>

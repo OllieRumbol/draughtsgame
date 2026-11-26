@@ -2,6 +2,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderApp } from "@/test-app";
+import { JUMPING_AGAIN, KINGS, MOVING, TAKING, WINNING } from "./rule-pictures";
 
 beforeEach(() => {
   // jsdom does not lay out the page, so it has no scrollIntoView.
@@ -72,11 +73,11 @@ describe("the How to play page", () => {
   it("gives each rule a board picture with a text alternative, and Show me for each but the end of the game", async () => {
     const main = await openPage();
 
-    const pictures = within(main).getAllByRole("img");
-    expect(pictures).toHaveLength(5);
-    for (const picture of pictures) {
-      expect(picture.getAttribute("aria-label")?.length).toBeGreaterThan(20);
-    }
+    // Each picture sits with its own rule, and its text alternative describes that picture.
+    const labels = within(main)
+      .getAllByRole("img")
+      .map((picture) => picture.getAttribute("aria-label"));
+    expect(labels).toEqual([MOVING, TAKING, JUMPING_AGAIN, KINGS, WINNING].map((picture) => picture.label));
     expect(
       within(main)
         .getAllByRole("button")

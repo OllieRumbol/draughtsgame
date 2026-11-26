@@ -59,7 +59,8 @@
   text-align: center;
 }
 
-.showMe {
+/* ".rule" makes these win over the button's own padding, whatever the order of the CSS. */
+.rule .showMe {
   display: block;
   width: 100%;
   margin-top: 8px;
@@ -153,7 +154,7 @@
   margin: 28px 0 0;
 }
 
-.start {
+.end .start {
   padding: 12px 22px;
 }
 

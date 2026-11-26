@@ -1,6 +1,6 @@
 // The small board pictures on How to play (spec section 6.1.11, item 3), as the design draws them
 // (docs/design/site.html, RULES). Each picture is a corner of the board, a few squares wide. Plain TypeScript.
-import type { PictureMarks, PicturePiece } from "@/components/board/RulePicture";
+import type { PictureMarks, PicturePiece } from "@/components/board/CornerPicture";
 import { type Cell, type Position, CELL, samePosition } from "@/game/board";
 
 // One step of "Show me": a move or one jump, which may take a man, or crown the man that makes it.

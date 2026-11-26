@@ -27,6 +27,8 @@ describe("the routes", () => {
 
     expect(await screen.findByRole("heading", { level: 1, name: "Page not found" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Go to Play" })).toHaveAttribute("href", "#/");
+    // The design's empty corner of the board, with its text alternative (T10 Notes).
+    expect(screen.getByRole("img", { name: "An empty corner of a draughts board." })).toBeInTheDocument();
   });
 
   it("links every page to the other two, and moves between them (item 1, and spec section 6.4.1, item 4)", async () => {

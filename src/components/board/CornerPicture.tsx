@@ -3,10 +3,10 @@ import { type Cell, type Position, isDarkSquare, samePosition } from "@/game/boa
 import styles from "./Board.module.css";
 import squareStyles from "./BoardSquare.module.css";
 import { Piece } from "./Piece";
-import pictureStyles from "./RulePicture.module.css";
-import type { Timings } from "./timings";
+import pictureStyles from "./CornerPicture.module.css";
+import { type Timings, NORMAL_TIMINGS } from "./timings";
 
-// A piece on a rule picture. The id stays the same while the piece moves, so it slides (T12).
+// A piece on a corner picture. The id stays the same while the piece moves, so it slides (T12).
 export type PicturePiece = {
   id: number;
   cell: Cell;
@@ -25,20 +25,24 @@ export type PictureMarks = {
   arrows: PictureArrow[];
 };
 
-type RulePictureProps = {
+type CornerPictureProps = {
   squares: number; // the squares on each side: a corner of the board, such as 4 by 4
   pieces: PicturePiece[];
-  marks: PictureMarks;
-  marksShown: boolean;
+  marks?: PictureMarks;
+  marksShown?: boolean;
   label: string; // the text alternative, which says what the picture shows (spec section 6.4.4)
-  timings: Timings;
-  onCrowned: (id: number) => void;
+  timings?: Timings;
+  onCrowned?: (id: number) => void;
 };
 
-// A small picture of a corner of the board for How to play, in the same frame, wood and pieces as the board that is
-// played, as the design shows. Its pieces move with the board's own motion (plan section 3.6, "Show me"). It cannot be
-// played, so a screen reader reads it as one picture with its label.
-export function RulePicture({ squares, pieces, marks, marksShown, label, timings, onCrowned }: RulePictureProps) {
+const NO_MARKS: PictureMarks = { targets: [], taken: [], arrows: [] };
+
+// A small picture of a corner of the board, in the same frame, wood and pieces as the board that is played, as the
+// design shows on How to play and on "page not found". Its pieces move with the board's own motion (plan section 3.6,
+// "Show me"). It cannot be played, so a screen reader reads it as one picture with its label.
+export function CornerPicture(props: CornerPictureProps) {
+  const { squares, pieces, label } = props;
+  const { marks = NO_MARKS, marksShown = true, timings = NORMAL_TIMINGS, onCrowned = ignore } = props;
   const indexes = Array.from({ length: squares }, (_, index) => index);
   const layout = { "--squares": squares, "--target-fade-ms": `${timings.targetFade}ms` } as CSSProperties;
 
@@ -153,5 +157,5 @@ function arrowLine({ from, to, blocked }: PictureArrow): { x1: number; y1: numbe
   };
 }
 
-// The pictures put no piece down: the pieces are never lifted.
+// The pictures lift no piece, so none is put down. A still picture crowns no man.
 function ignore(): void {}

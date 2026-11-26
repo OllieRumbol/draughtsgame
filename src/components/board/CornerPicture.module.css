@@ -1,11 +1,12 @@
-/* A small board picture on How to play (docs/design/site.html, "mini"): a thinner frame and inlay, and no
-   "For Ernest" in the frame. Its board, squares and pieces are the played board's own (Board.module.css). */
-.frame {
+/* A small board picture (docs/design/site.html, "mini"): a thinner frame and inlay, and no "For Ernest" in the frame.
+   Its board, squares and pieces are the played board's own (Board.module.css). These rules override that file's
+   .frame and .inlay, so their selectors are more specific: the override does not depend on the order of the CSS. */
+div.frame {
   padding: 5px;
   border-radius: 5px;
 }
 
-.inlay {
+.frame .inlay {
   padding: 1px;
   border-width: 1.5px;
 }
