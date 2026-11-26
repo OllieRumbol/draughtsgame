@@ -31,7 +31,7 @@ const states: State[] = [
   { name: "The computer moving", address: "./#/", heading: "Play", computer: "moving" },
   { name: "The computer's move failed", address: "./#/", heading: "Play", computer: "failed" },
   { name: "How to play", address: "./#/howtoplay", heading: "How to play" },
-  { name: "About", address: "./#/about", heading: "About" },
+  { name: "About", address: "./#/about", heading: "Ernest Rumbol" },
   { name: "Page not found", address: "./#/old-page", heading: "Page not found" },
 ];
 

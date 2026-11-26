@@ -4,6 +4,7 @@ import { BoardPicture } from "@/components/board/BoardPicture";
 import { STARTING_BOARD } from "@/game/board";
 import type { Settings } from "@/game/game-state";
 import buttons from "@/styles/buttons.module.css";
+import links from "@/styles/links.module.css";
 import styles from "./GameSetup.module.css";
 import { DEFAULT_SETTINGS } from "./play-state";
 import { levelName } from "./status-text";
@@ -50,7 +51,7 @@ export function GameSetup({ onStart, focusHeading }: GameSetupProps) {
         </h1>
         <p className={styles.welcome}>
           Draughts with our family's house rules, for two players or against the computer.{" "}
-          <Link to="/about" className={styles.link}>
+          <Link to="/about" className={links.link}>
             Why this game exists
           </Link>
         </p>

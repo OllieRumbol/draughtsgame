@@ -336,7 +336,7 @@ Goal: How to play and About have their new content, approved by the owner.
     - `RuleExample.test.tsx` clicks with `fireEvent`: a `user-event` click never ends under Vitest's fake timers.
     - Evidence: pull request #83.
 
-- [ ] **T18 — Write the About page**
+- [x] **T18 — Write the About page**
   - Refs: spec 4.1 item 15, spec 6.1.11 items 5–7, spec 6.4.4, plan 3.6 (content), test 29
   - Depends on: T10
   - Done when:
@@ -346,7 +346,12 @@ Goal: How to play and About have their new content, approved by the owner.
     - "How it's built" links to both repositories.
     - Test 29 passes, and test 34 covers the page.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the page; then the owner's approval of the text in the pull request
-  - Notes: The owner is asked for the photo, and for a photo of the family board if there is one, at the start of this task.
+  - Notes:
+    - No photos yet (owner, 2026-11-26): both photos and the photo's caption are visible placeholders. T20's Notes carry them forward (plan risk 9).
+    - Owner approvals on 2026-11-26: all five tribute edits, one line at a time; the page text as drafted; the tokens `--placeholder` and `--placeholder-stripe`, with two rows in plan 3.6.
+    - The type scale (plan 3.6) wins over the design's sizes: the tribute is 20 px, and 16 px on a phone.
+    - Outside the Done when list, owner's choice on 2026-11-26: one shared link look (`links.module.css`, `--link` in plan 3.6) on every page.
+    - Evidence: pull request #84.
 
 ## Phase 5 — Release
 
@@ -371,6 +376,7 @@ Goal: the new web app is live, checked for accessibility, and signed off by the 
     - The owner has signed off the look in this task's pull request.
   - Verify: the design review report and the owner's sign-off, both recorded in the pull request; `npm run check` and `npm run e2e` pass after any fix
   - Notes:
+    - From T18: the photo of Ernest, its caption and the family board photo replace the About placeholders before the owner signs off, if the owner has supplied them (plan risk 9).
 
 - [ ] **T21 — Release the new web app (manual)**
   - Refs: spec 2.5, spec 3 goals 2 and 7, spec 9, plan 6 (secrets), plan 8.1, plan 8.3 (release), risk 1

@@ -46,6 +46,10 @@ describe("the How to play page", () => {
     const main = await openPage();
 
     const contents = within(main).getByRole("navigation", { name: "On this page" });
+    // A visible label, so the links read as a list of the page's parts (the owner's choice, 2026-11-26).
+    expect(contents).toHaveTextContent(/^On this page:/);
+    // The nav's name already says it, so a screen reader does not hear it twice.
+    expect(within(contents).getByText("On this page:")).toHaveAttribute("aria-hidden", "true");
     expect(
       within(contents)
         .getAllByRole("link")

@@ -2,6 +2,7 @@ import type { MouseEvent } from "react";
 import { Link } from "react-router";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import buttons from "@/styles/buttons.module.css";
+import links from "@/styles/links.module.css";
 import styles from "./HowToPlayPage.module.css";
 import { RuleExample } from "./RuleExample";
 import { JUMPING_AGAIN, KINGS, MOVING, TAKING, WINNING } from "./rule-pictures";
@@ -37,8 +38,10 @@ export function HowToPlayPage() {
       <title>How to play – Draughts</title>
       <h1>How to play</h1>
       <nav className={styles.contents} aria-label="On this page">
+        {/* The nav already has this name, so a screen reader skips the visible label rather than say it twice. */}
+        <span aria-hidden="true">On this page:</span>
         {PARTS.map((part) => (
-          <a key={part.id} href="#/howtoplay" className={styles.link} onClick={(event) => goToPart(event, part.id)}>
+          <a key={part.id} href="#/howtoplay" className={links.link} onClick={(event) => goToPart(event, part.id)}>
             {part.title}
           </a>
         ))}
@@ -114,7 +117,7 @@ export function HowToPlayPage() {
         <p>
           <strong>Why is taking a choice?</strong> Grandad liked forced taking. I thought the game was more tactical
           without it.{" "}
-          <Link to="/about" className={styles.link}>
+          <Link to="/about" className={links.link}>
             Read about Ernest
           </Link>
         </p>

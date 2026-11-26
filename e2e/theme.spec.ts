@@ -56,7 +56,7 @@ test("keeps the player's choice after a refresh and on another page", async ({ p
   await page.reload();
   await page.getByRole("link", { name: "About" }).click();
 
-  await expect(page.getByRole("heading", { level: 1, name: "About" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Ernest Rumbol" })).toBeVisible();
   await expect(themeButton(page, "dark")).toBeVisible();
   await expect(page.locator("body")).toHaveCSS("background-color", DARK_PAGE);
 });

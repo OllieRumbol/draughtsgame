@@ -1,0 +1,106 @@
+/* About, as in the design (docs/design/site.html, aboutHTML). Sizes follow the type scale in plan section 3.6, which
+   wins over the design's 13, 17 and 18 px. */
+
+/* The photo on the left, the tribute on the right. */
+.about {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.photo {
+  margin: 0;
+}
+
+.prose {
+  max-width: 640px;
+}
+
+.prose p {
+  margin: 0 0 12px;
+}
+
+.prose .tribute {
+  font-size: var(--text-20);
+  line-height: 1.6;
+}
+
+.caption {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: var(--text-14);
+  text-align: center;
+}
+
+/* A caption that the owner has not written yet: a dashed box, so it shows as unfinished. */
+.captionToCome {
+  padding: 6px 8px;
+  border: 1px dashed var(--text-muted);
+  border-radius: 4px;
+  text-align: left;
+}
+
+.boardPhoto {
+  max-width: 360px;
+  margin: 8px 0 4px;
+}
+
+.part {
+  margin: 32px 0 10px;
+  font-size: var(--text-24);
+}
+
+/* The board's walnut frame (Board.module.css), with an even edge round a photo. "div" makes this win over that
+   file's padding, whatever the order of the CSS. */
+div.frame {
+  padding: 9px;
+}
+
+/* A photo that the owner has not supplied yet (the design's placeholder). */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  padding: 16px;
+  background:
+    repeating-linear-gradient(135deg, var(--placeholder-stripe) 0 10px, transparent 10px 20px), var(--placeholder);
+  color: var(--maple);
+  font-size: var(--text-14);
+  text-align: center;
+}
+
+.portrait {
+  aspect-ratio: 4 / 5;
+}
+
+.landscape {
+  aspect-ratio: 4 / 3;
+}
+
+.placeholderTitle {
+  color: var(--cream);
+  font-family: var(--font-heading);
+  font-size: var(--text-20);
+  font-weight: 500;
+}
+
+/* A phone: the photo, smaller and centred, above the tribute (the design's phone layout). */
+@media (max-width: 640px) {
+  .about {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .photo {
+    width: 72%;
+    margin: 0 auto;
+  }
+
+  .prose .tribute {
+    font-size: var(--text-16);
+  }
+}
