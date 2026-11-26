@@ -319,7 +319,7 @@ Goal: a full game can be played in the new look, against another person or the c
 
 Goal: How to play and About have their new content, approved by the owner.
 
-- [ ] **T17 — Write the How to play page**
+- [x] **T17 — Write the How to play page**
   - Refs: spec 2.1, spec 4.1 item 12, spec 6.1.11 items 1, 3, 4 and 7, spec 6.4.4, plan 3.6, design
   - Depends on: T11, T12, T13, T16
   - Done when:
@@ -330,12 +330,11 @@ Goal: How to play and About have their new content, approved by the owner.
     - Test 34 covers the page.
   - Verify: `npm run check`, then `npm run e2e`; then the design-reviewer agent on the page; then the owner's approval of the text in the pull request
   - Notes:
-    - Checkpoint: the page, its tests and `e2e/how-to-play.spec.ts` are done, and the three reviews' findings are fixed. Next: the owner's approval of the text in the pull request.
-    - `CornerPicture` (`src/components/board/`) draws a corner of the board with the board's frame, squares and `Piece`, which has a new `squares` prop. `BoardPicture` stays separate: it draws a whole `Board` in the full frame with "For Ernest", and the Play layout tests measure it.
-    - "Show me" plays the computer's slide, capture fade and crowning, with its own start pause and return time in `timings.ts`. A second press starts it again; the design disables the button, which would lose the focus. The owner approved this on 2026-11-26.
-    - Outside the Done when list: the "page not found" corner picture that the T10 Notes handed to T17.
-    - `RuleExample.test.tsx` clicks with `fireEvent`: a `user-event` click never ends under Vitest's fake timers (probe, 2026-11-26).
-    - Text sizes follow plan 3.6. The house rules table was checked against Wikipedia's "English draughts" on 2026-11-26.
+    - `CornerPicture` draws a corner of the board with the board's frame, squares and `Piece` (new `squares` prop). `BoardPicture` stays separate: the Play layout tests measure it.
+    - Owner approvals on 2026-11-26: "Show me" stays active and restarts on a second press, and the page's wording as drafted.
+    - Outside the Done when list: the "page not found" corner picture from the T10 Notes.
+    - `RuleExample.test.tsx` clicks with `fireEvent`: a `user-event` click never ends under Vitest's fake timers.
+    - Evidence: pull request #83.
 
 - [ ] **T18 — Write the About page**
   - Refs: spec 4.1 item 15, spec 6.1.11 items 5–7, spec 6.4.4, plan 3.6 (content), test 29
