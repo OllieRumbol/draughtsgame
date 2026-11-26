@@ -32,8 +32,9 @@
   --man-dark: #1e140e;
   --man-dark-edge: #0a0604;
   --cream: #fff6e2;
-  /* A photo that the owner has not supplied yet on About: the design's dark brown, with faint cream stripes as
-     decoration. Its text is --maple and --cream. */
+
+  /* A photo on About that the owner has not supplied yet: the design's dark brown, the same in both modes, with faint
+     cream stripes as decoration. Its text is --maple and --cream. */
   --placeholder: #3b2a1a;
   --placeholder-stripe: rgba(255, 246, 226, 0.05);
 

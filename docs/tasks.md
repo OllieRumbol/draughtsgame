@@ -376,6 +376,7 @@ Goal: the new web app is live, checked for accessibility, and signed off by the 
     - The owner has signed off the look in this task's pull request.
   - Verify: the design review report and the owner's sign-off, both recorded in the pull request; `npm run check` and `npm run e2e` pass after any fix
   - Notes:
+    - From T18: the photo of Ernest, its caption and the family board photo replace the About placeholders before the owner signs off, if the owner has supplied them (plan risk 9).
 
 - [ ] **T21 — Release the new web app (manual)**
   - Refs: spec 2.5, spec 3 goals 2 and 7, spec 9, plan 6 (secrets), plan 8.1, plan 8.3 (release), risk 1
