@@ -357,7 +357,7 @@ Goal: How to play and About have their new content, approved by the owner.
 
 Goal: the new web app is live, checked for accessibility, and signed off by the owner, and the old release path is gone.
 
-- [ ] **T19 — Finish the accessibility and layout checks**
+- [x] **T19 — Finish the accessibility and layout checks**
   - Refs: spec 3 goal 6, spec 6.4.1 item 3, spec 6.4.2 items 4 and 7, spec 6.5 item 1, spec 6.6 item 14, plan 3.6 (colour tokens), plan 7.1, tests 34, 35 and 36, risks 7 and 8
   - Depends on: T13, T14, T15, T16, T17, T18
   - Done when:
@@ -366,11 +366,11 @@ Goal: the new web app is live, checked for accessibility, and signed off by the 
     - Every finding is fixed, or listed in the pull request with the reason it is accepted.
   - Verify: `npm run e2e`
   - Notes:
-    - Test 34 gains two states: a two-player game with nothing selected, and a computer game on the person's turn after its move (the level and the last-move mark).
-    - Risk 8: axe does not check graphics, so test 34 also measures each man's colour against `--walnut` in every state (at least 3 to 1). It measures colour, not the step-back fade, which is the exception in spec 6.5 item 1.
-    - Test 35 (`layout.spec.ts`) sets 200% zoom at 1280 px as a 640 by 450 window at 2 device pixels to each CSS pixel. It runs in the desktop projects. The same file checks that squares are at least 24 by 24 at 320 px (spec 6.4.2 item 4).
+    - Test 34 adds two states (nothing selected; the person's turn in a computer game) and measures each man's colour against walnut in every state (risk 8). The step-back fade is the exception in spec 6.5 item 1.
+    - Test 35 (`layout.spec.ts`) sets 200% zoom at 1280 px as a 640 by 450 window at 2 device pixels to each CSS pixel. The same file checks squares of at least 24 by 24 at 320 px.
     - Test 36 already existed (T11, `board.spec.ts`). Risk 7 (a busy board at 320 px) is checked by T20's design review.
-    - Firefox does not start on this machine ("spawn UNKNOWN", as in T16 to T18). The required `e2e` check runs it in CI.
+    - Firefox does not start on this machine; the required `e2e` check runs it in CI.
+    - Evidence: pull request #86.
 
 - [ ] **T20 — Sign off the look and the accessibility (manual)**
   - Refs: spec 3 goals 5 and 6, spec 6.4.1 item 1, spec 6.5 item 1, spec 9, plan 3.6, design
