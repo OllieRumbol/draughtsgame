@@ -166,7 +166,11 @@ async function openState(page: Page, state: State): Promise<void> {
 // The contrast ratio of two colours, by the WCAG 2.2 formula. Each colour is "rgb(r, g, b)", as the browser gives it.
 function contrastRatio(first: string, second: string): number {
   const luminance = (colour: string): number => {
-    const channels = colour.match(/\d+/g)?.slice(0, 3).map(Number) ?? [];
+    const channels = colour.match(/[\d.]+/g)?.map(Number) ?? [];
+    // A see-through colour shows the colour under it, so this formula alone would give the wrong ratio.
+    if (channels.length !== 3) {
+      throw new Error(`Expected an opaque "rgb(r, g, b)" colour, but got "${colour}".`);
+    }
     const [red, green, blue] = channels.map((channel) => {
       const value = channel / 255;
       return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
@@ -181,23 +185,29 @@ function contrastRatio(first: string, second: string): number {
 // against the walnut squares. Each needs 3 to 1 (WCAG 2.2, success criterion 1.4.11). Plan section 3.6 measured 4.94
 // for player 1's men and 3.10 for player 2's. The test measures the men's colour, not their fade: the faded men while
 // a piece is selected are the exception in spec section 6.5, item 1.
-async function menContrastOnWalnut(page: Page): Promise<number[]> {
-  const colours = await page.evaluate(() => {
-    // A probe element turns each colour into "rgb(r, g, b)".
+async function menColoursOnWalnut(page: Page): Promise<{ bodies: string[]; walnut: string }> {
+  return page.evaluate(() => {
+    // A probe element turns each colour into "rgb(r, g, b)". An empty colour stays empty, so the test can fail on it.
     const probe = document.createElement("span");
     document.body.append(probe);
     const toRgb = (colour: string): string => {
+      if (colour === "") {
+        return "";
+      }
       probe.style.color = colour;
       return getComputedStyle(probe).color;
     };
     const bodies = [...document.querySelectorAll("[data-look]")].map((piece) =>
       toRgb(getComputedStyle(piece).getPropertyValue("--body").trim()),
     );
-    const walnut = toRgb(getComputedStyle(document.documentElement).getPropertyValue("--walnut").trim());
+    // The game board's row 1, column 2 is walnut (spec section 2.3). Pages without the game board use the token.
+    const walnutSquare = document.querySelector('[role="gridcell"][aria-label^="Row 1, column 2,"]');
+    const walnut = walnutSquare
+      ? getComputedStyle(walnutSquare).backgroundColor
+      : toRgb(getComputedStyle(document.documentElement).getPropertyValue("--walnut").trim());
     probe.remove();
     return { bodies: [...new Set(bodies)], walnut };
   });
-  return colours.bodies.map((body) => contrastRatio(body, colours.walnut));
 }
 
 // axe gives the same result in every browser project, so it runs once, in desktop Chromium.
@@ -215,8 +225,13 @@ for (const state of states) {
         const results = state.computer === "moving" ? await analyzeOnStoppedClock(page, axe) : await axe.analyze();
 
         expect(results.violations).toEqual([]);
-        for (const ratio of await menContrastOnWalnut(page)) {
-          expect(ratio).toBeGreaterThanOrEqual(3);
+        const men = await menColoursOnWalnut(page);
+        if (state.game !== undefined || state.computer !== undefined) {
+          // Both players' men are on the board, so the check cannot pass by measuring nothing.
+          expect(men.bodies).toHaveLength(2);
+        }
+        for (const body of men.bodies) {
+          expect(contrastRatio(body, men.walnut)).toBeGreaterThanOrEqual(3);
         }
       });
     }

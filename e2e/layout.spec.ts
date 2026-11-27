@@ -1,5 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
-import { startTwoPlayerGame } from "./play.ts";
+import { startComputerGame, startTwoPlayerGame } from "./play.ts";
 
 // Plan section 3.6, "Page size": on a window 1,000 px or wider, the Play page's board fills the window's height, less
 // the header and the page's margins, up to 840 px, and nothing scrolls. The header keeps the same edges as the game.
@@ -89,7 +89,8 @@ for (const size of NARROW_WINDOWS) {
 // Plan section 7.2, test 35: no page scrolls sideways at 320 px, at 2560 px, or at 200% zoom on a 1280 px window
 // (spec section 6.4.1, item 3, and section 6.6, item 14). A 1280 by 900 window at 200% zoom lays the page out in
 // 640 by 450 CSS pixels, at 2 device pixels to each, so the test sets that window. WCAG's reflow rule uses the same
-// equivalence: 1280 CSS pixels at 400% zoom is 320 CSS pixels.
+// equivalence: 1280 CSS pixels at 400% zoom is 320 CSS pixels. The test measures the whole page's width. No page has
+// a box that scrolls on its own, so that is where sideways scrolling would show.
 const SCROLL_WINDOWS = [
   { name: "320 px wide", viewport: { width: 320, height: 800 }, deviceScaleFactor: 1 },
   { name: "2560 px wide", viewport: { width: 2560, height: 1440 }, deviceScaleFactor: 1 },
@@ -119,9 +120,17 @@ async function saveLateGame(page: Page): Promise<void> {
   });
 }
 
-// Every page, and the Play page's setup, a game, and a result. Each opens on its main heading.
+// Every page, and the Play page's setup in each mode, a game, a failure and a result. Each opens on its main heading.
 const PAGES = [
   { name: "Game setup", open: (page: Page) => page.goto("./#/").then(() => undefined), heading: "New game" },
+  {
+    name: "Game setup, against the computer",
+    open: async (page: Page) => {
+      await page.goto("./#/");
+      await page.getByRole("radio", { name: "The computer" }).check();
+    },
+    heading: "New game",
+  },
   {
     name: "A game with 11 men captured by each player",
     open: async (page: Page) => {
@@ -137,6 +146,15 @@ const PAGES = [
     open: async (page: Page) => {
       await startTwoPlayerGame(page);
       await page.getByRole("button", { name: "Give up" }).click();
+    },
+    heading: "Play",
+  },
+  {
+    name: "The computer's move failed",
+    open: async (page: Page) => {
+      await page.route("**/GetNextMove", (route) => route.fulfill({ status: 500, json: {} }));
+      await startComputerGame(page, "The computer");
+      await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
     },
     heading: "Play",
   },
