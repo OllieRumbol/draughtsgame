@@ -1,5 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
-import { openSavedChainGame, startComputerGame, startTwoPlayerGame } from "./play.ts";
+import { openSavedChainGame, openSavedGame, startComputerGame, startTwoPlayerGame } from "./play.ts";
 
 // Plan section 3.6, "Page size": on a window 1,000 px or wider, the Play page's board fills the window's height, less
 // the header and the page's margins, up to 840 px, and nothing scrolls. The header keeps the same edges as the game.
@@ -225,3 +225,39 @@ test("at 320 px wide, the board does not move when a chain starts", async ({ pag
   expect(topBefore).toBeDefined();
   expect(topInChain).toBe(topBefore);
 });
+
+// The note under the status title says the last move. It keeps room for three lines on a phone and two on a wider
+// screen. A jump that crowns a man takes all of that room, and the board and the controls do not move (spec
+// section 6.4.2, item 2).
+for (const { width, lines } of [
+  { width: 320, lines: 3 },
+  { width: 1280, lines: 2 },
+]) {
+  test(`at ${width} px wide, the board and the controls do not move when the last move fills the note`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 800 });
+    const board = page.getByRole("grid", { name: "Draughts board" });
+    const giveUp = page.getByRole("button", { name: "Give up" });
+    await openSavedGame(page, [
+      [2, 3, 1],
+      [1, 2, 2],
+      [3, 6, 2],
+    ]);
+    const boardBefore = (await board.boundingBox())?.y;
+    const controlsBefore = (await giveUp.boundingBox())?.y;
+
+    await page.getByRole("gridcell", { name: "Row 3, column 4, player 1's man" }).click();
+    await page.getByRole("gridcell", { name: "Row 1, column 2, empty, target" }).click();
+    const note = page.getByText(
+      "Player 1 jumped row 3, column 4 to row 1, column 2, taking a man. The man becomes a king.",
+    );
+    await expect(note).toBeVisible();
+    const noteLines = await note.evaluate((element) => element.getBoundingClientRect().height / 21);
+
+    expect(noteLines).toBe(lines);
+    expect(boardBefore).toBeDefined();
+    expect((await board.boundingBox())?.y).toBe(boardBefore);
+    expect((await giveUp.boundingBox())?.y).toBe(controlsBefore);
+  });
+}

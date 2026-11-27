@@ -3,7 +3,7 @@
 > **What this document is for:** It answers *what are we building, and why?* It is agreed before any design or code, and it is the source of truth for requirements.
 
 Status: Approved
-Last updated: 2026-11-25 (section 6.4.3 item 2: "tip" in square names, approved in T16)
+Last updated: 2026-11-27 (section 6.4.2 item 2: the status note says the last move, approved in T20)
 
 ---
 
@@ -500,6 +500,7 @@ The exact wording of each message is drafted with the design and approved by the
 2. **Game:**
    * the board;
    * whose turn it is, or that the computer is thinking, or the result;
+   * a note under that: who moves first, until the first turn ends; then the last move, such as "The computer jumped row 3, column 4 to row 5, column 2, taking your man."; the reason for the result; or what to do after a failure. On a phone the note keeps room for three lines, and on a wider screen for two, so the board and the controls do not move from turn to turn. The owner chose this on 2026-11-27.
    * the mode, and the level in a computer game;
    * the number of pieces each player has captured;
    * the controls: Show tips, Undo, Give up, New game, and End turn during a chain.

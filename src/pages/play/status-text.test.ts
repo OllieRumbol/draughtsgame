@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type GameState, type Settings, newGame } from "@/game/game-state";
+import { type GameState, type Settings, gameReducer, newGame } from "@/game/game-state";
 import { at } from "@/game/test-boards";
 import { modeText, statusNote, statusTitle } from "@/pages/play/status-text";
 
@@ -46,10 +46,13 @@ describe("the status card's words", () => {
     );
   });
 
-  it("notes who moves first until the first turn ends, the reason for the result, and the failure", () => {
+  it("notes who moves first, then the last move, the reason for the result, and the failure", () => {
     expect(statusNote(newGame(twoPlayers))).toBe("Player 1 moves first.");
     expect(statusNote(newGame({ ...againstComputer, firstPlayer: 1 }))).toBe("You move first.");
-    expect(statusNote({ ...newGame(twoPlayers), history: [newGame(twoPlayers).turnStart] })).toBe("");
+    const selected = gameReducer(newGame(twoPlayers), { type: "select", at: at(5, 2) });
+    expect(statusNote(selected)).toBe("Player 1 moves first.");
+    const moved = gameReducer(selected, { type: "chooseTarget", at: at(4, 3) });
+    expect(statusNote(moved)).toBe("Player 1 moved row 6, column 3 to row 5, column 4.");
     expect(statusNote(inPhase(twoPlayers, { kind: "over", result: { winner: 1, reason: "noPieces" } }))).toBe(
       "Player 2 has no pieces left.",
     );

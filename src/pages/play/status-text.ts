@@ -1,6 +1,6 @@
 // The words in the game screen's status card (spec section 6.4.2, item 2), as the design shows them: the mode,
 // then a title that says whose turn it is, that the computer is thinking, or the result, then a short note.
-import { firstMove, resultReason, resultTitle } from "@/components/live-region/announcement";
+import { firstMove, lastMove, resultReason, resultTitle } from "@/components/live-region/announcement";
 import type { GameState, Settings } from "@/game/game-state";
 
 // When Show tips fails (spec section 6.1.4, item 4, and plan section 4).
@@ -40,7 +40,8 @@ export function statusTitle(game: GameState): string {
   }
 }
 
-// The note under the title: who moves first, until the first turn ends; the reason for the result; or nothing.
+// The note under the title (spec section 6.4.2, item 2): the reason for the result; what to do after a failure;
+// the last move; or who moves first, until the first turn ends.
 export function statusNote(game: GameState): string {
   const phase = game.phase;
   if (phase.kind === "over") {
@@ -49,7 +50,11 @@ export function statusNote(game: GameState): string {
   if (phase.kind === "computerFailed") {
     return "Check your connection and try again.";
   }
-  if (game.history.length === 0 && phase.kind === "turn" && phase.chain === null) {
+  const move = lastMove(game);
+  if (move !== null) {
+    return move;
+  }
+  if (game.history.length === 0 && phase.kind === "turn") {
     return firstMove(game.settings, game.toMove);
   }
   return "";

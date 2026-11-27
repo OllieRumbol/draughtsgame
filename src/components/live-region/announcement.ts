@@ -16,6 +16,9 @@ import {
 import type { GameState, Result, Settings } from "@/game/game-state";
 import { nextSteps } from "@/game/rules";
 
+// In a computer game, the computer is player 2 (spec section 2.4).
+const COMPUTER: Player = 2;
+
 // Spec section 6.1.9, item 1.
 const FAILED = "The computer couldn't move. Check your connection and try again.";
 
@@ -173,22 +176,91 @@ function computerMove(previous: GameState, next: GameState): string | null {
     return null;
   }
   const { move } = previous.phase;
-  const before = previous.turnStart.board;
-  const taken = move.captured.length;
-  const crowned = !isKing(cellAt(before, move.from)) && isKing(cellAt(next.board, move.to));
+  const sentence = moveSentence(next.settings, COMPUTER, previous.turnStart.board, next.board, move.from, move.to);
+  return `${sentence} ${whatComesNext(next)}`;
+}
 
-  let taking = "";
-  if (taken === 1) {
-    taking = `, taking your ${pieceKind(before, move.captured[0])}`;
-  } else if (taken > 1) {
-    taking = `, taking ${taken} pieces`;
+// The last move, for the note in the status card (spec section 6.4.2, item 2, and plan section 3.6, "Status note"),
+// or null before the first move. It is worked out from the boards in the game state, so it needs no state of its
+// own, and after Undo it is the move before. During a chain, it is the jumps so far in this turn. Otherwise it is
+// the last finished turn: the board at that turn's start against the board at the start of this one.
+export function lastMove(game: GameState): string | null {
+  const phase = game.phase;
+  if (phase.kind === "turn" && phase.chain !== null) {
+    return moveSentence(
+      game.settings,
+      game.toMove,
+      game.turnStart.board,
+      game.board,
+      phase.chain.start,
+      phase.selected,
+    );
   }
-  const verbPart = taken === 0 ? "moved" : "jumped";
-  const route = samePosition(move.from, move.to)
-    ? `from ${place(move.from)} and back again`
-    : `${place(move.from)} to ${place(move.to)}`;
-  const crowning = crowned ? ". Its man becomes a king." : ".";
-  return `The computer ${verbPart} ${route}${taking}${crowning} ${whatComesNext(next)}`;
+
+  const lastTurn = game.history.at(-1);
+  if (lastTurn === undefined) {
+    return null;
+  }
+  const before = lastTurn.board;
+  const after = game.turnStart.board;
+  const mover = lastTurn.toMove;
+  // The computer's own squares name a king's chain that ends where it began. Undo and the person's next step clear
+  // them, so the board change names the move then.
+  const computerSquares = mover === COMPUTER ? game.lastComputerMove : null;
+  const from =
+    computerSquares?.from ??
+    findSquare((position) => ownerIn(before, position) === mover && isEmptyIn(after, position));
+  const to =
+    computerSquares?.to ?? findSquare((position) => isEmptyIn(before, position) && ownerIn(after, position) === mover);
+  return moveSentence(game.settings, mover, before, after, from, to);
+}
+
+// One move as a sentence, from the boards before and after it: "Player 1 moved row 6, column 1 to row 5, column 2.",
+// "You jumped row 7, column 2 to row 3, column 6, taking 2 pieces. Your man becomes a king." or "The computer
+// jumped row 3, column 4 to row 5, column 2, taking your man." When the start or the end square is not known, as for
+// a person's king that ends where it began, the squares are left out: "Player 1 jumped, taking 4 pieces."
+function moveSentence(
+  settings: Settings,
+  mover: Player,
+  before: Board,
+  after: Board,
+  from: Position | null,
+  to: Position | null,
+): string {
+  const computer = settings.opponent === "computer" && mover === COMPUTER;
+  const actor = playerName(settings, mover);
+
+  const captured = squaresWhere(
+    (position) => ownerIn(before, position) === otherPlayer(mover) && isEmptyIn(after, position),
+  );
+  let taking = "";
+  if (captured.length === 1) {
+    taking = `, taking ${computer ? "your" : "a"} ${pieceKind(before, captured[0])}`;
+  } else if (captured.length > 1) {
+    taking = `, taking ${captured.length} pieces`;
+  }
+
+  let route = "";
+  if (from !== null && to !== null) {
+    route = samePosition(from, to) ? ` from ${place(from)} and back again` : ` ${place(from)} to ${place(to)}`;
+  }
+
+  const crowned = from !== null && to !== null && !isKing(cellAt(before, from)) && isKing(cellAt(after, to));
+  let crowning = "";
+  if (crowned) {
+    crowning = ` ${crownedOwner(settings, mover)} man becomes a king.`;
+  }
+
+  return `${actor} ${captured.length === 0 ? "moved" : "jumped"}${route}${taking}.${crowning}`;
+}
+
+// Whose man becomes a king, as the live region says it: "Its" for the computer's, "Your" for the person's in a
+// computer game, and "The" in a two-player game.
+function crownedOwner(settings: Settings, mover: Player): string {
+  if (settings.opponent === "computer") {
+    return mover === COMPUTER ? "Its" : "Your";
+  }
+  return "The";
 }
 
 // The start of the next turn, the computer thinking, a failure, or the result.
@@ -241,14 +313,19 @@ function isEmptyIn(board: Board, position: Position): boolean {
 }
 
 function findSquare(matches: (position: Position) => boolean): Position | null {
+  return squaresWhere(matches)[0] ?? null;
+}
+
+function squaresWhere(matches: (position: Position) => boolean): Position[] {
+  const found: Position[] = [];
   for (let row = 0; row < BOARD_SIZE; row++) {
     for (let col = 0; col < BOARD_SIZE; col++) {
       if (matches({ row, col })) {
-        return { row, col };
+        found.push({ row, col });
       }
     }
   }
-  return null;
+  return found;
 }
 
 function sameBoard(a: Board, b: Board): boolean {

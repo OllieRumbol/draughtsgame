@@ -24,10 +24,18 @@
   min-height: 2.6em;
 }
 
-/* It keeps its height when it is empty, so the card does not change size between turns. */
+/* The note says the last move, which takes up to three lines on a phone and two on a wider screen. It always keeps
+   that room, so the card does not change size between turns (spec section 6.4.2, item 2). One line is 1.5em. */
 .note {
-  min-height: 21px;
+  min-height: 4.5em;
   margin: 4px 0 0;
   color: var(--text-muted);
   font-size: var(--text-14);
+  line-height: 1.5;
+}
+
+@media (min-width: 641px) {
+  .note {
+    min-height: 3em;
+  }
 }
