@@ -8,20 +8,23 @@ const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 const WIDTHS = [320, 1280];
 const MODES = ["light", "dark"] as const;
 
-// Each state is an address, the main heading that shows it is ready, and for a game, what is done in it. Later
-// tasks add their states here: How to play (T17) and About (T18).
+// Each state is an address, the main heading that shows it is ready, and for a game, what is done in it. Together they
+// are every page, and every state and sub-state in spec section 6.3.
+type ComputerState = "thinking" | "moving" | "failed" | "yourTurn";
+
 type State = {
   name: string;
   address: string;
   heading: string;
   setup?: "computer";
-  game?: "pieceSelected" | "inChain" | "over" | "tipsShown" | "tipsLoading";
-  computer?: "thinking" | "moving" | "failed";
+  game?: "nothingSelected" | "pieceSelected" | "inChain" | "over" | "tipsShown" | "tipsLoading";
+  computer?: ComputerState;
 };
 
 const states: State[] = [
   { name: "Game setup", address: "./#/", heading: "New game" },
   { name: "Game setup, against the computer", address: "./#/", heading: "New game", setup: "computer" },
+  { name: "A two-player game, nothing selected", address: "./#/", heading: "Play", game: "nothingSelected" },
   { name: "A two-player game, a piece selected", address: "./#/", heading: "Play", game: "pieceSelected" },
   { name: "A two-player game, in a chain", address: "./#/", heading: "Play", game: "inChain" },
   { name: "A two-player game, over", address: "./#/", heading: "Play", game: "over" },
@@ -30,6 +33,7 @@ const states: State[] = [
   { name: "The computer thinking", address: "./#/", heading: "Play", computer: "thinking" },
   { name: "The computer moving", address: "./#/", heading: "Play", computer: "moving" },
   { name: "The computer's move failed", address: "./#/", heading: "Play", computer: "failed" },
+  { name: "A computer game, your turn after its move", address: "./#/", heading: "Play", computer: "yourTurn" },
   { name: "How to play", address: "./#/howtoplay", heading: "How to play" },
   { name: "About", address: "./#/about", heading: "Ernest Rumbol" },
   { name: "Page not found", address: "./#/old-page", heading: "Page not found" },
@@ -67,8 +71,9 @@ async function openChainGame(page: Page): Promise<void> {
 
 // A game the computer starts, held in one of its states (spec section 6.3). The mocked API never answers for
 // "thinking", answers with an error for "failed", and answers with a move for "moving", while the page's clock is
-// stopped, so the move waits at its first step.
-async function openComputerState(page: Page, state: "thinking" | "moving" | "failed"): Promise<void> {
+// stopped, so the move waits at its first step. For "yourTurn", the move is shown in full, so the person's turn shows
+// the level and the computer's last move.
+async function openComputerState(page: Page, state: ComputerState): Promise<void> {
   if (state === "moving") {
     await page.clock.install();
     // Stop the clock a minute from now: a fixed date would be in the past once that day has gone.
@@ -76,7 +81,7 @@ async function openComputerState(page: Page, state: "thinking" | "moving" | "fai
   }
   let answered = false;
   await page.route("**/GetNextMove", async (route) => {
-    if (state === "moving") {
+    if (state === "moving" || state === "yourTurn") {
       await route.fulfill({ json: apiMove([2, 1], [3, 0]) });
       answered = true;
     }
@@ -94,6 +99,7 @@ async function openComputerState(page: Page, state: "thinking" | "moving" | "fai
     thinking: "The computer is thinking…",
     moving: "The computer is moving",
     failed: "The computer couldn't move",
+    yourTurn: "Your turn",
   };
   await expect(page.getByText(titles[state], { exact: true })).toBeVisible();
 }
@@ -157,6 +163,53 @@ async function openState(page: Page, state: State): Promise<void> {
   await expect(page.getByRole("heading", { level: 1, name: state.heading })).toBeVisible();
 }
 
+// The contrast ratio of two colours, by the WCAG 2.2 formula. Each colour is "rgb(r, g, b)", as the browser gives it.
+function contrastRatio(first: string, second: string): number {
+  const luminance = (colour: string): number => {
+    const channels = colour.match(/[\d.]+/g)?.map(Number) ?? [];
+    // A see-through colour shows the colour under it, so this formula alone would give the wrong ratio.
+    if (channels.length !== 3) {
+      throw new Error(`Expected an opaque "rgb(r, g, b)" colour, but got "${colour}".`);
+    }
+    const [red, green, blue] = channels.map((channel) => {
+      const value = channel / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+  };
+  const [lighter, darker] = [luminance(first), luminance(second)].sort((a, b) => b - a);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+// Plan section 9, risk 8: axe does not check the contrast of graphics, so test 34 also measures each man on the page
+// against the walnut squares. Each needs 3 to 1 (WCAG 2.2, success criterion 1.4.11). Plan section 3.6 measured 4.94
+// for player 1's men and 3.10 for player 2's. The test measures the men's colour, not their fade: the faded men while
+// a piece is selected are the exception in spec section 6.5, item 1.
+async function menColoursOnWalnut(page: Page): Promise<{ bodies: string[]; walnut: string }> {
+  return page.evaluate(() => {
+    // A probe element turns each colour into "rgb(r, g, b)". An empty colour stays empty, so the test can fail on it.
+    const probe = document.createElement("span");
+    document.body.append(probe);
+    const toRgb = (colour: string): string => {
+      if (colour === "") {
+        return "";
+      }
+      probe.style.color = colour;
+      return getComputedStyle(probe).color;
+    };
+    const bodies = [...document.querySelectorAll("[data-look]")].map((piece) =>
+      toRgb(getComputedStyle(piece).getPropertyValue("--body").trim()),
+    );
+    // The game board's row 1, column 2 is walnut (spec section 2.3). Pages without the game board use the token.
+    const walnutSquare = document.querySelector('[role="gridcell"][aria-label^="Row 1, column 2,"]');
+    const walnut = walnutSquare
+      ? getComputedStyle(walnutSquare).backgroundColor
+      : toRgb(getComputedStyle(document.documentElement).getPropertyValue("--walnut").trim());
+    probe.remove();
+    return { bodies: [...new Set(bodies)], walnut };
+  });
+}
+
 // axe gives the same result in every browser project, so it runs once, in desktop Chromium.
 test.skip(({ browserName, isMobile }) => browserName !== "chromium" || isMobile, "axe runs in desktop Chromium only");
 
@@ -172,6 +225,14 @@ for (const state of states) {
         const results = state.computer === "moving" ? await analyzeOnStoppedClock(page, axe) : await axe.analyze();
 
         expect(results.violations).toEqual([]);
+        const men = await menColoursOnWalnut(page);
+        if (state.game !== undefined || state.computer !== undefined) {
+          // Both players' men are on the board, so the check cannot pass by measuring nothing.
+          expect(men.bodies).toHaveLength(2);
+        }
+        for (const body of men.bodies) {
+          expect(contrastRatio(body, men.walnut)).toBeGreaterThanOrEqual(3);
+        }
       });
     }
   }
