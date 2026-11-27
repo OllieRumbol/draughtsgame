@@ -9,11 +9,22 @@
 }
 
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  /* The crown's drawing has 3 px of space on its right, so this makes a gap of about one word space. */
+  gap: 3px;
   color: inherit;
   font-family: var(--font-heading);
   font-size: var(--text-24);
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
+}
+
+.crown {
+  display: flex;
+  color: var(--brass);
+  /* Lines the crown up with the capitals: its base on the baseline, its points at the cap height. */
+  translate: 0 -1px;
 }
 
 .nav {

@@ -11,8 +11,10 @@ beforeAll(() => {
 // jsdom has no matchMedia, which useTheme and usePrefersReducedMotion read. By default the device is in light mode,
 // with no reduced motion, and never changes. A test can stub it again to set the device's mode.
 // jsdom has no Element.animate either, which the board's motion uses. The stand-in finishes at once, and a test can
-// read its calls.
+// read its calls. jsdom does not lay out the page, so its scrollTo, which the layout calls on each new page, only
+// reports that it is not implemented.
 beforeEach(() => {
+  window.scrollTo = vi.fn();
   vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
   Element.prototype.animate = vi.fn(() => ({ finished: Promise.resolve(), cancel() {} }) as unknown as Animation);
 });

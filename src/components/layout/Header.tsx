@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router";
+import { CrownIcon } from "@/components/board/CrownIcon";
 import type { Theme } from "@/hooks/useTheme";
 import styles from "./Header.module.css";
 import { ThemeButton } from "./ThemeButton";
@@ -15,12 +16,16 @@ type HeaderProps = {
   onToggleTheme: () => void;
 };
 
-// The wordmark, the page links and the light and dark button, as the design shows. NavLink marks the current page
-// with aria-current="page".
+// The wordmark, the page links and the light and dark button, as the design shows. The wordmark's brass crown is the
+// one beside "For Ernest" on the board's frame (plan section 3.6, "Wordmark"). It is hidden from screen readers, so the
+// link's name stays "Draughts". NavLink marks the current page with aria-current="page".
 export function Header({ theme, onToggleTheme }: HeaderProps) {
   return (
     <header className={styles.header}>
       <Link to="/" className={styles.wordmark}>
+        <span className={styles.crown}>
+          <CrownIcon size={25} />
+        </span>
         Draughts
       </Link>
       <nav className={styles.nav} aria-label="Main">

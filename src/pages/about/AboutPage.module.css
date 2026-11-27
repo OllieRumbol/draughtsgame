@@ -26,19 +26,27 @@
   line-height: 1.6;
 }
 
+/* The sign-off after the tribute, as the mark on the board's frame. Brass text would have too little contrast on the
+   light page, so only the crown is brass. */
+.prose .signOff {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: var(--text-16);
+}
+
+.signOff svg {
+  color: var(--brass);
+  translate: 0 -1px;
+}
+
 .caption {
   margin: 8px 0 0;
   color: var(--text-muted);
   font-size: var(--text-14);
   text-align: center;
-}
-
-/* A caption that the owner has not written yet: a dashed box, so it shows as unfinished. */
-.captionToCome {
-  padding: 6px 8px;
-  border: 1px dashed var(--text-muted);
-  border-radius: 4px;
-  text-align: left;
 }
 
 .boardPhoto {
@@ -71,6 +79,16 @@ div.frame {
   color: var(--maple);
   font-size: var(--text-14);
   text-align: center;
+}
+
+/* A supplied photo fills the placeholder's shape. The photo of Ernest is a little taller than 4 by 5, so a little is
+   cut from the top and the bottom, less from the top, to keep his head in the frame. */
+.picture {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: 50% 35%;
 }
 
 .portrait {

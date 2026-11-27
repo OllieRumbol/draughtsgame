@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { type GameState, type Settings, newGame } from "@/game/game-state";
+import { type GameState, type Settings, gameReducer, newGame } from "@/game/game-state";
 import { at } from "@/game/test-boards";
-import { modeText, statusNote, statusTitle } from "@/pages/play/status-text";
+import { modeText, statusMark, statusNote, statusTitle } from "@/pages/play/status-text";
 
 const twoPlayers: Settings = { opponent: "twoPlayers", level: "easy", firstPlayer: 1 };
 const againstComputer: Settings = { opponent: "computer", level: "normal", firstPlayer: 1 };
@@ -46,15 +46,44 @@ describe("the status card's words", () => {
     );
   });
 
-  it("notes who moves first until the first turn ends, the reason for the result, and the failure", () => {
+  it("notes who moves first, then the last move, the reason for the result, and the failure", () => {
     expect(statusNote(newGame(twoPlayers))).toBe("Player 1 moves first.");
     expect(statusNote(newGame({ ...againstComputer, firstPlayer: 1 }))).toBe("You move first.");
-    expect(statusNote({ ...newGame(twoPlayers), history: [newGame(twoPlayers).turnStart] })).toBe("");
+    const selected = gameReducer(newGame(twoPlayers), { type: "select", at: at(5, 2) });
+    expect(statusNote(selected)).toBe("Player 1 moves first.");
+    const moved = gameReducer(selected, { type: "chooseTarget", at: at(4, 3) });
+    expect(statusNote(moved)).toBe("Player 1 moved row 6, column 3 to row 5, column 4.");
     expect(statusNote(inPhase(twoPlayers, { kind: "over", result: { winner: 1, reason: "noPieces" } }))).toBe(
       "Player 2 has no pieces left.",
     );
     expect(statusNote(inPhase(againstComputer, { kind: "computerFailed", requestId: 1 }))).toBe(
       "Check your connection and try again.",
     );
+  });
+});
+
+// Plan section 3.6, "Status mark": the picture before the title.
+describe("the status card's mark", () => {
+  it("shows a man in the colour of the player who moves", () => {
+    expect(statusMark(newGame(twoPlayers))).toEqual({ kind: "man", player: 1 });
+    expect(statusMark({ ...newGame(twoPlayers), toMove: 2 })).toEqual({ kind: "man", player: 2 });
+  });
+
+  it("shows the computer's man while the computer moves, and after its move fails", () => {
+    const computersTurn = { ...newGame(againstComputer), toMove: 2 as const };
+    expect(statusMark({ ...computersTurn, phase: { kind: "computerThinking", requestId: 1 } })).toEqual({
+      kind: "man",
+      player: 2,
+    });
+    expect(statusMark({ ...computersTurn, phase: { kind: "computerFailed", requestId: 1 } })).toEqual({
+      kind: "man",
+      player: 2,
+    });
+  });
+
+  it("shows the brass crown when a player has won", () => {
+    expect(statusMark(inPhase(twoPlayers, { kind: "over", result: { winner: 2, reason: "gaveUp" } }))).toEqual({
+      kind: "crown",
+    });
   });
 });

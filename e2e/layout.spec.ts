@@ -1,5 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
-import { startComputerGame, startTwoPlayerGame } from "./play.ts";
+import { openSavedChainGame, startComputerGame, startTwoPlayerGame } from "./play.ts";
 
 // Plan section 3.6, "Page size": on a window 1,000 px or wider, the Play page's board fills the window's height, less
 // the header and the page's margins, up to 840 px, and nothing scrolls. The header keeps the same edges as the game.
@@ -207,3 +207,49 @@ test("at 320 px wide, each square of the board is at least 24 by 24 pixels", asy
     expect(size.height).toBeGreaterThanOrEqual(24);
   }
 });
+
+// The status title always keeps room for two lines, so only the note can grow between turns (T20 design review).
+// "Jump again or end your turn" takes two lines at 320 px, and in the narrowest side column, at 641 px. The man before
+// the title must not push it to three. From 641 to 719 px wide the man is hidden, so 720 px is the narrowest side column
+// with the man (plan section 3.6, "Status mark"). The note says the jump so far (spec section 6.4.2, item 2). Each title
+// is measured with its mark: the text's parent.
+for (const width of [320, 641, 720]) {
+  test(`at ${width} px wide, the status title keeps its height when a chain starts, and the note says the jump`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await openSavedChainGame(page);
+    const titleBefore = page.getByText("Player 1's turn", { exact: true }).locator("..");
+    const heightBefore = (await titleBefore.boundingBox())?.height;
+
+    await page.getByRole("gridcell", { name: "Row 7, column 2, player 1's man" }).click();
+    await page.getByRole("gridcell", { name: "Row 5, column 4, empty, target" }).click();
+    const titleInChain = page.getByText("Jump again or end your turn", { exact: true }).locator("..");
+    await expect(titleInChain).toBeVisible();
+    const note = "Player 1 jumped row 7, column 2 to row 5, column 4, taking a man.";
+    await expect(page.getByText(note, { exact: true })).toBeVisible();
+
+    expect(heightBefore).toBeDefined();
+    expect((await titleInChain.boundingBox())?.height).toBe(heightBefore);
+  });
+}
+
+// The winner's title has the brass crown, which is wider than the man (plan section 3.6, "Status mark"). In a game
+// against the computer, the side column is narrower, because "The computer took 0" is wider than "Player 2 took 0".
+// "The computer wins" still fits in the title's two lines: without the crown at 641 px, and with it at 720 px, the
+// narrowest side column that shows it.
+for (const width of [641, 720]) {
+  test(`at ${width} px wide, the winner's title keeps the status title's height`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await startComputerGame(page, "You");
+    const titleBefore = page.getByText("Your turn", { exact: true }).locator("..");
+    const heightBefore = (await titleBefore.boundingBox())?.height;
+
+    await page.getByRole("button", { name: "Give up" }).click();
+    const winnerTitle = page.getByText("The computer wins", { exact: true }).locator("..");
+    await expect(winnerTitle).toBeVisible();
+
+    expect(heightBefore).toBeDefined();
+    expect((await winnerTitle.boundingBox())?.height).toBe(heightBefore);
+  });
+}

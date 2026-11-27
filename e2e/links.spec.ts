@@ -50,3 +50,23 @@ for (const mode of ["light", "dark"] as const) {
     });
   }
 }
+
+// The links at the end of How to play open their page at the top, not at How to play's scroll position. On a phone,
+// About opened below Ernest's story (T20 design review).
+for (const { name, heading } of [
+  { name: "Read about Ernest", heading: "Ernest Rumbol" },
+  { name: "Start a game", heading: "New game" },
+]) {
+  test(`"${name}" on How to play opens its page at the top`, async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await page.goto("./#/howtoplay");
+    const link = page.getByRole("main").getByRole("link", { name, exact: true });
+    await link.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+
+    await link.click();
+
+    await expect(page.getByRole("heading", { level: 1, name: heading })).toBeInViewport();
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  });
+}

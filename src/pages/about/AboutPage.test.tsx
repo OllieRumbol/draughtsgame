@@ -19,7 +19,7 @@ describe("the About page", () => {
     const main = await openPage();
 
     const name = within(main).getByRole("heading", { level: 1 });
-    const photo = within(main).getByRole("img", { name: "Placeholder for a photo of Ernest" });
+    const photo = within(main).getByRole("img", { name: "Ernest Rumbol" });
     const tribute = within(main).getByText(/^This game was made in loving memory/);
     const board = within(main).getByRole("img", { name: "Placeholder for a photo of the family draughts board" });
     const built = within(main).getByRole("heading", { level: 2, name: "How it's built" });
@@ -51,11 +51,33 @@ describe("the About page", () => {
     expect(main.textContent).not.toMatch(/past away/);
   });
 
-  it("shows a visible placeholder for each photo and for the photo's caption until the owner supplies them", async () => {
+  it('ends the tribute with "For Ernest", the mark on the board\'s frame (plan section 3.6)', async () => {
     const main = await openPage();
 
-    expect(within(main).getAllByText("Placeholder until the owner supplies it")).toHaveLength(2);
-    expect(within(main).getByText(/^Caption to come, in the owner's words/)).toBeInTheDocument();
+    const paragraphs = within(main)
+      .getAllByRole("paragraph")
+      .map((paragraph) => paragraph.textContent);
+    expect(paragraphs[2]).toMatch(/rest in peace\.$/);
+    expect(paragraphs[3]).toBe("For Ernest");
+  });
+
+  it("shows the owner's photo of Ernest with the owner's caption, and a visible placeholder for the family board", async () => {
+    const main = await openPage();
+
+    expect(within(main).getByRole("img", { name: "Ernest Rumbol" })).toHaveAttribute(
+      "src",
+      expect.stringMatching(/ernest/),
+    );
+    expect(within(main).queryByRole("img", { name: "Placeholder for a photo of Ernest" })).not.toBeInTheDocument();
+    expect(within(main).getAllByText("Placeholder until the owner supplies it")).toHaveLength(1);
+    const caption = within(main)
+      .getByRole("img", { name: "Ernest Rumbol" })
+      .closest("figure")
+      ?.querySelector("figcaption");
+    expect(caption).toHaveTextContent(
+      "Ernest Rumbol, the perfect grandad. I miss the games we used to play and the warmth of your kind loving heart. Love you Grandad.",
+    );
+    expect(within(main).queryByText(/^Caption to come/)).not.toBeInTheDocument();
     expect(within(main).getByText("The board we played on")).toBeInTheDocument();
   });
 
