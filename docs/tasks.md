@@ -382,6 +382,11 @@ Goal: the new web app is live, checked for accessibility, and signed off by the 
   - Verify: the design review report and the owner's sign-off, both recorded in the pull request; `npm run check` and `npm run e2e` pass after any fix
   - Notes:
     - From T18: the photo of Ernest, its caption and the family board photo replace the About placeholders before the owner signs off, if the owner has supplied them (plan risk 9).
+    - Checkpoint, 2026-11-27. Done: the design review (every page, light and dark, 320 and 1280 px): 0 blockers, 5 findings. Risk 7: the board does not look busy at 320 px.
+    - G1 fixed: `ScrollRestoration` opens each new page at the top. G2 fixed: the status title keeps room for two lines at every width.
+    - G3, owner's choice on 2026-11-27: the status note says the last move, as the design does. Spec 6.4.2 item 2 and plan 3.6 ("Status note") approved the same day. Outside the Done when list. G4 (setup choice in dark mode) and G5 (focus and last-move marks): kept as they are, owner's decision on 2026-11-27.
+    - Firefox does not start on this machine; the required `e2e` check runs it in CI.
+    - Next: the owner's keyboard game and screen reader game, the About photos if supplied, and the owner's sign-off of the look in the pull request. Then tick.
 
 - [ ] **T21 — Release the new web app (manual)**
   - Refs: spec 2.5, spec 3 goals 2 and 7, spec 9, plan 6 (secrets), plan 8.1, plan 8.3 (release), risk 1
