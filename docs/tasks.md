@@ -372,7 +372,7 @@ Goal: the new web app is live, checked for accessibility, and signed off by the 
     - Firefox does not start on this machine; the required `e2e` check runs it in CI.
     - Evidence: pull request #86.
 
-- [ ] **T20 — Sign off the look and the accessibility (manual)**
+- [x] **T20 — Sign off the look and the accessibility (manual)**
   - Refs: spec 3 goals 5 and 6, spec 6.4.1 item 1, spec 6.5 item 1, spec 9, plan 3.6, design
   - Depends on: T19
   - Done when:
@@ -381,13 +381,11 @@ Goal: the new web app is live, checked for accessibility, and signed off by the 
     - The owner has signed off the look in this task's pull request.
   - Verify: the design review report and the owner's sign-off, both recorded in the pull request; `npm run check` and `npm run e2e` pass after any fix
   - Notes:
-    - From T18: the photo of Ernest, its caption and the family board photo replace the About placeholders before the owner signs off, if the owner has supplied them (plan risk 9).
-    - Checkpoint, 2026-11-27. Done: the design review (every page, light and dark, 320 and 1280 px): 0 blockers, 5 findings. Risk 7: the board does not look busy at 320 px.
-    - G1 fixed: `Layout` scrolls to the top when the address changes. Not `ScrollRestoration`, which keeps positions in sessionStorage (spec 6.5 item 6). G2 fixed: the status title keeps room for two lines at every width.
-    - G3, owner's choice on 2026-11-27: the status note says the last move, as the design does. Outside the Done when list. The note keeps one line of room and the card grows with a longer note, so the board can move between turns (owner, 2026-11-27, after the reviews). Spec 6.4.2 item 2 and plan 3.6 ("Status note") approved the same day. G4 (setup choice in dark mode) and G5 (focus and last-move marks): kept as they are, owner's decision on 2026-11-27.
-    - Wordmark, owner's choice on 2026-11-27 during the sign-off: the brass crown before "Draughts", at weight 600 (plan 3.6, "Wordmark"). Then, the same day: a man or the crown before the status title, and "For Ernest" after the tribute (plan 3.6, "Status mark" and "For Ernest on About"). The mark is hidden from 641 to 719 px wide, where it pushed computer titles to 3–4 lines (owner, 2026-11-27). The owner supplied the photo of Ernest on 2026-11-27: resized to 600 px wide, no metadata, in `src/pages/about/ernest.jpg`. Its caption is the owner's words (2026-11-27), with "you kind" corrected to "your kind" and a full stop added at the end. The owner kept the family board photo as a placeholder (2026-11-27). No review ran on these changes.
+    - Design review: 0 blockers, 5 findings. G1 fixed (`Layout` scrolls to the top, not `ScrollRestoration`, spec 6.5 item 6), G2 fixed (the title keeps two lines), G3 the note says the last move and the card grows with it (spec 6.4.2 item 2, plan 3.6), G4 and G5 kept (owner, 2026-11-27).
+    - Owner's additions during the sign-off (plan 3.6): the crown wordmark, the status mark (hidden from 641 to 719 px), "For Ernest" on About, and the photo of Ernest with the owner's caption (`src/pages/about/ernest.jpg`, 600 px wide, no metadata). The family board photo stays a placeholder. No review ran on these.
+    - Owner's checks, 2026-11-27: a keyboard-only game and a Narrator game in Edge, no problems found; the look signed off.
     - Firefox does not start on this machine; the required `e2e` check runs it in CI.
-    - Next: the owner's keyboard game and screen reader game, and the owner's sign-off of the look in the pull request. Then tick.
+    - Evidence: pull request #87.
 
 - [ ] **T21 — Release the new web app (manual)**
   - Refs: spec 2.5, spec 3 goals 2 and 7, spec 9, plan 6 (secrets), plan 8.1, plan 8.3 (release), risk 1
