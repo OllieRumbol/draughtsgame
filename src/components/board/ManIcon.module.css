@@ -1,0 +1,30 @@
+/* The board's men, drawn small. At this size the board's faint rings would not show, so the rings are stronger. Off
+   the board, a man can be close to the card's colour: the light man in light mode, and the dark man in dark mode. So
+   the edge keeps each man's outline visible. */
+.man {
+  flex: none;
+}
+
+.body {
+  fill: var(--body);
+  stroke: var(--edge);
+  stroke-width: 1.5;
+}
+
+.ring {
+  fill: none;
+  stroke: var(--ring);
+  stroke-width: 1;
+}
+
+.light {
+  --body: var(--man-light);
+  --edge: light-dark(var(--text-muted), var(--man-light-edge));
+  --ring: var(--man-light-edge);
+}
+
+.dark {
+  --body: var(--man-dark);
+  --edge: light-dark(var(--man-dark-edge), var(--text-muted));
+  --ring: color-mix(in srgb, var(--man-light) 35%, var(--man-dark));
+}

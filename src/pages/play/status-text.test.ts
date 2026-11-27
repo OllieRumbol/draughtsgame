@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { type GameState, type Settings, gameReducer, newGame } from "@/game/game-state";
 import { at } from "@/game/test-boards";
-import { modeText, statusNote, statusTitle } from "@/pages/play/status-text";
+import { modeText, statusMark, statusNote, statusTitle } from "@/pages/play/status-text";
 
 const twoPlayers: Settings = { opponent: "twoPlayers", level: "easy", firstPlayer: 1 };
 const againstComputer: Settings = { opponent: "computer", level: "normal", firstPlayer: 1 };
@@ -59,5 +59,31 @@ describe("the status card's words", () => {
     expect(statusNote(inPhase(againstComputer, { kind: "computerFailed", requestId: 1 }))).toBe(
       "Check your connection and try again.",
     );
+  });
+});
+
+// Plan section 3.6, "Status mark": the picture before the title.
+describe("the status card's mark", () => {
+  it("shows a man in the colour of the player who moves", () => {
+    expect(statusMark(newGame(twoPlayers))).toEqual({ kind: "man", player: 1 });
+    expect(statusMark({ ...newGame(twoPlayers), toMove: 2 })).toEqual({ kind: "man", player: 2 });
+  });
+
+  it("shows the computer's man while the computer moves, and after its move fails", () => {
+    const computersTurn = { ...newGame(againstComputer), toMove: 2 as const };
+    expect(statusMark({ ...computersTurn, phase: { kind: "computerThinking", requestId: 1 } })).toEqual({
+      kind: "man",
+      player: 2,
+    });
+    expect(statusMark({ ...computersTurn, phase: { kind: "computerFailed", requestId: 1 } })).toEqual({
+      kind: "man",
+      player: 2,
+    });
+  });
+
+  it("shows the brass crown when a player has won", () => {
+    expect(statusMark(inPhase(twoPlayers, { kind: "over", result: { winner: 2, reason: "gaveUp" } }))).toEqual({
+      kind: "crown",
+    });
   });
 });

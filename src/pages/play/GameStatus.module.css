@@ -13,6 +13,9 @@
 }
 
 .title {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
   margin: 0;
   font-family: var(--font-heading);
   font-size: var(--text-20);
@@ -22,6 +25,32 @@
      turn" on a 320 px phone. So the title always keeps room for two. Then the board and the controls do not move
      when the title changes, such as between two jumps of a chain. */
   min-height: 2.6em;
+}
+
+/* The man or the crown before the title (plan section 3.6, "Status mark"). It is one line high, so it stays beside
+   the first line when the title takes two. */
+.mark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 1.3em;
+}
+
+/* Lines the crown up with the capitals, as in the wordmark. Its drawing has 2.5 px of space on each side, which the
+   margins take back. Then the titles still fit in two lines in the narrowest side column, at 641 px wide. */
+.crown {
+  margin-inline: -2.5px;
+  color: var(--brass);
+  translate: 0 -1px;
+}
+
+/* From 641 to 719 px wide, the side column is too narrow for the mark: in a game against the computer, it pushes
+   titles such as "The computer is thinking…" to three or four lines, so the controls move. Without the mark, every
+   title fits in two. The owner chose this on 2026-11-27. */
+@media (min-width: 641px) and (max-width: 719px) {
+  .mark {
+    display: none;
+  }
 }
 
 /* It keeps one line of room when it is empty, and grows with a longer move, as the design does (spec section 6.4.2,

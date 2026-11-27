@@ -51,6 +51,16 @@ describe("the About page", () => {
     expect(main.textContent).not.toMatch(/past away/);
   });
 
+  it('ends the tribute with "For Ernest", the mark on the board\'s frame (plan section 3.6)', async () => {
+    const main = await openPage();
+
+    const paragraphs = within(main)
+      .getAllByRole("paragraph")
+      .map((paragraph) => paragraph.textContent);
+    expect(paragraphs[2]).toMatch(/rest in peace\.$/);
+    expect(paragraphs[3]).toBe("For Ernest");
+  });
+
   it("shows a visible placeholder for each photo and for the photo's caption until the owner supplies them", async () => {
     const main = await openPage();
 

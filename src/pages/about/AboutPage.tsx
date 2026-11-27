@@ -1,4 +1,5 @@
 import boardStyles from "@/components/board/Board.module.css";
+import { CrownIcon } from "@/components/board/CrownIcon";
 import links from "@/styles/links.module.css";
 import styles from "./AboutPage.module.css";
 
@@ -32,6 +33,11 @@ export function AboutPage() {
               {paragraph}
             </p>
           ))}
+          {/* The tribute ends with the mark on the board's frame (plan section 3.6, "For Ernest on About"). */}
+          <p className={styles.signOff}>
+            <CrownIcon size={16} />
+            For Ernest
+          </p>
           <figure className={styles.boardPhoto}>
             <PhotoPlaceholder
               title="The family board"

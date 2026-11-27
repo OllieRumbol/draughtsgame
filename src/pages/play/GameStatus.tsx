@@ -1,6 +1,8 @@
+import { CrownIcon } from "@/components/board/CrownIcon";
+import { ManIcon } from "@/components/board/ManIcon";
 import type { GameState } from "@/game/game-state";
 import styles from "./GameStatus.module.css";
-import { modeText, statusNote, statusTitle } from "./status-text";
+import { modeText, statusMark, statusNote, statusTitle, type StatusMark } from "./status-text";
 
 type GameStatusProps = {
   game: GameState;
@@ -12,8 +14,31 @@ export function GameStatus({ game }: GameStatusProps) {
   return (
     <div className={styles.status}>
       <p className={styles.mode}>{modeText(game.settings)}</p>
-      <p className={styles.title}>{statusTitle(game)}</p>
+      <p className={styles.title}>
+        <TitleMark mark={statusMark(game)} />
+        <span>{statusTitle(game)}</span>
+      </p>
       <p className={styles.note}>{statusNote(game)}</p>
     </div>
+  );
+}
+
+type TitleMarkProps = {
+  mark: StatusMark;
+};
+
+// The picture before the title (plan section 3.6, "Status mark"). Both pictures are hidden from screen readers.
+function TitleMark({ mark }: TitleMarkProps) {
+  if (mark.kind === "crown") {
+    return (
+      <span className={`${styles.mark} ${styles.crown}`}>
+        <CrownIcon size={20} />
+      </span>
+    );
+  }
+  return (
+    <span className={styles.mark}>
+      <ManIcon player={mark.player} size={16} />
+    </span>
   );
 }

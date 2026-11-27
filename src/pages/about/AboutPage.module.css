@@ -26,6 +26,22 @@
   line-height: 1.6;
 }
 
+/* The sign-off after the tribute, as the mark on the board's frame. Brass text would have too little contrast on the
+   light page, so only the crown is brass. */
+.prose .signOff {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: var(--text-16);
+}
+
+.signOff svg {
+  color: var(--brass);
+  translate: 0 -1px;
+}
+
 .caption {
   margin: 8px 0 0;
   color: var(--text-muted);
