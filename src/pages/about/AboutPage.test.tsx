@@ -61,7 +61,7 @@ describe("the About page", () => {
     expect(paragraphs[3]).toBe("For Ernest");
   });
 
-  it("shows the owner's photo of Ernest, and a visible placeholder for the caption and the family board", async () => {
+  it("shows the owner's photo of Ernest with the owner's caption, and a visible placeholder for the family board", async () => {
     const main = await openPage();
 
     expect(within(main).getByRole("img", { name: "Ernest Rumbol" })).toHaveAttribute(
@@ -70,7 +70,14 @@ describe("the About page", () => {
     );
     expect(within(main).queryByRole("img", { name: "Placeholder for a photo of Ernest" })).not.toBeInTheDocument();
     expect(within(main).getAllByText("Placeholder until the owner supplies it")).toHaveLength(1);
-    expect(within(main).getByText(/^Caption to come, in the owner's words/)).toBeInTheDocument();
+    const caption = within(main)
+      .getByRole("img", { name: "Ernest Rumbol" })
+      .closest("figure")
+      ?.querySelector("figcaption");
+    expect(caption).toHaveTextContent(
+      "Ernest Rumbol, the perfect grandad. I miss the games we used to play and the warmth of your kind loving heart. Love you Grandad.",
+    );
+    expect(within(main).queryByText(/^Caption to come/)).not.toBeInTheDocument();
     expect(within(main).getByText("The board we played on")).toBeInTheDocument();
   });
 

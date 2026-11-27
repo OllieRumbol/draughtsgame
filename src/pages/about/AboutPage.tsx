@@ -34,8 +34,10 @@ export function AboutPage() {
               height={804}
             />
           </PhotoFrame>
-          <figcaption className={`${styles.caption} ${styles.captionToCome}`}>
-            Caption to come, in the owner's words: for example, where or when the photo was taken
+          {/* The owner's words, 2026-11-27, with "you kind" corrected to "your kind", and a full stop added at the end. */}
+          <figcaption className={styles.caption}>
+            Ernest Rumbol, the perfect grandad. I miss the games we used to play and the warmth of your kind loving
+            heart. Love you Grandad.
           </figcaption>
         </figure>
         <div className={styles.prose}>

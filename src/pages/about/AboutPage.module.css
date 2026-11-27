@@ -49,14 +49,6 @@
   text-align: center;
 }
 
-/* A caption that the owner has not written yet: a dashed box, so it shows as unfinished. */
-.captionToCome {
-  padding: 6px 8px;
-  border: 1px dashed var(--text-muted);
-  border-radius: 4px;
-  text-align: left;
-}
-
 .boardPhoto {
   max-width: 360px;
   margin: 8px 0 4px;
