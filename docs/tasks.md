@@ -385,6 +385,7 @@ Goal: the new web app is live, checked for accessibility, and signed off by the 
     - Checkpoint, 2026-11-27. Done: the design review (every page, light and dark, 320 and 1280 px): 0 blockers, 5 findings. Risk 7: the board does not look busy at 320 px.
     - G1 fixed: `Layout` scrolls to the top when the address changes. Not `ScrollRestoration`, which keeps positions in sessionStorage (spec 6.5 item 6). G2 fixed: the status title keeps room for two lines at every width.
     - G3, owner's choice on 2026-11-27: the status note says the last move, as the design does. Outside the Done when list. The note keeps one line of room and the card grows with a longer note, so the board can move between turns (owner, 2026-11-27, after the reviews). Spec 6.4.2 item 2 and plan 3.6 ("Status note") approved the same day. G4 (setup choice in dark mode) and G5 (focus and last-move marks): kept as they are, owner's decision on 2026-11-27.
+    - Wordmark, owner's choice on 2026-11-27 during the sign-off: the brass crown before "Draughts", at weight 600 (plan 3.6, "Wordmark"). No review ran on this change.
     - Firefox does not start on this machine; the required `e2e` check runs it in CI.
     - Next: the owner's keyboard game and screen reader game, the About photos if supplied, and the owner's sign-off of the look in the pull request. Then tick.
 
