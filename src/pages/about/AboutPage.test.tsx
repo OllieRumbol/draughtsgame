@@ -19,7 +19,7 @@ describe("the About page", () => {
     const main = await openPage();
 
     const name = within(main).getByRole("heading", { level: 1 });
-    const photo = within(main).getByRole("img", { name: "Placeholder for a photo of Ernest" });
+    const photo = within(main).getByRole("img", { name: "Ernest Rumbol" });
     const tribute = within(main).getByText(/^This game was made in loving memory/);
     const board = within(main).getByRole("img", { name: "Placeholder for a photo of the family draughts board" });
     const built = within(main).getByRole("heading", { level: 2, name: "How it's built" });
@@ -61,10 +61,15 @@ describe("the About page", () => {
     expect(paragraphs[3]).toBe("For Ernest");
   });
 
-  it("shows a visible placeholder for each photo and for the photo's caption until the owner supplies them", async () => {
+  it("shows the owner's photo of Ernest, and a visible placeholder for the caption and the family board", async () => {
     const main = await openPage();
 
-    expect(within(main).getAllByText("Placeholder until the owner supplies it")).toHaveLength(2);
+    expect(within(main).getByRole("img", { name: "Ernest Rumbol" })).toHaveAttribute(
+      "src",
+      expect.stringMatching(/ernest/),
+    );
+    expect(within(main).queryByRole("img", { name: "Placeholder for a photo of Ernest" })).not.toBeInTheDocument();
+    expect(within(main).getAllByText("Placeholder until the owner supplies it")).toHaveLength(1);
     expect(within(main).getByText(/^Caption to come, in the owner's words/)).toBeInTheDocument();
     expect(within(main).getByText("The board we played on")).toBeInTheDocument();
   });

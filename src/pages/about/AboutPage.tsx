@@ -1,7 +1,9 @@
+import type { ReactNode } from "react";
 import boardStyles from "@/components/board/Board.module.css";
 import { CrownIcon } from "@/components/board/CrownIcon";
 import links from "@/styles/links.module.css";
 import styles from "./AboutPage.module.css";
+import ernestPhoto from "./ernest.jpg";
 
 // The tribute from `About.js` on `main` at commit da953ce, in three paragraphs (spec section 6.1.11, item 5).
 // "past away" is corrected to "passed away". The owner accepted five more edits on 2026-11-26, one line at a time:
@@ -22,7 +24,16 @@ export function AboutPage() {
       <h1>Ernest Rumbol</h1>
       <div className={styles.about}>
         <figure className={styles.photo}>
-          <PhotoPlaceholder title="Photo of Ernest" label="Placeholder for a photo of Ernest" shape="portrait" />
+          {/* The owner supplied this photo on 2026-11-27. It is 600 px wide, twice its widest size on the page. */}
+          <PhotoFrame>
+            <img
+              className={`${styles.picture} ${styles.portrait}`}
+              src={ernestPhoto}
+              alt="Ernest Rumbol"
+              width={600}
+              height={804}
+            />
+          </PhotoFrame>
           <figcaption className={`${styles.caption} ${styles.captionToCome}`}>
             Caption to come, in the owner's words: for example, where or when the photo was taken
           </figcaption>
@@ -87,13 +98,24 @@ type PhotoPlaceholderProps = {
 // (spec section 6.1.11, item 5).
 function PhotoPlaceholder({ title, label, shape }: PhotoPlaceholderProps) {
   return (
-    <div className={`${boardStyles.frame} ${styles.frame}`}>
-      <div className={boardStyles.inlay}>
-        <div className={`${styles.placeholder} ${styles[shape]}`} role="img" aria-label={label}>
-          <strong className={styles.placeholderTitle}>{title}</strong>
-          <span>Placeholder until the owner supplies it</span>
-        </div>
+    <PhotoFrame>
+      <div className={`${styles.placeholder} ${styles[shape]}`} role="img" aria-label={label}>
+        <strong className={styles.placeholderTitle}>{title}</strong>
+        <span>Placeholder until the owner supplies it</span>
       </div>
+    </PhotoFrame>
+  );
+}
+
+type PhotoFrameProps = {
+  children: ReactNode;
+};
+
+// The board's walnut frame and brass inlay round a photo or its placeholder, as the design shows.
+function PhotoFrame({ children }: PhotoFrameProps) {
+  return (
+    <div className={`${boardStyles.frame} ${styles.frame}`}>
+      <div className={boardStyles.inlay}>{children}</div>
     </div>
   );
 }

@@ -89,6 +89,16 @@ div.frame {
   text-align: center;
 }
 
+/* A supplied photo fills the placeholder's shape. The photo of Ernest is a little taller than 4 by 5, so a little is
+   cut from the top and the bottom, less from the top, to keep his head in the frame. */
+.picture {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: 50% 35%;
+}
+
 .portrait {
   aspect-ratio: 4 / 5;
 }
