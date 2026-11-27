@@ -500,7 +500,7 @@ The exact wording of each message is drafted with the design and approved by the
 2. **Game:**
    * the board;
    * whose turn it is, or that the computer is thinking, or the result;
-   * a note under that: who moves first, until the first turn ends; then the last move, such as "The computer jumped row 3, column 4 to row 5, column 2, taking your man."; the reason for the result; or what to do after a failure. On a phone the note keeps room for three lines, and on a wider screen for two, so the board and the controls do not move from turn to turn. The owner chose this on 2026-11-27.
+   * a note under that: who moves first, until the first move; then the last move, such as "The computer jumped row 3, column 4 to row 5, column 2, taking your man."; the reason for the result; or what to do after a failure. As the design does, the note keeps room for one line and grows with a longer sentence, so the board or the controls can move between turns. The owner chose this on 2026-11-27.
    * the mode, and the level in a computer game;
    * the number of pieces each player has captured;
    * the controls: Show tips, Undo, Give up, New game, and End turn during a chain.

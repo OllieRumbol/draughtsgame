@@ -42,7 +42,7 @@ export async function startComputerGame(page: Page, first: "You" | "The computer
 // Opens a saved two-player game with only these pieces, player 1 to move. Each piece is [row, column, cell], with the
 // saved game's cell values: 1 for player 1's man, 2 for player 2's man. It is written on the About page, because game
 // setup removes a saved game that it does not use.
-export async function openSavedGame(page: Page, pieces: [number, number, number][]): Promise<void> {
+async function openSavedGame(page: Page, pieces: [number, number, number][]): Promise<void> {
   await page.goto("./#/about");
   await page.evaluate((pieces) => {
     const rows = Array.from({ length: 8 }, (_, row) =>

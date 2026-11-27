@@ -281,9 +281,21 @@ describe("lastMove", () => {
       captured: [at(2, 3), at(4, 3), at(4, 1), at(2, 1)],
       path: [at(3, 4), at(5, 2), at(3, 0), at(1, 2)],
     };
-    expect(lastMove(play(asked, received(loop), shown, shown, shown, shown, shown))).toBe(
-      "The computer jumped from row 2, column 3 and back again, taking 4 pieces.",
+    const afterLoop = play(asked, received(loop), shown, shown, shown, shown, shown);
+    expect(lastMove(afterLoop)).toBe("The computer jumped from row 2, column 3 and back again, taking 4 pieces.");
+
+    // Undo clears the computer's squares, so after Undo the same move is named without them (plan section 3.6).
+    const reply: Move = { from: at(1, 2), to: at(2, 1), captured: [], path: [at(2, 1)] };
+    const undone = play(
+      afterLoop,
+      select(6, 1),
+      target(5, 0),
+      { type: "computerMoveReceived", requestId: 2, move: reply },
+      shown,
+      shown,
+      { type: "undo" },
     );
+    expect(lastMove(undone)).toBe("The computer jumped, taking 4 pieces.");
 
     // A person's king has no saved squares, so the board change cannot tell where it began.
     const loopForPerson = gameOn(boardWith([1, 2, K1], [2, 3, M2], [4, 3, M2], [4, 1, M2], [2, 1, M2], [5, 6, M2]));

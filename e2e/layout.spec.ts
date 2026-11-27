@@ -1,5 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
-import { openSavedChainGame, openSavedGame, startComputerGame, startTwoPlayerGame } from "./play.ts";
+import { openSavedChainGame, startComputerGame, startTwoPlayerGame } from "./play.ts";
 
 // Plan section 3.6, "Page size": on a window 1,000 px or wider, the Play page's board fills the window's height, less
 // the header and the page's margins, up to 840 px, and nothing scrolls. The header keeps the same edges as the game.
@@ -208,56 +208,23 @@ test("at 320 px wide, each square of the board is at least 24 by 24 pixels", asy
   }
 });
 
-// At 320 px, "Jump again or end your turn" takes two lines. The status card keeps room for two, so the board does not
-// move down under the player's finger between the jumps of a chain (T20 design review).
-test("at 320 px wide, the board does not move when a chain starts", async ({ page }) => {
+// At 320 px, "Jump again or end your turn" takes two lines. The status title always keeps room for two, so only the
+// note can grow when a chain starts (T20 design review). The note says the jump so far (spec section 6.4.2, item 2).
+test("at 320 px wide, the status title keeps its height when a chain starts, and the note says the jump", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 320, height: 800 });
-  const board = page.getByRole("grid", { name: "Draughts board" });
-
   await openSavedChainGame(page);
-  const topBefore = (await board.boundingBox())?.y;
+  const titleBefore = page.getByText("Player 1's turn", { exact: true });
+  const heightBefore = (await titleBefore.boundingBox())?.height;
 
   await page.getByRole("gridcell", { name: "Row 7, column 2, player 1's man" }).click();
   await page.getByRole("gridcell", { name: "Row 5, column 4, empty, target" }).click();
-  await expect(page.getByText("Jump again or end your turn", { exact: true })).toBeVisible();
-  const topInChain = (await board.boundingBox())?.y;
+  const titleInChain = page.getByText("Jump again or end your turn", { exact: true });
+  await expect(titleInChain).toBeVisible();
+  const note = "Player 1 jumped row 7, column 2 to row 5, column 4, taking a man.";
+  await expect(page.getByText(note, { exact: true })).toBeVisible();
 
-  expect(topBefore).toBeDefined();
-  expect(topInChain).toBe(topBefore);
+  expect(heightBefore).toBeDefined();
+  expect((await titleInChain.boundingBox())?.height).toBe(heightBefore);
 });
-
-// The note under the status title says the last move. It keeps room for three lines on a phone and two on a wider
-// screen. A jump that crowns a man takes all of that room, and the board and the controls do not move (spec
-// section 6.4.2, item 2).
-for (const { width, lines } of [
-  { width: 320, lines: 3 },
-  { width: 1280, lines: 2 },
-]) {
-  test(`at ${width} px wide, the board and the controls do not move when the last move fills the note`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width, height: 800 });
-    const board = page.getByRole("grid", { name: "Draughts board" });
-    const giveUp = page.getByRole("button", { name: "Give up" });
-    await openSavedGame(page, [
-      [2, 3, 1],
-      [1, 2, 2],
-      [3, 6, 2],
-    ]);
-    const boardBefore = (await board.boundingBox())?.y;
-    const controlsBefore = (await giveUp.boundingBox())?.y;
-
-    await page.getByRole("gridcell", { name: "Row 3, column 4, player 1's man" }).click();
-    await page.getByRole("gridcell", { name: "Row 1, column 2, empty, target" }).click();
-    const note = page.getByText(
-      "Player 1 jumped row 3, column 4 to row 1, column 2, taking a man. The man becomes a king.",
-    );
-    await expect(note).toBeVisible();
-    const noteLines = await note.evaluate((element) => element.getBoundingClientRect().height / 21);
-
-    expect(noteLines).toBe(lines);
-    expect(boardBefore).toBeDefined();
-    expect((await board.boundingBox())?.y).toBe(boardBefore);
-    expect((await giveUp.boundingBox())?.y).toBe(controlsBefore);
-  });
-}
