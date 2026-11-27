@@ -1,5 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
-import { startComputerGame, startTwoPlayerGame } from "./play.ts";
+import { openSavedChainGame, startComputerGame, startTwoPlayerGame } from "./play.ts";
 
 // Plan section 3.6, "Page size": on a window 1,000 px or wider, the Play page's board fills the window's height, less
 // the header and the page's margins, up to 840 px, and nothing scrolls. The header keeps the same edges as the game.
@@ -206,4 +206,22 @@ test("at 320 px wide, each square of the board is at least 24 by 24 pixels", asy
     expect(size.width).toBeGreaterThanOrEqual(24);
     expect(size.height).toBeGreaterThanOrEqual(24);
   }
+});
+
+// At 320 px, "Jump again or end your turn" takes two lines. The status card keeps room for two, so the board does not
+// move down under the player's finger between the jumps of a chain (T20 design review).
+test("at 320 px wide, the board does not move when a chain starts", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  const board = page.getByRole("grid", { name: "Draughts board" });
+
+  await openSavedChainGame(page);
+  const topBefore = (await board.boundingBox())?.y;
+
+  await page.getByRole("gridcell", { name: "Row 7, column 2, player 1's man" }).click();
+  await page.getByRole("gridcell", { name: "Row 5, column 4, empty, target" }).click();
+  await expect(page.getByText("Jump again or end your turn", { exact: true })).toBeVisible();
+  const topInChain = (await board.boundingBox())?.y;
+
+  expect(topBefore).toBeDefined();
+  expect(topInChain).toBe(topBefore);
 });

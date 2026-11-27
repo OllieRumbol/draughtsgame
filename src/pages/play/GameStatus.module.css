@@ -18,14 +18,10 @@
   font-size: var(--text-20);
   font-weight: 500;
   line-height: 1.3;
-}
-
-/* In the desktop side column, "The computer is thinking…" takes two lines, so the title always keeps room for two.
-   Then the controls below the card do not move at the start and end of the computer's turn. */
-@media (min-width: 641px) {
-  .title {
-    min-height: 2.6em;
-  }
+  /* Some titles take two lines: "The computer is thinking…" in the desktop side column, and "Jump again or end your
+     turn" on a 320 px phone. So the title always keeps room for two. Then the board and the controls do not move
+     when the title changes, such as between two jumps of a chain. */
+  min-height: 2.6em;
 }
 
 /* It keeps its height when it is empty, so the card does not change size between turns. */
